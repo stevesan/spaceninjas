@@ -1,0 +1,11 @@
+csharp-project-backup
+obj
+Library
+Temp
+.vs
+*.swp
+*.pidb
+*.unityproj
+*.sln
+*.userprefs
+*.csproj
