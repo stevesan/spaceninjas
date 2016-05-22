@@ -1,0 +1,32 @@
+csv level importer
+    each csv cell has a word in it. word maps directly to game object name of prefab
+    http://answers.unity3d.com/questions/8187/how-can-i-read-binary-files-from-resources.html
+
+enemies
+combat
+digging
+temp power ups (ex: touch a wall, get triple-boost for 10 seconds)
+obstacles that need double-boost to get past
+minimap
+
+powerups:
+    explosion on boost
+    triple-boost
+    digging
+
+skills to teach:
+    wall hugging: move paralell to wall, then boost into it to just slide.
+    out-and-back: go out to scout, then boost back for safety
+
+    getting over a bump by first going to a back wall.
+    need to go to the ceiling first!
+
+    OOOOOOO
+    O     L
+    Ox    L
+    O     L
+    OOO   L
+    OOO   L
+    O     L
+    O     L
+    O     L
