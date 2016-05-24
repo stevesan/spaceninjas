@@ -26,9 +26,12 @@ public class Player : MonoBehaviour {
     float gracePeriod = 0f;
 
     private MoveState moveState = MoveState.Idle;
-    private Dir2D moveDir = Dir2D.Right;
     private Dir2D lastMoveDir = Dir2D.Right;
+    private Dir2D bufferedBoostDir = Dir2D.Right;
+    private bool boostBuffered = false;
+
     private Rigidbody2D rb;
+
     private int boostsUsed = 0;
     private float restedSecs = 0f;
 
@@ -38,58 +41,113 @@ public class Player : MonoBehaviour {
 	}
 
     void TriggerBoost(Dir2D dir) {
-        if( boostsUsed < maxBoosts ) {
+
+        bool boostAllowed = boostsUsed < maxBoosts;
+
+        // but allow boost in the given direction if a wall is close enough
+        // a "grab"
+        // TODO: allow this or not?
+        // Design decision. To allow this or not? If we allow it,
+        // it creates a "boring optimal" way of getting around corners.
+        // But without it, it feels "unfair". Meh.
+        // I think it's best to leave it out. Removes complexity from the rules.
+        // And, figuring out how to get around corners without this is fun.
+        //if( CheckForWall(dir) ) {
+            //Debug.Log("grab");
+            //boostAllowed = true;
+        //}
+
+        if( boostAllowed ) {
             boostsUsed++;
             bool isDouble = false;
-            if( moveState == MoveState.Moving && dir != moveDir ) {
+
+            if( moveState == MoveState.Moving && dir != lastMoveDir ) {
+                // immediately change direction, so don't accumulate existing velocity
                 rb.velocity = Vector2.zero;
             }
-            else if( moveState == MoveState.Moving && dir == moveDir ) {
+            else if( moveState == MoveState.Moving && dir == lastMoveDir ) {
                 // if same dir, allow extra boost of speed
                 isDouble = true;
             }
 
             rb.AddForce(dir.GetVector2() * forceScale, ForceMode2D.Impulse);
-            moveDir = dir;
+            lastMoveDir = dir;
             moveState = MoveState.Moving;
 
             ExecuteEvents.Execute<EventHandler>(this.gameObject, null, (x,y)=>x.OnBoost(boostsUsed, isDouble));
+
+            boostBuffered = false;
         }
         else {
             // out of boosts
             ExecuteEvents.Execute<EventHandler>(this.gameObject, null, (x,y)=>x.OnOutOfBoosts());
+
+            bufferedBoostDir = dir;
+            boostBuffered = true;
         }
     }
-	
-	void Update()
-    {
+
+    void UpdateGracePeriod() {
         if( gracePeriod > 0f ) {
             gracePeriod -= Time.deltaTime;
             if( gracePeriod < 0f ) {
                 ExecuteEvents.Execute<EventHandler>(this.gameObject, null, (x,y)=>x.OnGracePeriodChange(false));
             }
         }
+    }
+
+    void TriggerBoostIfInputted() {
+        foreach( Dir2D dir in Enum.GetValues(typeof(Dir2D)) ) {
+            if( input.IsTriggerMove(dir) ) {
+                TriggerBoost(dir);
+            }
+        }
+
+    }
+
+    bool CheckForWall( Dir2D dir ) {
+        foreach( Collider2D col in OverlapAll(dir) ) {
+            if( col.gameObject == this.gameObject ) {
+                continue;
+            }
+            if( !col.isTrigger ) {
+                Debug.Log("found wall: " + col.gameObject.name);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    Collider2D[] OverlapAll( Dir2D dir ) {
+        CircleCollider2D myCol = GetComponent<CircleCollider2D>();
+        Vector2 c = transform.position.ToVector2XY() + dir.GetVector2()*myCol.radius;
+        return Physics2D.OverlapCircleAll( c, myCol.radius );
+    }
+
+    RaycastHit2D[] CastAll(Dir2D dir, float maxDist) {
+        CircleCollider2D myCol = GetComponent<CircleCollider2D>();
+        return Physics2D.CircleCastAll(
+                transform.position,
+                myCol.radius,
+                dir.GetVector2(),
+                maxDist);
+    }
+
+	void Update()
+    {
+        UpdateGracePeriod();
 
         if( moveState == MoveState.Idle ) {
-            // if idle and player was holding down a key, register a boost
-            // but guard to make sure we don't spam it
-            foreach( Dir2D dir in Enum.GetValues(typeof(Dir2D)) ) {
-                // avoid spamming and trying in wrong direction
-                if( dir == lastMoveDir ) {
-                    continue;
-                }
-                if( input.IsHoldingMove(dir) ) {
-                    TriggerBoost(dir);
-                }
+            // execute buffered, held command.
+            if( boostBuffered && input.IsHoldingMove(bufferedBoostDir) ) {
+                TriggerBoost(bufferedBoostDir);
+            }
+            else {
+                TriggerBoostIfInputted();
             }
         }
         else if( moveState == MoveState.Moving ) {
-            // if moving, only respond to the down-frame
-            foreach( Dir2D dir in Enum.GetValues(typeof(Dir2D)) ) {
-                if( input.IsTriggerMove(dir) ) {
-                    TriggerBoost(dir);
-                }
-            }
+            TriggerBoostIfInputted();
         }
         else {
             restedSecs += Time.fixedDeltaTime;
@@ -127,7 +185,6 @@ public class Player : MonoBehaviour {
             transform.position += (Vector3)col.contacts[0].normal * 0.1f;
             rb.velocity = Vector2.zero;
             moveState = MoveState.Resting;
-            lastMoveDir = moveDir;
             boostsUsed = 0;
             restedSecs = 0f;
 
