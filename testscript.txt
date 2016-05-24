@@ -1,0 +1,4 @@
+input:
+    hold direction into wall: confirm no boost spam
+    use all boosts, hold dir: confirm when hit wall, immediately boost in held dir
+    rapidly boost right then down: confirm you move a bit and stop.
