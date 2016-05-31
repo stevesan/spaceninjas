@@ -5,8 +5,12 @@ using System;
 
 public class Player : MonoBehaviour {
 
+    static Player localPlayer;
+
+    public static Player GetLocalPlayer() { return localPlayer; }
+
     public interface EventHandler : IEventSystemHandler {
-        void OnBoost( int boostsUsed, bool isDouble );
+        void OnBoost( int boostsUsed, bool isDashing );
         void OnOutOfBoosts();
         void OnRest();
         void OnPickupCoin();
@@ -18,7 +22,7 @@ public class Player : MonoBehaviour {
 
     enum MoveState {Idle, Moving, Resting};
 
-    float forceScale = 15f;
+    float forceScale = 12f;
     int maxBoosts = 2;
     float minRestSecs = 0.00f;  // this doesn't feel great, but keep here just in case.
     int health = 5;
@@ -28,16 +32,18 @@ public class Player : MonoBehaviour {
     private MoveState moveState = MoveState.Idle;
     private Dir2D lastMoveDir = Dir2D.Right;
     private Dir2D bufferedBoostDir = Dir2D.Right;
-    private bool boostBuffered = false;
+    private bool isBoostBuffered = false;
 
     private Rigidbody2D rb;
 
     private int boostsUsed = 0;
     private float restedSecs = 0f;
+    private bool isDashing = false;
 
 	// Use this for initialization
 	void Start () {
         rb = GetComponent<Rigidbody2D>();
+        localPlayer = this;
 	}
 
     void TriggerBoost(Dir2D dir) {
@@ -59,7 +65,7 @@ public class Player : MonoBehaviour {
 
         if( boostAllowed ) {
             boostsUsed++;
-            bool isDouble = false;
+            isDashing = false;
 
             if( moveState == MoveState.Moving && dir != lastMoveDir ) {
                 // immediately change direction, so don't accumulate existing velocity
@@ -67,23 +73,23 @@ public class Player : MonoBehaviour {
             }
             else if( moveState == MoveState.Moving && dir == lastMoveDir ) {
                 // if same dir, allow extra boost of speed
-                isDouble = true;
+                isDashing = true;
             }
 
             rb.AddForce(dir.GetVector2() * forceScale, ForceMode2D.Impulse);
             lastMoveDir = dir;
             moveState = MoveState.Moving;
 
-            ExecuteEvents.Execute<EventHandler>(this.gameObject, null, (x,y)=>x.OnBoost(boostsUsed, isDouble));
+            ExecuteEvents.Execute<EventHandler>(this.gameObject, null, (x,y)=>x.OnBoost(boostsUsed, isDashing));
 
-            boostBuffered = false;
+            isBoostBuffered = false;
         }
         else {
             // out of boosts
             ExecuteEvents.Execute<EventHandler>(this.gameObject, null, (x,y)=>x.OnOutOfBoosts());
 
             bufferedBoostDir = dir;
-            boostBuffered = true;
+            isBoostBuffered = true;
         }
     }
 
@@ -139,7 +145,7 @@ public class Player : MonoBehaviour {
 
         if( moveState == MoveState.Idle ) {
             // execute buffered, held command.
-            if( boostBuffered && input.IsHoldingMove(bufferedBoostDir) ) {
+            if( isBoostBuffered && input.IsHoldingMove(bufferedBoostDir) ) {
                 TriggerBoost(bufferedBoostDir);
             }
             else {
@@ -197,4 +203,9 @@ public class Player : MonoBehaviour {
     public int GetHealth() { return health; }
 
     public int GetBoostsLeft() { return maxBoosts - boostsUsed; }
+
+    public bool IsDashing() {
+        return moveState == MoveState.Moving
+            && isDashing;
+    }
 }

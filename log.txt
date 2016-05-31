@@ -1,19 +1,14 @@
 
 like VVVVVV, with regular intra-level checkpoints.
 metroid-vania, like RWK
-implement raycast to test
-
-implement grab: ie. even if out of boosts, do a quick raycast in a direciton,
-      if it hits a wall, then allow to stop right there.
-
-
 
 csv level importer
     each csv cell has a word in it. word maps directly to game object name of prefab
     http://answers.unity3d.com/questions/8187/how-can-i-read-binary-files-from-resources.html
 
 enemies
-combat
+    turret
+combat - boost to attack?
 digging
 temp power ups (ex: touch a wall, get triple-boost for 10 seconds)
 obstacles that need double-boost to get past
@@ -53,3 +48,7 @@ skills to teach:
 fix bug: if rapidly to "right down" to just move one space, it can often lead to immediately right again probably due to the hold logic.
     solution: we should buffer the last edge only. so in this case, the last edge would be the down.
     this would still work in the "hit and move" case, since then, the right key would be the last edge.
+implement raycast to test
+implement grab: ie. even if out of boosts, do a quick raycast in a direciton,
+      if it hits a wall, then allow to stop right there.
+    done, but not sure if i like it.

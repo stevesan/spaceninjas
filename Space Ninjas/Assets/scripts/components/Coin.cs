@@ -5,7 +5,8 @@ public class Coin : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-	
+        // random rotation, for variety
+        transform.Rotate(Vector3.forward * Random.value * 360f);
 	}
 	
 	// Update is called once per frame

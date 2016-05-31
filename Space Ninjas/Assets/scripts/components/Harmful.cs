@@ -5,6 +5,8 @@ public class Harmful : MonoBehaviour {
 
     public int hurtAmount = 1;
 
+    public bool destroyOnHarm = false;
+
 	// Use this for initialization
 	void Start () {
 	
@@ -26,6 +28,10 @@ public class Harmful : MonoBehaviour {
         Player p = other.gameObject.GetComponentInParent<Player>();
         if( p != null ) {
             p.OnHurt(hurtAmount);
+
+            if(destroyOnHarm) {
+                Object.Destroy(gameObject);
+            }
         }
     }
 }
