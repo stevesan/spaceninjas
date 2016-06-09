@@ -9,3 +9,5 @@ Temp
 *.sln
 *.userprefs
 *.csproj
+ios
+.DS_Store

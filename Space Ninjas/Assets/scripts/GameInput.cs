@@ -64,14 +64,14 @@ public class GameInput {
     }
 
     public bool IsTriggerMove( Dir2D dir ) {
-        return Input.GetKeyDown( DIR_TO_KEYCODE[dir] )
-            || IsTouchTriggeringMove(dir)
-            || IsMouseTriggeringMove(dir);
+        return Input.GetKeyDown( DIR_TO_KEYCODE[dir] ) ||
+            (UIInputHandler.Instance == null && (IsTouchTriggeringMove(dir) || IsMouseTriggeringMove(dir))) ||
+            (UIInputHandler.Instance != null && UIInputHandler.Instance.IsTriggerMove(dir));
     }
 
     public bool IsHoldingMove( Dir2D dir ) {
-        return Input.GetKey( DIR_TO_KEYCODE[dir] )
-            || IsTouchHoldingMove(dir)
-            || IsMouseHoldingMove(dir);
+        return Input.GetKey( DIR_TO_KEYCODE[dir] ) ||
+            (UIInputHandler.Instance == null && (IsTouchHoldingMove(dir) || IsMouseHoldingMove(dir))) ||
+            (UIInputHandler.Instance != null && UIInputHandler.Instance.IsHoldingMove(dir));
     }
 }
