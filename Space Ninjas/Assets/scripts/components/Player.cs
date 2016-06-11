@@ -5,10 +5,6 @@ using System;
 
 public class Player : MonoBehaviour {
 
-    static Player localPlayer;
-
-    public static Player GetLocalPlayer() { return localPlayer; }
-
     public interface EventHandler : IEventSystemHandler {
         void OnBoost( int boostsUsed, bool isDashing );
         void OnOutOfBoosts();
@@ -18,12 +14,18 @@ public class Player : MonoBehaviour {
         void OnGracePeriodChange(bool sGracePeriod);
     }
 
-    GameInput input = new GameInput();
+    // Should be an interface...but Unity Editor does not support interface fields
+    public abstract class Input : MonoBehaviour {
+        public abstract bool IsTriggerMove( Dir2D dir );
+        public abstract bool IsHoldingMove( Dir2D dir );
+    }
+
+    public Input input;
 
     enum MoveState {Idle, Moving, Resting};
 
     float forceScale = 12f;
-    int maxBoosts = 2;
+    int maxBoosts = 9999;
     float minRestSecs = 0.00f;  // this doesn't feel great, but keep here just in case.
     int health = 5;
 
@@ -43,7 +45,6 @@ public class Player : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         rb = GetComponent<Rigidbody2D>();
-        localPlayer = this;
 	}
 
     void TriggerBoost(Dir2D dir) {

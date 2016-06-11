@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 using System;
 
@@ -12,7 +13,7 @@ public class PlayerBoostEffects : MonoBehaviour, Player.EventHandler {
     public AudioClip pickupCoinClip;
     public AudioClip hurtClip;
 
-    public TextMesh healthText;
+    public Text healthText;
 
     private Player player;
     private Renderer render;
@@ -53,6 +54,7 @@ public class PlayerBoostEffects : MonoBehaviour, Player.EventHandler {
 
     private void RefreshHUD() {
         healthText.text = "";
+        /*
         for( int i = 0; i < player.GetHealth(); i++ ) {
             healthText.text += "H";
         }
@@ -60,6 +62,7 @@ public class PlayerBoostEffects : MonoBehaviour, Player.EventHandler {
         for( int i = 0; i < player.GetBoostsLeft(); i++ ) {
             healthText.text += "B";
         }
+        */
     }
 
     public void OnHealthChange(bool isHeal) {

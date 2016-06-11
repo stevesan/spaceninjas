@@ -4,10 +4,13 @@ using System.Collections;
 // Shoots at the player
 public class Shooter : MonoBehaviour {
 
-    public float maxPlayerDist = 10f;
+    public float maxTargetDist = 10f;
 
     // we assume the bullet is pointing to the right by default
     public GameObject bulletPrefab;
+
+    // Which object should we shoot towards - usually the player
+    public GameObject target;
 
     // min seconds between shots
     public float cooldown = 2f;
@@ -31,11 +34,9 @@ public class Shooter : MonoBehaviour {
     }
 
     void Update() {
-        Player p = Player.GetLocalPlayer();
-        if( p != null
-                && Vector3.Distance(transform.position, p.transform.position) < maxPlayerDist ) {
+        if( Vector3.Distance(transform.position, target.transform.position) < maxTargetDist ) {
             if( Time.time - lastShotTime > cooldown ) {
-                ShootAt(p.transform.position);
+                ShootAt(target.transform.position);
                 lastShotTime = Time.time;
             }
         }
