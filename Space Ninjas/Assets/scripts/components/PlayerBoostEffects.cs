@@ -53,16 +53,6 @@ public class PlayerBoostEffects : MonoBehaviour, Player.EventHandler {
     }
 
     private void RefreshHUD() {
-        healthText.text = "";
-        /*
-        for( int i = 0; i < player.GetHealth(); i++ ) {
-            healthText.text += "H";
-        }
-        healthText.text += "\n";
-        for( int i = 0; i < player.GetBoostsLeft(); i++ ) {
-            healthText.text += "B";
-        }
-        */
     }
 
     public void OnHealthChange(bool isHeal) {

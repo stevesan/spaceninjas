@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class Main : MonoBehaviour {
 
@@ -17,4 +18,8 @@ public class Main : MonoBehaviour {
 	void Update () {
 	
 	}
+
+    public void ResetLevel() {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
 }

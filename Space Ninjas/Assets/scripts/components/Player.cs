@@ -24,7 +24,7 @@ public class Player : MonoBehaviour {
 
     enum MoveState {Idle, Moving, Resting};
 
-    float forceScale = 12f;
+    float forceScale = 8f;
     int maxBoosts = 9999;
     float minRestSecs = 0.00f;  // this doesn't feel great, but keep here just in case.
     int health = 5;
