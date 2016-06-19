@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using UnityEngine.UI;
 using System.Collections;
 using System;
 
@@ -13,10 +12,8 @@ public class PlayerBoostEffects : MonoBehaviour, Player.EventHandler {
     public AudioClip pickupCoinClip;
     public AudioClip hurtClip;
 
-    public Text healthText;
-
     private Player player;
-    private Renderer render;
+    public Renderer render;
     private AudioSource audioSource;
     private float volume = 0.5f;
 
@@ -66,7 +63,6 @@ public class PlayerBoostEffects : MonoBehaviour, Player.EventHandler {
     // Use this for initialization
     void Start () {
         player = GetComponent<Player>();
-        render = GetComponent<Renderer>();
         audioSource = GetComponent<AudioSource>();
         RefreshHUD();
 	}

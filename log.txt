@@ -1,4 +1,9 @@
 
+name ideas:
+    drone mite
+    drone bug
+    star quark
+
 like VVVVVV, with regular intra-level checkpoints.
 metroid-vania, like RWK
 
