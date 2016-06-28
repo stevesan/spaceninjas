@@ -127,7 +127,7 @@ public class Player : MonoBehaviour {
 
     Collider2D[] OverlapAll( Dir2D dir ) {
         CircleCollider2D myCol = GetComponent<CircleCollider2D>();
-        Vector2 c = transform.position.ToVector2XY() + dir.GetVector2()*myCol.radius;
+        Vector2 c = transform.position.GetXY() + dir.GetVector2()*myCol.radius;
         return Physics2D.OverlapCircleAll( c, myCol.radius );
     }
 

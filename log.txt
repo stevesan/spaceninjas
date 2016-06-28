@@ -1,8 +1,11 @@
 
-name ideas:
-    drone mite
-    drone bug
-    star quark
+no-boost zones
+    puzzles?
+    could do one-boost-ish puzzles with no-boost zones and a boost-OK hole
+
+change size, ala. badland
+
+moving damage zones.
 
 like VVVVVV, with regular intra-level checkpoints.
 metroid-vania, like RWK
@@ -12,8 +15,6 @@ csv level importer
     http://answers.unity3d.com/questions/8187/how-can-i-read-binary-files-from-resources.html
 
 enemies
-    turret
-combat - boost to attack?
 digging
 temp power ups (ex: touch a wall, get triple-boost for 10 seconds)
 obstacles that need double-boost to get past
@@ -57,3 +58,6 @@ implement raycast to test
 implement grab: ie. even if out of boosts, do a quick raycast in a direciton,
       if it hits a wall, then allow to stop right there.
     done, but not sure if i like it.
+
+turret
+combat - boost to attack?
