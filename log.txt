@@ -1,13 +1,28 @@
 
+redo controls so boost doesn't need "runway"
+
+damage zones and heal zones
+    can make time-sensitive traversal parts
+
+force zones
+
+charge-type enemies, ie. invulnerable unless you let them charge, then dodge, then hit behind.
+    make the chaser do this.
+    ie. chaser should follow until it has a clear LOS to player
+    then telegraph 2s, then charge. chaser should have clear front-armor
+
+hitscan enemy
+
 puzzles where you draw out a line, like infinite snake
-walls that bounce you off immediately
+    could copy some Witness puzzles - heh! maybe with action elements
+walls that bounce you off immediately...? not that interesting.
 no-boost zones
     puzzles?
     could do single-boost-only puzzles with no-boost zones and a boost-OK hole
 
-change size, ala. badland
+enemies with tails (head is harmful, but tail is vulnerable)
 
-moving damage zones.
+change size, ala. badland
 
 like VVVVVV, with regular intra-level checkpoints.
 metroid-vania, like RWK
@@ -16,7 +31,6 @@ csv level importer
     each csv cell has a word in it. word maps directly to game object name of prefab
     http://answers.unity3d.com/questions/8187/how-can-i-read-binary-files-from-resources.html
 
-enemies
 digging
 temp power ups (ex: touch a wall, get triple-boost for 10 seconds)
 obstacles that need double-boost to get past

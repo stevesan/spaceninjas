@@ -329,6 +329,7 @@ MonoBehaviour:
   - {fileID: 1541986208}
   - {fileID: 989507791}
   - {fileID: 1901183800}
+  - {fileID: 1833802192}
 --- !u!1 &192809481
 GameObject:
   m_ObjectHideFlags: 0
@@ -7625,9 +7626,10 @@ GameObject:
   - 114: {fileID: 1833802194}
   - 120: {fileID: 1833802195}
   - 114: {fileID: 1833802196}
+  - 61: {fileID: 1833802198}
   - 114: {fileID: 1833802197}
   m_Layer: 0
-  m_Name: laserTest
+  m_Name: laser
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7659,8 +7661,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: adff0f22429374400973cdc7acd5a82e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  onHit: {fileID: 1408822059}
-  cooldown: 3
   ignoreRoot: {fileID: 1833802193}
   line: {fileID: 1833802195}
 --- !u!120 &1833802195
@@ -7710,10 +7710,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 1833802192}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7a31639c238444f89860c58f0eaee949, type: 3}
+  m_Script: {fileID: 11500000, guid: cb020b639c9894b6b9dbad2783258f66, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  degreesPerSec: 45
+  spawnOnDestroy:
+    prefab: {fileID: 915288332}
+    inheritRotation: 0
+    assignParent: 0
 --- !u!114 &1833802197
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7722,10 +7725,24 @@ MonoBehaviour:
   m_GameObject: {fileID: 1833802192}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e5ee2b20d1d134438852e2985ee10e98, type: 3}
+  m_Script: {fileID: 11500000, guid: 7a31639c238444f89860c58f0eaee949, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  target: {fileID: 192809486}
+  degreesPerSec: 45
+--- !u!61 &1833802198
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1833802192}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_Offset: {x: 0, y: 0}
+  serializedVersion: 2
+  m_Size: {x: 1.5, y: 1}
 --- !u!1 &1901183800
 GameObject:
   m_ObjectHideFlags: 0
@@ -7739,7 +7756,7 @@ GameObject:
   - 61: {fileID: 1901183803}
   - 114: {fileID: 1901183802}
   m_Layer: 0
-  m_Name: spinlaser
+  m_Name: lavaspinner
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

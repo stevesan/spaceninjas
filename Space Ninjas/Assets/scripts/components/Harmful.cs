@@ -13,11 +13,6 @@ public class Harmful : MonoBehaviour {
 	void Start () {
         onHarm.OnStart();
 	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
 
     void OnTouch(GameObject other) {
         Player p = other.gameObject.GetComponentInParent<Player>();

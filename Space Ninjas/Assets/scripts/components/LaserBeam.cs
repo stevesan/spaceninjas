@@ -12,6 +12,7 @@ public class LaserBeam : MonoBehaviour {
     private RaycastHit2D currHit;
 
     void UpdateHit() {
+        Physics2D.queriesHitTriggers = false;
         int numHits = Physics2D.RaycastNonAlloc(
                 transform.position,
                 transform.TransformDirection(Vector3.right),
