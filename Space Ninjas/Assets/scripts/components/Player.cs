@@ -22,12 +22,14 @@ public class Player : MonoBehaviour {
 
     public Input input;
 
+    public SpawnSpec onHurt;
+
     enum MoveState {Idle, Moving, Resting};
 
     float forceScale = 8f;
     int maxBoosts = 9999;
     float minRestSecs = 0.00f;  // this doesn't feel great, but keep here just in case.
-    int health = 5;
+    int health = 99;
 
     float gracePeriod = 0f;
 
@@ -45,6 +47,7 @@ public class Player : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         rb = GetComponent<Rigidbody2D>();
+        onHurt.OnStart();
 	}
 
     void TriggerBoost(Dir2D dir) {
@@ -168,22 +171,25 @@ public class Player : MonoBehaviour {
         ExecuteEvents.Execute<EventHandler>(this.gameObject, null, (x,y)=>x.OnPickupCoin());
     }
 
-    public void OnHeal(int amt) {
-        OnHurt(-1 * amt);
+    public bool OnHeal(int amt) {
+        return OnHurt(-1 * amt);
     }
 
-    public void OnHurt(int amt) {
-        if( amt > 0 ) {
-            if( gracePeriod > 0f ) {
-                return;
-            }
-            else {
-                gracePeriod = 2f;
-                ExecuteEvents.Execute<EventHandler>(this.gameObject, null, (x,y)=>x.OnGracePeriodChange(true));
-            }
+    public bool OnHurt(int amt) {
+        if( amt > 0 && gracePeriod <= 0f ) {
+            health -= amt;
+            ExecuteEvents.Execute<EventHandler>(this.gameObject, null, (x,y)=>x.OnHealthChange(amt < 0));
+
+            gracePeriod = 2f;
+            ExecuteEvents.Execute<EventHandler>(this.gameObject, null, (x,y)=>x.OnGracePeriodChange(true));
+
+            onHurt.Spawn(transform);
+
+            return true;
         }
-        health -= amt;
-        ExecuteEvents.Execute<EventHandler>(this.gameObject, null, (x,y)=>x.OnHealthChange(amt < 0));
+        else {
+            return false;
+        }
     }
 
     void OnCollisionEnter2D( Collision2D col ) {

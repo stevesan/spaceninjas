@@ -7,9 +7,11 @@ public class Harmful : MonoBehaviour {
 
     public bool destroyOnHarm = false;
 
+    public SpawnSpec onHarm;
+
 	// Use this for initialization
 	void Start () {
-	
+        onHarm.OnStart();
 	}
 	
 	// Update is called once per frame
@@ -17,21 +19,29 @@ public class Harmful : MonoBehaviour {
 	
 	}
 
-    void OnCollisionEnter2D( Collision2D other ) {
+    void OnTouch(GameObject other) {
         Player p = other.gameObject.GetComponentInParent<Player>();
         if( p != null ) {
-            p.OnHurt(hurtAmount);
-        }
-    }
-
-    void OnTriggerEnter2D( Collider2D other ) {
-        Player p = other.gameObject.GetComponentInParent<Player>();
-        if( p != null ) {
-            p.OnHurt(hurtAmount);
+            if( p.OnHurt(hurtAmount) ) {
+                onHarm.Spawn(transform);
+            }
 
             if(destroyOnHarm) {
                 Object.Destroy(gameObject);
             }
+
         }
+    }
+
+    void OnCollisionEnter2D( Collision2D other ) {
+        OnTouch(other.gameObject);
+    }
+
+    void OnTriggerEnter2D( Collider2D other ) {
+        OnTouch(other.gameObject);
+    }
+
+    void OnTriggerStay2D( Collider2D other ) {
+        OnTouch( other.gameObject );
     }
 }

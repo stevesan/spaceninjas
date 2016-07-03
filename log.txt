@@ -1,7 +1,9 @@
 
+puzzles where you draw out a line, like infinite snake
+walls that bounce you off immediately
 no-boost zones
     puzzles?
-    could do one-boost-ish puzzles with no-boost zones and a boost-OK hole
+    could do single-boost-only puzzles with no-boost zones and a boost-OK hole
 
 change size, ala. badland
 
@@ -26,7 +28,7 @@ powerups:
     triple-boost
     digging
 
-skills to teach:
+skills to teach: (for no-boost zone puzzles)
     wall hugging: move paralell to wall, then boost into it to just slide.
     out-and-back: go out to scout, then boost back for safety
 
@@ -35,7 +37,7 @@ skills to teach:
 
     OOOOOOO
     O     L
-    Ox    L
+    Op    L
     O     L
     OOO   L
     OOO   L
@@ -43,6 +45,7 @@ skills to teach:
     O     L
     O     L
 
+    p = player, L = lava, 0 = rock
 
 -----------------------------
 -----------------------------

@@ -14,6 +14,10 @@ public class SpawnSpec
     public bool assignParent = false;
 
     public GameObject Spawn(Transform spawner) {
+        if( !IsValid() ) {
+            return null;
+        }
+
         GameObject inst = (GameObject)GameObject.Instantiate(
                 prefab,
                 spawner.position,
