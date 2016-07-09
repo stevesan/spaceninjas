@@ -21,9 +21,13 @@ public class Chaser : MonoBehaviour {
         rb = GetComponent<Rigidbody2D>();
 	}
 
+    public bool IsTargetCloseEnough() {
+        return Vector3.Distance(transform.position, target.position) < maxTargetDist;
+    }
+
     void Update() {
         if( mode == Mode.Chase ) {
-            if( Vector3.Distance(transform.position, target.position) < maxTargetDist ) {
+            if( IsTargetCloseEnough() ) {
                 Vector2 dir = (target.position - transform.position).GetXY();
                 rb.velocity = dir.normalized * speed;
             }
@@ -45,6 +49,9 @@ public class Chaser : MonoBehaviour {
         if( mode == Mode.Chase ) {
             mode = Mode.Backoff;
             backoffDir = (Vector3)col.contacts[0].normal;
+            // randomly rotate a bit
+            float degs = Mathf.Lerp( -60, 60, Random.value );
+            backoffDir = backoffDir.Rotated(degs);
             backoffTimer = backoffTime;
         }
     }

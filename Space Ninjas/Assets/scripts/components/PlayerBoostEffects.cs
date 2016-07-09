@@ -10,7 +10,6 @@ public class PlayerBoostEffects : MonoBehaviour, Player.EventHandler {
     public AudioClip restClip;
     public AudioClip outOfBoostsClip;
     public AudioClip pickupCoinClip;
-    public AudioClip hurtClip;
 
     private Player player;
     public Renderer render;
@@ -53,10 +52,6 @@ public class PlayerBoostEffects : MonoBehaviour, Player.EventHandler {
     }
 
     public void OnHealthChange(bool isHeal) {
-        if( !isHeal ) {
-            audioSource.PlayOneShot(hurtClip, volume);
-        }
-
         RefreshHUD();
     }
 
@@ -70,9 +65,7 @@ public class PlayerBoostEffects : MonoBehaviour, Player.EventHandler {
 	// Update is called once per frame
 	void Update() {
         if( isGraceFlickering ) {
-            float t = Time.time - Mathf.Floor(Time.time);
-            int frame = (int)Mathf.Floor( t * graceFlickerFreq * 2f );
-            render.enabled = (frame % 2) == 0;
+            render.enabled = Util.SquareWave(graceFlickerFreq);
         }
         else {
             render.enabled = true;

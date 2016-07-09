@@ -19,12 +19,11 @@ public class Harmful : MonoBehaviour {
         if( p != null ) {
             if( p.OnHurt(hurtAmount) ) {
                 onHarm.Spawn(transform);
-            }
 
-            if(destroyOnHarm) {
-                Object.Destroy(gameObject);
+                if(destroyOnHarm) {
+                    Object.Destroy(gameObject);
+                }
             }
-
         }
     }
 

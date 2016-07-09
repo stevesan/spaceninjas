@@ -26,7 +26,7 @@ public class Player : MonoBehaviour {
 
     enum MoveState {Idle, Moving, Resting};
 
-    float forceScale = 8f;
+    float speed = 8f;
     int maxBoosts = 9999;
     float minRestSecs = 0.00f;  // this doesn't feel great, but keep here just in case.
     int health = 99;
@@ -43,6 +43,7 @@ public class Player : MonoBehaviour {
     private int boostsUsed = 0;
     private float restedSecs = 0f;
     private bool isDashing = false;
+    private int lastMovingFrame = -1;
 
 	// Use this for initialization
 	void Start () {
@@ -71,16 +72,25 @@ public class Player : MonoBehaviour {
             boostsUsed++;
             isDashing = false;
 
+            /*
             if( moveState == MoveState.Moving && dir != lastMoveDir ) {
                 // immediately change direction, so don't accumulate existing velocity
                 rb.velocity = Vector2.zero;
             }
-            else if( moveState == MoveState.Moving && dir == lastMoveDir ) {
+            */
+
+            if( dir == lastMoveDir ) {
                 // if same dir, allow extra boost of speed
                 isDashing = true;
             }
 
-            rb.AddForce(dir.GetVector2() * forceScale, ForceMode2D.Impulse);
+            if( dir != lastMoveDir ) {
+                rb.AddStoppingForce();
+            }
+            else {
+                // do nothing - add to existing velocity as a double boost
+            }
+            rb.AddForce(dir.GetVector2() * speed * rb.mass, ForceMode2D.Impulse);
             lastMoveDir = dir;
             moveState = MoveState.Moving;
 
@@ -160,7 +170,7 @@ public class Player : MonoBehaviour {
             TriggerBoostIfInputted();
         }
         else {
-            restedSecs += Time.fixedDeltaTime;
+            restedSecs += Time.deltaTime;
             if(restedSecs >= minRestSecs) {
                 moveState = MoveState.Idle;
             }
@@ -196,7 +206,11 @@ public class Player : MonoBehaviour {
         if( moveState == MoveState.Moving ) {
             // move back slightly to not actually touch the block
             transform.position += (Vector3)col.contacts[0].normal * 0.1f;
-            rb.velocity = Vector2.zero;
+
+            // apply impulse to zero out velocity
+            rb.AddForce( -1 * rb.velocity * rb.mass, ForceMode2D.Impulse );
+
+            lastMovingFrame = Time.frameCount;
             moveState = MoveState.Resting;
             boostsUsed = 0;
             restedSecs = 0f;
@@ -212,7 +226,7 @@ public class Player : MonoBehaviour {
     public int GetBoostsLeft() { return maxBoosts - boostsUsed; }
 
     public bool IsDashing() {
-        return moveState == MoveState.Moving
-            && isDashing;
+        return (moveState == MoveState.Moving
+            && isDashing) || lastMovingFrame == Time.frameCount;
     }
 }
