@@ -24,12 +24,14 @@ public class Player : MonoBehaviour {
 
     public SpawnSpec onHurt;
 
+    public Main main;
+
     enum MoveState {Idle, Moving, Resting};
 
     float speed = 8f;
     int maxBoosts = 9999;
     float minRestSecs = 0.00f;  // this doesn't feel great, but keep here just in case.
-    int health = 99;
+    int health = 10;
 
     float gracePeriod = 0f;
 
@@ -174,6 +176,10 @@ public class Player : MonoBehaviour {
             if(restedSecs >= minRestSecs) {
                 moveState = MoveState.Idle;
             }
+        }
+
+        if(GetHealth() <= 0) {
+            main.OnGameOver();
         }
 	}
 

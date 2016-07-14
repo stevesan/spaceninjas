@@ -37,7 +37,7 @@ public class LevelGen {
                 if( onEdge || wallVal > 0.5f ) {
                     float y = Mathf.PerlinNoise(perlinScale * i * 1f/iMax + 123.456f, perlinScale * j * 1f/jMax + 654.321f);
                     GameObject prefab =
-                        y < 0.4f ? settings.lavaPrefab :
+                        y < 0.3f ? settings.lavaPrefab :
                         y < 0.5f ? settings.softBlockPrefab :
                         settings.blockPrefab;
                     SpawnAt( prefab, root, i, j );

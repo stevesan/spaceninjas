@@ -56,4 +56,8 @@ public class Main : MonoBehaviour {
             Pause();
         }
     }
+
+    public void OnGameOver() {
+        ResetLevel();
+    }
 }

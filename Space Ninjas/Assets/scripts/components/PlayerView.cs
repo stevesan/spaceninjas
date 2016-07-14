@@ -1,8 +1,10 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 using System;
 
-public class PlayerBoostEffects : MonoBehaviour, Player.EventHandler {
+// Effects for player state and events
+public class PlayerView : MonoBehaviour, Player.EventHandler {
 
     public TrailRenderer trail;
     public AudioClip boostClip;
@@ -10,6 +12,7 @@ public class PlayerBoostEffects : MonoBehaviour, Player.EventHandler {
     public AudioClip restClip;
     public AudioClip outOfBoostsClip;
     public AudioClip pickupCoinClip;
+    public Text healthText;
 
     private Player player;
     public Renderer render;
@@ -49,6 +52,10 @@ public class PlayerBoostEffects : MonoBehaviour, Player.EventHandler {
     }
 
     private void RefreshHUD() {
+        healthText.text = "";
+        for( int i = 0; i < player.GetHealth(); i++ ) {
+            healthText.text += "O";
+        }
     }
 
     public void OnHealthChange(bool isHeal) {

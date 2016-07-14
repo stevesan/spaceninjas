@@ -1,4 +1,12 @@
 
+short term:
+
+LONG TERM: need to have rapid, on-phone design iteration!! so, create system to download levels
+    from internet, create levels using tiled. enemies...have 1 tile per rotation.
+    we should probably *generate* the tilesets from the game build. and generate a .tmx file. (XML)
+    1 tile per 90deg rotation for enemies
+    keep it consistent via some UUID
+
 checkpoints
 levels and structure
 

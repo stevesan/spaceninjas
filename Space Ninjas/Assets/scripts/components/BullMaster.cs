@@ -34,7 +34,7 @@ public class BullMaster : MonoBehaviour {
     }
 
     void PointRightAtTarget() {
-        transform.rotation = Util.RightRotation( (chasing.target.position - transform.position).normalized );
+        transform.PointRightAt(chasing.target.position);
     }
 
     bool CanHitTarget() {
