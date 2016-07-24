@@ -11,7 +11,7 @@ public class BullMaster : MonoBehaviour {
     static float chargeTime = 1f;
     static float minChargeDist = 10f;
     static float castRadius = 0.5f;
-    static float restTime = 1f;
+    static float restTime = 1.5f;
     static float prechargeTime = 0.5f;
 
     public Renderer sprite;

@@ -30,4 +30,12 @@ public static class UnityExtensions {
     public static void PointRightAt(this Transform transform, Vector3 target) {
         transform.rotation = Util.RightRotation((target - transform.position).normalized);
     }
+
+    public static float PolarAngleXY(this Vector3 v) {
+        return Mathf.Atan2(v.y, v.x);
+    }
+
+    public static string ToStringXY(this Vector3 v) {
+        return v.x+","+v.y;
+    }
 }

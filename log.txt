@@ -1,5 +1,9 @@
 
-short term:
+enemies explode into health pickups..
+
+puzzle: instead of "one boost" zones, you could sort of do similar puzzles with rigidbodies you knock around.
+    ie. if they hit lava, they get destroyed
+    these are basically block puzzles.....
 
 LONG TERM: need to have rapid, on-phone design iteration!! so, create system to download levels
     from internet, create levels using tiled. enemies...have 1 tile per rotation.
@@ -93,3 +97,6 @@ DONE obstacles that need double-boost to get past
 DONE charge-type enemies, ie. invulnerable unless you let them charge, then dodge, then hit behind.
     then telegraph 2s, then charge. chaser should have clear front-armor
     implemented BullMaster
+DONE: Fix issue where if you hit a direction on the same frame as collision stopping you, you just stop
+short term:
+    done. this was caused by the rest frame, but also the physics stopping.

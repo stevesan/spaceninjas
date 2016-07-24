@@ -26,11 +26,10 @@ public class Player : MonoBehaviour {
 
     public Main main;
 
-    enum MoveState {Idle, Moving, Resting};
+    enum MoveState {Idle, Moving};
 
     float speed = 8f;
     int maxBoosts = 9999;
-    float minRestSecs = 0.00f;  // this doesn't feel great, but keep here just in case.
     int health = 10;
 
     float gracePeriod = 0f;
@@ -43,9 +42,9 @@ public class Player : MonoBehaviour {
     private Rigidbody2D rb;
 
     private int boostsUsed = 0;
-    private float restedSecs = 0f;
     private bool isDashing = false;
     private int lastMovingFrame = -1;
+    private bool boostedLastUpdate = false;
 
 	// Use this for initialization
 	void Start () {
@@ -93,6 +92,7 @@ public class Player : MonoBehaviour {
                 // do nothing - add to existing velocity as a double boost
             }
             rb.AddForce(dir.GetVector2() * speed * rb.mass, ForceMode2D.Impulse);
+            boostedLastUpdate = true;
             lastMoveDir = dir;
             moveState = MoveState.Moving;
 
@@ -159,6 +159,7 @@ public class Player : MonoBehaviour {
     {
         UpdateGracePeriod();
 
+        boostedLastUpdate = false;
         if( moveState == MoveState.Idle ) {
             // execute buffered, held command.
             if( isBoostBuffered && input.IsHoldingMove(bufferedBoostDir) ) {
@@ -170,12 +171,6 @@ public class Player : MonoBehaviour {
         }
         else if( moveState == MoveState.Moving ) {
             TriggerBoostIfInputted();
-        }
-        else {
-            restedSecs += Time.deltaTime;
-            if(restedSecs >= minRestSecs) {
-                moveState = MoveState.Idle;
-            }
         }
 
         if(GetHealth() <= 0) {
@@ -214,12 +209,15 @@ public class Player : MonoBehaviour {
             transform.position += (Vector3)col.contacts[0].normal * 0.1f;
 
             // apply impulse to zero out velocity
-            rb.AddForce( -1 * rb.velocity * rb.mass, ForceMode2D.Impulse );
+            // but, don't do this if the player hit a direction on the same frame
+            // this can have the effect of canceling out the input, which feels bad
+            if(!boostedLastUpdate) {
+                rb.AddStoppingForce();
+            }
 
             lastMovingFrame = Time.frameCount;
-            moveState = MoveState.Resting;
+            moveState = MoveState.Idle;
             boostsUsed = 0;
-            restedSecs = 0f;
 
             ExecuteEvents.Execute<EventHandler>(this.gameObject, null, (x,y)=>x.OnRest());
         }

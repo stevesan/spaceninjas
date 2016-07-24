@@ -1,7 +1,12 @@
 ﻿using UnityEngine;
+using UnityEngine.EventSystems;
 using System.Collections;
 
 public class DashBreakable : MonoBehaviour {
+
+    public interface EventHandler : IEventSystemHandler {
+        void OnDashed(Player p);
+    }
 
     public SpawnSpec spawnOnDestroy;
 
@@ -11,9 +16,6 @@ public class DashBreakable : MonoBehaviour {
 
     public void Start() {
         spawnOnDestroy.OnStart();
-        if(destroyVictim == null) {
-            destroyVictim = this.gameObject;
-        }
     }
 
     string LogPrefix() {
@@ -30,8 +32,10 @@ public class DashBreakable : MonoBehaviour {
             if( p.IsDashing() ) {
                 if( debug ) Debug.Log(LogPrefix() + "dashing player " + other.gameObject.name);
 
+                ExecuteEvents.Execute<EventHandler>(this.gameObject, null, (x,y)=>x.OnDashed(p));
+
                 spawnOnDestroy.Spawn(transform);
-                Object.Destroy(destroyVictim);
+                Object.Destroy(destroyVictim == null ? this.gameObject : destroyVictim);
             }
         }
     }
