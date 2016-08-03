@@ -1,0 +1,38 @@
+
+LONG TERM: need to have rapid, on-phone design iteration!! so, create system to download levels
+    from internet, create levels using tiled. enemies...have 1 tile per rotation.
+    we should probably *generate* the tilesets from the game build. so the game should have a backwards compatible tileset, with an internal map from tile number to entity.
+    1 tile per 90deg rotation for...the tileset itself may be large, but don't need to
+    keep it consistent via some UUID
+
+    pipeline:
+    export tileset from unity project
+        create/infer tile->spawn mapping
+            should be additive, backwards-compatible
+            a 'spawn' is an (entity, rotation, etc.) tuple
+            how to setup scripting..such as key->door combos? just keep it purely color-based? yeah sure
+            foreach ent entry:
+                if directional?
+                    allocate 4 tiles, one per rotation
+                else
+                    allocate 1 tile
+
+            waste of space for additive maps? only real disadvantage is wasted space in tilemap...with compression though, no big deal at all.
+            organization?
+            multiple tilemaps?
+                more maps -> more pain to load into tiled. but a few is fine. good for organization
+            you should keep ent lists in a plain text file for ease of merging
+            how about just a json file..yes, yes.
+            since we need other specs per ent, like whether or not it's rotatable. should it all be rotatable? well, certain enemies don't even rotate...?
+
+            hmm we could keep it in a relational database...hmmmmm interesting thought.. sqlite....
+            heck, we don't even need this to be in unity. but, how to generate thumbnails? yeh, still need that
+            what about actual tileset tho..
+
+    load tileset into Tiled
+        hand-create map, export json
+    load json into game (in-game, download via http):
+        read grid string
+        create ents mapped to each tile
+        spawn player, start game
+

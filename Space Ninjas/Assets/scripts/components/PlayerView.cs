@@ -12,6 +12,7 @@ public class PlayerView : MonoBehaviour, Player.EventHandler {
     public AudioClip restClip;
     public AudioClip outOfBoostsClip;
     public AudioClip pickupCoinClip;
+    public AudioClip healClip;
     public Text healthText;
 
     private Player player;
@@ -60,6 +61,9 @@ public class PlayerView : MonoBehaviour, Player.EventHandler {
 
     public void OnHealthChange(bool isHeal) {
         RefreshHUD();
+        if(isHeal) {
+            audioSource.PlayOneShot(healClip, volume);
+        }
     }
 
     // Use this for initialization

@@ -8,14 +8,14 @@ public class DashBreakable : MonoBehaviour {
         void OnDashed(Player p);
     }
 
-    public SpawnSpec spawnOnDestroy;
+    public MultiSpawnSpec spawnsOnDestroy;
 
     public bool debug;
 
     public GameObject destroyVictim;    // set if this should destroy something aside from this.gameObject
 
     public void Start() {
-        spawnOnDestroy.OnStart();
+        spawnsOnDestroy.OnStart();
     }
 
     string LogPrefix() {
@@ -34,7 +34,7 @@ public class DashBreakable : MonoBehaviour {
 
                 ExecuteEvents.Execute<EventHandler>(this.gameObject, null, (x,y)=>x.OnDashed(p));
 
-                spawnOnDestroy.Spawn(transform);
+                foreach( var s in spawnsOnDestroy.Spawn(transform) ) {}
                 Object.Destroy(destroyVictim == null ? this.gameObject : destroyVictim);
             }
         }

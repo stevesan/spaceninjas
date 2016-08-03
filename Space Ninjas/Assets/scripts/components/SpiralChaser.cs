@@ -4,7 +4,7 @@ using UnityEngine.UI;
 using System.Collections;
 
 // Not physics-based.
-public class SmoothChaser : MonoBehaviour {
+public class SpiralChaser : MonoBehaviour {
 
     public Transform target;
 
@@ -31,7 +31,6 @@ public class SmoothChaser : MonoBehaviour {
         // randomize start angle a bit
         angle += Random.Range(-30, 30);
         distance.ForceValue( GetDistToTarget() );
-        Debug.Log("angle = " + angle + ", dist = " + distance.Get() + " to player = " + GetDirToTarget().ToStringXY());
 
         // randomize the direction of rotation
         angSpeed.goalValue *= Random.value < 0.5f ? -1 : 1;

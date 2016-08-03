@@ -30,7 +30,8 @@ public class Player : MonoBehaviour {
 
     float speed = 8f;
     int maxBoosts = 9999;
-    int health = 10;
+    int health = 5;
+    int maxHealth = 5;
 
     float gracePeriod = 0f;
 
@@ -187,20 +188,37 @@ public class Player : MonoBehaviour {
     }
 
     public bool OnHurt(int amt) {
-        if( amt > 0 && gracePeriod <= 0f ) {
-            health -= amt;
-            ExecuteEvents.Execute<EventHandler>(this.gameObject, null, (x,y)=>x.OnHealthChange(amt < 0));
-
-            gracePeriod = 2f;
-            ExecuteEvents.Execute<EventHandler>(this.gameObject, null, (x,y)=>x.OnGracePeriodChange(true));
-
-            onHurt.Spawn(transform);
-
-            return true;
-        }
-        else {
+        if(amt == 0) {
             return false;
         }
+
+        if( amt > 0 ) {
+            // hurting
+            if( amt > 0 && gracePeriod <= 0f ) {
+                health -= amt;
+                ExecuteEvents.Execute<EventHandler>(this.gameObject, null, (x,y)=>x.OnHealthChange(amt < 0));
+
+                gracePeriod = 2f;
+                onHurt.Spawn(transform);
+                ExecuteEvents.Execute<EventHandler>(this.gameObject, null, (x,y)=>x.OnGracePeriodChange(true));
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        else {
+            // healing
+            if( health < maxHealth ) {
+                health -= amt;
+                ExecuteEvents.Execute<EventHandler>(this.gameObject, null, (x,y)=>x.OnHealthChange(amt < 0));
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+
     }
 
     void OnCollisionEnter2D( Collision2D col ) {

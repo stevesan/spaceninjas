@@ -1,21 +1,14 @@
 
-enemies explode into health pickups..
+SHORT TERM:
+    ok, before we create a crazy level pipeline, let's actually just manually create a world first. manually. using some unity 2d editing plugin, or just some grid-based tools.
+    so, let's just setup a quick pipeline for manual editing
 
-puzzle: instead of "one boost" zones, you could sort of do similar puzzles with rigidbodies you knock around.
-    ie. if they hit lava, they get destroyed
-    these are basically block puzzles.....
-
-LONG TERM: need to have rapid, on-phone design iteration!! so, create system to download levels
-    from internet, create levels using tiled. enemies...have 1 tile per rotation.
-    we should probably *generate* the tilesets from the game build. and generate a .tmx file. (XML)
-    1 tile per 90deg rotation for enemies
-    keep it consistent via some UUID
+TODO: platforms, ie. when you touch it, you start moving with it. could also rotate! especially for no-boost zones
 
 checkpoints
 levels and structure
 
 locks and keys - knock a key around to get it to the door
-
 
 corrosive zones and heal zones
     can make time-sensitive traversal parts
@@ -100,3 +93,7 @@ DONE charge-type enemies, ie. invulnerable unless you let them charge, then dodg
 DONE: Fix issue where if you hit a direction on the same frame as collision stopping you, you just stop
 short term:
     done. this was caused by the rest frame, but also the physics stopping.
+DONE: enemies explode into health pickups..
+puzzle: instead of "one boost" zones, you could sort of do similar puzzles with rigidbodies you knock around.
+    ie. if they hit lava, they get destroyed
+    these are basically block puzzles.....
