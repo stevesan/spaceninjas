@@ -25,7 +25,6 @@ public class DashBreakable : MonoBehaviour {
         if( p != null ) {
             if( p.IsDashing() ) {
                 ExecuteEvents.Execute<EventHandler>(this.gameObject, null, (x,y)=>x.OnDashed(p));
-
                 foreach( var s in spawnsOnDestroy.Spawn(transform) ) { }
                 Object.Destroy(destroyVictim == null ? this.gameObject : destroyVictim);
             }

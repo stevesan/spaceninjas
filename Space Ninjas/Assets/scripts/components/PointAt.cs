@@ -7,7 +7,7 @@ using System.Collections;
 public class PointAt : MonoBehaviour {
     public Transform target;
 
-    void Awake() {
+    void Start() {
         if(target == null) {
             target = GetComponentInParent<Main>().GetPlayer().transform;
         }

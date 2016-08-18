@@ -18,18 +18,15 @@ public class SpawnSpec
             return null;
         }
 
-        GameObject inst = (GameObject)GameObject.Instantiate(
+        Transform parent = assignParent ? spawner.parent
+            : spawner.GetComponentInParent<Main>().transform;
+
+        GameObject inst = (GameObject)Object.Instantiate(
                 prefab,
                 spawner.position,
-                inheritRotation ? spawner.rotation : Quaternion.identity );
+                inheritRotation ? spawner.rotation : Quaternion.identity);
 
-        if(assignParent) {
-            inst.transform.parent = spawner;
-        }
-        else {
-            inst.transform.parent = spawner.GetComponentInParent<Main>().transform;
-        }
-
+        inst.transform.parent = parent;
         inst.SetActive(true);
 
         return inst;
@@ -40,8 +37,5 @@ public class SpawnSpec
     }
 
     public void OnStart() {
-        if( prefab != null ) {
-            prefab.SetActive(false);
-        }
     }
 }

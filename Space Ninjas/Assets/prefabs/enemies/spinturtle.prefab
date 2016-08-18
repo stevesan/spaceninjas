@@ -197,7 +197,6 @@ MonoBehaviour:
     - prefab: {fileID: 163564, guid: 5b1d14ea46d2948cc8149d926d34b5b6, type: 2}
       inheritRotation: 0
       assignParent: 0
-  debug: 0
   destroyVictim: {fileID: 124174}
 --- !u!212 &21242664
 SpriteRenderer:

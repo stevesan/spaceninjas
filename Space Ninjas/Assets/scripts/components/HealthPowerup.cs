@@ -7,8 +7,9 @@ using System.Collections;
 public class HealthPowerup : MonoBehaviour {
     public Player player;
 
-    void Awake() {
+    void Start() {
         if(player == null) {
+            Debug.Assert(GetComponentInParent<Main>() != null);
             player = GetComponentInParent<Main>().GetPlayer();
         }
     }
