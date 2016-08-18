@@ -29,14 +29,10 @@ public class Shooter : MonoBehaviour {
         inst.SetActive(true);
     }
 
-    void Awake() {
+    void Start() {
         if(target == null) {
             target = GetComponentInParent<Main>().GetPlayer().transform;
         }
-    }
-
-    void Start() {
-        bulletPrefab.SetActive(false);
     }
 
     void Update() {

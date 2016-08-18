@@ -17,8 +17,6 @@ public class LevelGen {
 
     void SpawnAt(GameObject prefab, GameObject root, int i, int j)
     {
-        prefab.SetActive(false);
-
         GameObject inst = (GameObject)GameObject.Instantiate(prefab,
                 Vector3.zero,
                 Quaternion.identity);
