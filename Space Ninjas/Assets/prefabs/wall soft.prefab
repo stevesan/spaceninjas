@@ -16,7 +16,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!1 &171028
 GameObject:
   m_ObjectHideFlags: 0
@@ -87,7 +87,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   spawnsOnDestroy:
     specs:
-    - prefab: {fileID: 0}
+    - prefab: {fileID: 101646, guid: 1b2563f7b10114f9f8e6100722ae064e, type: 2}
       inheritRotation: 0
       assignParent: 0
   debug: 0

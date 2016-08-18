@@ -5,6 +5,15 @@ public class Coin : MonoBehaviour {
 
     public OrbState manager;
 
+    void Awake() {
+        if(manager == null) {
+            manager = GetComponentInParent<OrbState>();
+        }
+        if(manager == null) {
+            Debug.LogError("Could not find OrbState in ancestors");
+        }
+    }
+
 	// Use this for initialization
 	void Start () {
         // random rotation, for variety

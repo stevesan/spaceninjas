@@ -8,16 +8,15 @@ public class Main : MonoBehaviour {
         public abstract void Activate(Main main);
     }
 
-    private LevelGen gen;
-
-    public GameObject levelRoot;
     public PauseMenu pauseMenu;
+
+    private Player player;
+
+    public Player GetPlayer() { return player; }
+    public void SetPlayer(Player p) {player = p;}
 
 	// Use this for initialization
 	void Start () {
-        gen = new LevelGen( GetComponent<LevelGenSettings>() );
-        gen.Generate(levelRoot);
-
         // for IOS, must set this for 60 FPS
         Application.targetFrameRate = 60;
 

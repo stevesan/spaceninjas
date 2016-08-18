@@ -15,6 +15,13 @@ public class SpiralChaser : MonoBehaviour {
     public SmoothDamped angSpeed;
     public SmoothDamped distance;
 
+    void Awake() {
+        if(target == null) {
+            target = GetComponentInParent<Main>().GetPlayer().transform;
+            Debug.Assert(target != null);
+        }
+    }
+
     Vector3 GetDirToTarget() {
         return (target.position - transform.position).normalized;
     }

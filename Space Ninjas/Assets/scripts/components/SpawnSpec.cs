@@ -26,6 +26,9 @@ public class SpawnSpec
         if(assignParent) {
             inst.transform.parent = spawner;
         }
+        else {
+            inst.transform.parent = spawner.GetComponentInParent<Main>().transform;
+        }
 
         inst.SetActive(true);
 

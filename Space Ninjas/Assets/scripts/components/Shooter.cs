@@ -10,7 +10,7 @@ public class Shooter : MonoBehaviour {
     public GameObject bulletPrefab;
 
     // Which object should we shoot towards - usually the player
-    public GameObject target;
+    public Transform target;
 
     // min seconds between shots
     public float cooldown = 2f;
@@ -25,8 +25,14 @@ public class Shooter : MonoBehaviour {
         GameObject inst = (GameObject)GameObject.Instantiate(bulletPrefab,
                 transform.position, rot );
         inst.name = bulletPrefab.name + " (shot from " + gameObject.name + ")";
-        inst.transform.parent = null;
+        inst.transform.parent = GetComponentInParent<Main>().transform;
         inst.SetActive(true);
+    }
+
+    void Awake() {
+        if(target == null) {
+            target = GetComponentInParent<Main>().GetPlayer().transform;
+        }
     }
 
     void Start() {
@@ -34,9 +40,9 @@ public class Shooter : MonoBehaviour {
     }
 
     void Update() {
-        if( Vector3.Distance(transform.position, target.transform.position) < maxTargetDist ) {
+        if( Vector3.Distance(transform.position, target.position) < maxTargetDist ) {
             if( Time.time - lastShotTime > cooldown ) {
-                ShootAt(target.transform.position);
+                ShootAt(target.position);
                 lastShotTime = Time.time;
             }
         }

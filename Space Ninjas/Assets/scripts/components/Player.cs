@@ -47,6 +47,10 @@ public class Player : MonoBehaviour {
     private int lastMovingFrame = -1;
     private bool boostedLastUpdate = false;
 
+    void Awake() {
+        GetComponentInParent<Main>().SetPlayer(this);
+    }
+
 	// Use this for initialization
 	void Start () {
         rb = GetComponent<Rigidbody2D>();

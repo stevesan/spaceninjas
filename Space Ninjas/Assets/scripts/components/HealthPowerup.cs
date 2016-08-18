@@ -7,6 +7,12 @@ using System.Collections;
 public class HealthPowerup : MonoBehaviour {
     public Player player;
 
+    void Awake() {
+        if(player == null) {
+            player = GetComponentInParent<Main>().GetPlayer();
+        }
+    }
+
     void Update()
     {
         if( Vector3.Distance(transform.position, player.transform.position) < 0.5f ) {

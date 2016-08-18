@@ -10,8 +10,6 @@ public class DashBreakable : MonoBehaviour {
 
     public MultiSpawnSpec spawnsOnDestroy;
 
-    public bool debug;
-
     public GameObject destroyVictim;    // set if this should destroy something aside from this.gameObject
 
     public void Start() {
@@ -23,18 +21,12 @@ public class DashBreakable : MonoBehaviour {
     }
 
     void OnCollisionEnter2D( Collision2D other ) {
-        if( debug ) Debug.Log(LogPrefix() + ": hit " + other.gameObject.name);
-
         Player p = other.gameObject.GetComponentInParent<Player>();
         if( p != null ) {
-            if( debug ) Debug.Log(LogPrefix() + "hit player " + other.gameObject.name);
-
             if( p.IsDashing() ) {
-                if( debug ) Debug.Log(LogPrefix() + "dashing player " + other.gameObject.name);
-
                 ExecuteEvents.Execute<EventHandler>(this.gameObject, null, (x,y)=>x.OnDashed(p));
 
-                foreach( var s in spawnsOnDestroy.Spawn(transform) ) {}
+                foreach( var s in spawnsOnDestroy.Spawn(transform) ) { }
                 Object.Destroy(destroyVictim == null ? this.gameObject : destroyVictim);
             }
         }
