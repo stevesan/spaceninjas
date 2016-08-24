@@ -7,107 +7,143 @@ using LitJson;
 
 public class MapOpsWindow : EditorWindow
 {
-    public class JsonColor32 {
-        public byte r, g, b, a;
-
-        public Color32 AsColor32() {
-            return new Color32(r, g, b, a);
-        }
-
-        public static JsonColor32 From(Color32 src) {
-            var rv = new JsonColor32();
-            rv.r = src.r;
-            rv.g = src.g;
-            rv.b = src.b;
-            rv.a = src.a;
-            return rv;
-        }
-    }
-
-    public class EntityInfo {
-        public string lastPrefabPath;   // purely for convenience - not really important.
-        public JsonColor32 bitmapColor;
-    }
-
-    public class MapImportSettings {
-        public Dictionary <string, EntityInfo> guid2info = new Dictionary<string, EntityInfo>();
-
-        public void RefreshFrom(string dir) {
-            foreach( string assetPath in Directory.GetFiles(dir) ) {
-                if(assetPath.EndsWith(".prefab")) {
-                    string guid = AssetDatabase.AssetPathToGUID(assetPath);
-
-                    if(!guid2info.ContainsKey(guid)) {
-                        Debug.Log("Found unmapped entity: " + assetPath);
-                        var info = new EntityInfo();
-                        info.bitmapColor = JsonColor32.From(new Color32(0,0,0, 255));
-                        guid2info[guid] = info;
-                    }
-
-                    // update path
-                    guid2info[guid].lastPrefabPath = assetPath;
-                }
-            }
-            foreach( string subdir in AssetDatabase.GetSubFolders(dir) ) {
-                RefreshFrom(subdir);
-            }
-        }
-    }
-
     [MenuItem ("Window/Map Ops")]
     public static void  ShowWindow () {
         EditorWindow.GetWindow(typeof(MapOpsWindow));
     }
 
-    Color32 testColor;
+    MapImportSettings importing = null;
 
-    MapImportSettings import = new MapImportSettings();
-
-    void OnGUI () {
-        if(GUILayout.Button("fds")) {
-            Debug.Log("HI");
+    void DestroyChildren(Transform t) {
+        var children = new LinkedList<Transform>();
+        foreach( Transform c in t ) {
+            children.AddLast(c);
         }
-
-        if(GUILayout.Button("test json")) {
-            var info = new EntityInfo();
-            info.lastPrefabPath = "foo/bar";
-            info.bitmapColor = JsonColor32.From(Color.yellow);
-            string json = JsonMapper.ToJson(info);
-            Debug.Log(json);
-
-            var info2 = JsonMapper.ToObject<EntityInfo>(json);
-            Debug.Log(info2.lastPrefabPath);
-            Debug.Log(info2.bitmapColor.AsColor32());
-
-            var settings = new MapImportSettings();
-            settings.guid2info["test"] = info;
-            Debug.Log(JsonMapper.ToJson(settings));
-        }
-
-        if(import != null) {
-            if(GUILayout.Button("Refresh Prefabs")) {
-                //Object objSelected = Selection.activeObject;
-                //string path = AssetDatabase.GetAssetPath(objSelected);
-                string path = "Assets/prefabs";
-                Debug.Log("looking in " + path);
-                import.RefreshFrom(path);
-            }
-
-            if(GUILayout.Button("Save to Disk")) {
-                string path = "mapImportSettings.json";
-                System.IO.File.WriteAllText(path, JsonMapper.ToJson(import));
-            }
-
-            if(GUILayout.Button("Load from Disk")) {
-            }
-
-            foreach(var entry in import.guid2info) {
-                var guid = entry.Key;
-                var info = entry.Value;
-                info.bitmapColor = JsonColor32.From(EditorGUILayout.ColorField(info.lastPrefabPath, info.bitmapColor.AsColor32()));
-            }
+        foreach( Transform c in children ) {
+            Object.DestroyImmediate(c.gameObject);
         }
     }
 
+    void Generate(MapImportSettings settings) {
+        DestroyChildren(settings.transform);
+
+        // create color -> prefab map
+        var prefabsByColor = new Dictionary<Color32, GameObject>();
+        var palette = settings.palette;
+        foreach( var entry in palette.entries ) {
+            var prefab = entry.prefab;
+            var color = entry.color;
+            if(prefab == null) {
+                Debug.LogError("null prefab for entry with"
+                        + " color = " + entry.color
+                        + " lastAssetPath = " + entry.lastAssetPath );
+            }
+            else {
+                prefabsByColor[color] = prefab;
+            }
+        }
+        var unknownColors = new HashSet<Color32>();
+        var tex = settings.srcTexture;
+
+        for( int x = 0; x < tex.width; x++ ) {
+            for( int y = 0; y < tex.height; y++ ) {
+                Color32 sample = tex.GetPixel(x, y);
+                if( prefabsByColor.ContainsKey(sample) ) {
+                    var prefab = prefabsByColor[sample];
+                    GameObject inst = (GameObject)PrefabUtility.InstantiatePrefab(prefab);
+                    inst.transform.parent = settings.transform;
+                    inst.transform.position = new Vector3(x, y, 0) + settings.offset.AsXY();
+                }
+                else {
+                    unknownColors.Add(sample);
+                }
+            }
+        }
+
+        foreach( var c in unknownColors ) {
+            Debug.Log("No prefab for color " + c);
+        }
+    }
+
+    void OnGUI () {
+
+        importing = (MapImportSettings)EditorGUI.ObjectField( EditorGUILayout.GetControlRect(), importing, typeof(MapImportSettings));
+
+        if(importing != null) {
+            var palette = importing.palette;
+            var srcTexture = importing.srcTexture;
+
+            if( palette != null && srcTexture != null ) {
+                if(GUILayout.Button("Generate")) {
+                    Generate(importing);
+                }
+            }
+
+            if(srcTexture != null) {
+                EditorGUI.DrawPreviewTexture(
+                        EditorGUILayout.GetControlRect(false, 100),
+                        srcTexture);
+                GUILayout.Label("" + srcTexture.GetPixel(0,0));
+            }
+
+            if(palette != null) {
+                string entsPath = "Assets/prefabs";
+                if(GUILayout.Button("Refresh Prefabs ("+entsPath+")")) {
+                    //Object objSelected = Selection.activeObject;
+                    //string path = AssetDatabase.GetAssetPath(objSelected);
+                    RefreshPalette(palette, entsPath);
+                }
+
+                foreach(var entry in palette.entries) {
+                    string label = entry.lastAssetPath.Substring(20);
+                    entry.color = EditorGUILayout.ColorField(label, entry.color);
+                }
+            }
+
+
+        }
+        else {
+            if( Selection.activeGameObject != null ) {
+                importing = Selection.activeGameObject.GetComponent<MapImportSettings>();
+            }
+        }
+
+    }
+
+    public static void RefreshPalette(EntityPalette palette, string dir) {
+        var prefab2entry = new Dictionary<GameObject, EntityPalette.Entry>();
+        foreach( var entry in palette.entries ) {
+            prefab2entry[entry.prefab] = entry;
+        }
+
+        foreach( string assetPath in Directory.GetFiles(dir) ) {
+            if(assetPath.EndsWith(".prefab")) {
+                GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>( assetPath );
+
+                if(!prefab2entry.ContainsKey(prefab)) {
+                    Debug.Log("Found unmapped entity: " + assetPath);
+                    var entry = new EntityPalette.Entry();
+                    entry.prefab = prefab;
+                    entry.lastAssetPath = assetPath;
+
+                    prefab2entry[prefab] = entry;
+                    palette.entries.Add(entry);
+                }
+
+                // update path
+                prefab2entry[prefab].lastAssetPath = assetPath;
+
+                // always do this just in case
+                var c = prefab2entry[prefab].color;
+                c = new Color32(c.r, c.g, c.b, 255);
+                prefab2entry[prefab].color = c;
+            }
+        }
+
+        // recurse
+        foreach( string subdir in AssetDatabase.GetSubFolders(dir) ) {
+            RefreshPalette(palette, subdir);
+        }
+    }
 }
 
