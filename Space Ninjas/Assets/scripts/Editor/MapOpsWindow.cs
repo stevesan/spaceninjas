@@ -83,7 +83,6 @@ public class MapOpsWindow : EditorWindow
                 EditorGUI.DrawPreviewTexture(
                         EditorGUILayout.GetControlRect(false, 100),
                         srcTexture);
-                GUILayout.Label("" + srcTexture.GetPixel(0,0));
             }
 
             if(palette != null) {
