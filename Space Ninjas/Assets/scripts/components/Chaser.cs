@@ -17,15 +17,13 @@ public class Chaser : MonoBehaviour {
     private Vector2 backoffDir;
     private float backoffTimer = 0f;
 
-    void Awake() {
+	void Start () {
+        rb = GetComponent<Rigidbody2D>();
+
         if(target == null) {
             target = GetComponentInParent<Main>().GetPlayer().transform;
             Debug.Assert(target != null);
         }
-    }
-
-	void Start () {
-        rb = GetComponent<Rigidbody2D>();
 	}
 
     public bool IsTargetCloseEnough() {
