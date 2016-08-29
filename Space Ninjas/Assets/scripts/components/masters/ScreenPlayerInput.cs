@@ -9,10 +9,10 @@ using System.Collections.Generic;
 public class ScreenPlayerInput : Player.Input, MasterComponent {
     private static Dictionary<Dir2D, KeyCode> DIR_TO_KEYCODE = new Dictionary<Dir2D, KeyCode>()
     {
-        { Dir2D.Right, KeyCode.D },
-        { Dir2D.Up, KeyCode.W },
-        { Dir2D.Left, KeyCode.A },
-        { Dir2D.Down, KeyCode.S }
+        { Dir2D.Right, KeyCode.RightArrow },
+        { Dir2D.Up, KeyCode.UpArrow },
+        { Dir2D.Left, KeyCode.LeftArrow },
+        { Dir2D.Down, KeyCode.DownArrow }
     };
 
     public RectTransform inputRegion;
