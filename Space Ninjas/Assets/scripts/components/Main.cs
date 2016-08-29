@@ -12,6 +12,8 @@ public class Main : MonoBehaviour {
 
     private Player player;
 
+    int lastMinute = -1;
+
     public Player GetPlayer() { return player; }
     public void SetPlayer(Player p) {player = p;}
 
@@ -25,6 +27,12 @@ public class Main : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+
+        int minute = Mathf.RoundToInt(Time.time/60f);
+        if( minute != lastMinute ) {
+            Debug.Log("minute " + minute);
+            lastMinute = minute;
+        }
 	
 	}
 
