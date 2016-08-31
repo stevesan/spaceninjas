@@ -1,14 +1,13 @@
 
-SHORT TERM:
-    ok, before we create a crazy level pipeline, let's actually just manually create a world first. manually. using some unity 2d editing plugin, or just some grid-based tools.
-    so, let's just setup a quick pipeline for manual editing
+locks and keys - knock a key around to get it to the door
 
 TODO: platforms, ie. when you touch it, you start moving with it. could also rotate! especially for no-boost zones
 
+environmental weapons:
+    touch a thing, get ability to touch-attack once
+
 checkpoints
 levels and structure
-
-locks and keys - knock a key around to get it to the door
 
 corrosive zones and heal zones
     can make time-sensitive traversal parts
@@ -97,3 +96,6 @@ DONE: enemies explode into health pickups..
 puzzle: instead of "one boost" zones, you could sort of do similar puzzles with rigidbodies you knock around.
     ie. if they hit lava, they get destroyed
     these are basically block puzzles.....
+DONE SHORT TERM:
+    ok, before we create a crazy level pipeline, let's actually just manually create a world first. manually. using some unity 2d editing plugin, or just some grid-based tools.
+    so, let's just setup a quick pipeline for manual editing
