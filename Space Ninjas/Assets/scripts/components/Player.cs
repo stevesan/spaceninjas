@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.EventSystems;
-using System.Collections;
+using System.Collections.Generic;
 using System;
 
 public class Player : MonoBehaviour {
@@ -25,6 +25,8 @@ public class Player : MonoBehaviour {
     public SpawnSpec onHurt;
 
     public Main main;
+
+    public List<GameObject> inventory;
 
     enum MoveState {Idle, Moving};
 
@@ -255,4 +257,23 @@ public class Player : MonoBehaviour {
         return (moveState == MoveState.Moving
             && isDashing) || lastMovingFrame == Time.frameCount;
     }
+
+    public IEnumerable<GameObject> EnumInventory() {
+        foreach( var item in inventory ) {
+            if( item == null ) {
+                Debug.LogError("null entry in player inventory!");
+                continue;
+            }
+            yield return item.gameObject;
+        }
+    }
+
+    public void RemoveFromInventory(GameObject obj) {
+        inventory.Remove(obj);
+    }
+
+    public void AddToInventory(GameObject item) {
+        inventory.Add(item);
+    }
+
 }
