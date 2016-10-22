@@ -9,8 +9,7 @@ public class HealthPowerup : MonoBehaviour {
 
     void Start() {
         if(player == null) {
-            Debug.Assert(GetComponentInParent<Main>() != null);
-            player = GetComponentInParent<Main>().GetPlayer();
+            player = GetComponentInParent<GameScope>().Get<Player>();
         }
     }
 

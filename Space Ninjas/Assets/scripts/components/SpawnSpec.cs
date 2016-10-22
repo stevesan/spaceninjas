@@ -19,7 +19,7 @@ public class SpawnSpec
         }
 
         Transform parent = assignParent ? spawner.parent
-            : spawner.GetComponentInParent<Main>().transform;
+            : spawner.GetComponentInParent<GameScope>().transform;
 
         GameObject inst = (GameObject)Object.Instantiate(
                 prefab,

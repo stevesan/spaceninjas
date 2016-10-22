@@ -10,12 +10,7 @@ public class Main : MonoBehaviour {
 
     public PauseMenu pauseMenu;
 
-    private Player player;
-
     int lastMinute = -1;
-
-    public Player GetPlayer() { return player; }
-    public void SetPlayer(Player p) {player = p;}
 
 	// Use this for initialization
 	void Start () {

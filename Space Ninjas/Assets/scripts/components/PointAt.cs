@@ -9,7 +9,7 @@ public class PointAt : MonoBehaviour {
 
     void Start() {
         if(target == null) {
-            target = GetComponentInParent<Main>().GetPlayer().transform;
+            target = GetComponentInParent<GameScope>().Get<Player>().transform;
         }
     }
 

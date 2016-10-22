@@ -21,7 +21,7 @@ public class Chaser : MonoBehaviour {
         rb = GetComponent<Rigidbody2D>();
 
         if(target == null) {
-            target = GetComponentInParent<Main>().GetPlayer().transform;
+            target = GetComponentInParent<GameScope>().Get<Player>().transform;
             Debug.Assert(target != null);
         }
 	}

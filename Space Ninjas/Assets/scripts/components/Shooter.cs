@@ -25,13 +25,13 @@ public class Shooter : MonoBehaviour {
         GameObject inst = (GameObject)GameObject.Instantiate(bulletPrefab,
                 transform.position, rot );
         inst.name = bulletPrefab.name + " (shot from " + gameObject.name + ")";
-        inst.transform.parent = GetComponentInParent<Main>().transform;
+        inst.transform.parent = GetComponentInParent<GameScope>().transform;
         inst.SetActive(true);
     }
 
     void Start() {
         if(target == null) {
-            target = GetComponentInParent<Main>().GetPlayer().transform;
+            target = GetComponentInParent<GameScope>().Get<Player>().transform;
         }
     }
 

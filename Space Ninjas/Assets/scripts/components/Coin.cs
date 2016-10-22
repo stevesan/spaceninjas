@@ -14,7 +14,7 @@ public class Coin : MonoBehaviour {
         transform.Rotate(Vector3.forward * Random.value * 360f);
 
         if(manager == null) {
-            manager = GetComponentInParent<OrbState>();
+            manager = GetComponentInParent<GameScope>().Get<OrbState>();
         }
         if(manager == null) {
             Debug.LogError("Could not find OrbState in ancestors");

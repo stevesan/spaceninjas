@@ -20,11 +20,12 @@ public class Player : MonoBehaviour {
         public abstract bool IsHoldingMove( Dir2D dir );
     }
 
-    public Input input;
+    // scope-bound
+    private Input input;
+    private Main main;
 
     public SpawnSpec onHurt;
 
-    public Main main;
 
     public List<GameObject> inventory;
 
@@ -49,14 +50,14 @@ public class Player : MonoBehaviour {
     private int lastMovingFrame = -1;
     private bool boostedLastUpdate = false;
 
-    void Awake() {
-        GetComponentInParent<Main>().SetPlayer(this);
-    }
-
 	// Use this for initialization
 	void Start () {
         rb = GetComponent<Rigidbody2D>();
         onHurt.OnStart();
+
+        var scope = GetComponentInParent<GameScope>();
+        input = scope.Get<Input>();
+        main = scope.Get<Main>();
 	}
 
     void TriggerBoost(Dir2D dir) {
