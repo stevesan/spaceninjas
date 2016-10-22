@@ -9,21 +9,20 @@ public class Door : MonoBehaviour {
     void OnCollisionEnter2D( Collision2D other ) {
         Player p = other.gameObject.GetComponentInParent<Player>();
         if( p != null ) {
-            Key key = null;
+            Key keyToUse = null;
             foreach( GameObject item in p.EnumInventory() ) {
-                key = item.GetComponent<Key>();
+                var key = item.GetComponent<Key>();
                 if( key != null && key.keyCode == keyCode) {
+                    keyToUse = key;
                     break;
-                }
-                else {
-                    key = null;
                 }
             }
 
-            if( key != null ) {
+            if( keyToUse != null ) {
                 Debug.Log("player has right key - opening");
-                p.RemoveFromInventory(key.gameObject);
-                Destroy(key.gameObject);
+                p.RemoveFromInventory(keyToUse.gameObject);
+                Destroy(keyToUse.gameObject);
+                // remove door obstacle
                 Destroy(gameObject);
             }
             else {
