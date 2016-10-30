@@ -10,7 +10,7 @@ public class Shooter : MonoBehaviour {
     public GameObject bulletPrefab;
 
     // Which object should we shoot towards - usually the player
-    public Transform target;
+    public Player targetPlayer;
 
     // min seconds between shots
     public float cooldown = 2f;
@@ -30,15 +30,15 @@ public class Shooter : MonoBehaviour {
     }
 
     void Start() {
-        if(target == null) {
-            target = GetComponentInParent<GameScope>().Get<Player>().transform;
+        if(targetPlayer == null) {
+            targetPlayer = GetComponentInParent<GameScope>().Get<Player>();
         }
     }
 
     void Update() {
-        if( Vector3.Distance(transform.position, target.position) < maxTargetDist ) {
+        if( targetPlayer.CanSee(transform, 0.5f, 1.0f) ) {
             if( Time.time - lastShotTime > cooldown ) {
-                ShootAt(target.position);
+                ShootAt(targetPlayer.transform.position);
                 lastShotTime = Time.time;
             }
         }

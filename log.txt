@@ -1,73 +1,16 @@
 
-structure.
-    metroidvania:
-        examples:
-            metroid
-            SOTN
-            VVVVVV
-        pros:
-            sense of exploring a place, immersive
-            multiple fronts, so if player gets stuck, they can push somewhere else. and maybe that helps them (grinding in SOTN)
-        cons:
-            backtracking
-            more planning (levels must work forward and backward; all areas must fit together;)
-            'what next?' 
-                some gates may be non-obvious to observe/open. such as, breaking the ice floor in SOTN. or the switch that opens red floors.
-                Metroid Prime had some hints, ie. the map pings
+player skills progression:
 
-    series of levels:
-        examples:
-            ecco the dolphin
-            DOOM
-            Deus Ex
+    basic arrow movement
+        all 4 dirs
+    avoiding lava with:
+        1 quick turn
+        2 quick turns
+        3 quick turns
+        aiming into a hole
+    stopping by going into a wall
+    stalling back and forth
 
-        pros:
-            easier to plan
-
-        cons:
-            if levels too small, less sense of exploration. but Ecco still succeeded
-            unable to go back to levels to grind (without breaking immersion, like Goblin Sword)
-
-    hub:
-        examples: Demons' Souls, Mega Man
-        pros:   
-            less confusing, but still multi-front
-            can be sense of cohesive space...but spokes may be too separate
-        cons:
-            less cohesive narrative progression. 
-
-    GOALS FOR STRUCTURE:
-        a sense that you're exploring a single, real space.
-            good examples:
-                Half-Life. Metroids. SOTN. Fallouts. Dark Souls. Shadow of the Colossus. Outcast.
-                continuity seems pretty important. not necessarily backtracking..but maybe some.
-                MGS3.
-            bad examples:
-                Demon's Souls - the hub spokes felt too independent from each other. contrast with Dark Souls.
-
-        a sense of forward progression, towards the center/end
-            good examples: The Room. Zelda.
-                I guess to have a sense of progression towards something spatially, you need to first have an idea of where that thing is.
-                For The Room, it was obvious: get the box to open. For zelda, the compass.
-
-        sense of mystery and exploration    
-            Good: Ecco, Half Life, Metroid
-            i feel like the structure doesn't have much to do with this. it's more about tone, progression of content, etc. which can be done in any physical structure with gating.
-
-        the ability to fill out a map, as long as it doesn't take too long
-            Good: DOOM, Descent, Fallout.
-            Not so great: Metroid Prime, SOTN. I think I was annoyed by the lack of info on the map. ie. if i knew that this unexplored part required double jump, then that's fine.
-
-    NON GOALS:
-         backtracking, open-world "do whatever you want"
-         tons of secrets littered around
-
-    STUFF I JUST DIDN'T LIKE ABOUT METROIDVANIAS:
-        annoying backtracking. like in metroid prime, that part with all the colored robots that were mad annoying to fight. had to do it each time. but, other parts where you could run through were fun.
-        not knowing what to do next
-            SOTN: i got double jump, yay, now what? ok let's go to this gray spot on the map...oh it requires something ELSE. ugh ok next...
-            i could keep my own notes. or the game could do it for me...or let me do it in-game with map notes.
-            Metroid Prime: the door colors were helpful. still had some non-map info tho, like where you needed the ball and stuff. MAP NOTES!
 
 locks and keys - knock a key around to get it to the door
 or just buttons to open doors
@@ -170,3 +113,74 @@ puzzle: instead of "one boost" zones, you could sort of do similar puzzles with 
 DONE SHORT TERM:
     ok, before we create a crazy level pipeline, let's actually just manually create a world first. manually. using some unity 2d editing plugin, or just some grid-based tools.
     so, let's just setup a quick pipeline for manual editing
+DONE: structure.
+    metroidvania:
+        examples:
+            metroid
+            SOTN
+            VVVVVV
+        pros:
+            sense of exploring a place, immersive
+            multiple fronts, so if player gets stuck, they can push somewhere else. and maybe that helps them (grinding in SOTN)
+        cons:
+            backtracking
+            more planning (levels must work forward and backward; all areas must fit together;)
+            'what next?' 
+                some gates may be non-obvious to observe/open. such as, breaking the ice floor in SOTN. or the switch that opens red floors.
+                Metroid Prime had some hints, ie. the map pings
+
+    series of levels:
+        examples:
+            ecco the dolphin
+            DOOM
+            Deus Ex
+
+        pros:
+            easier to plan
+
+        cons:
+            if levels too small, less sense of exploration. but Ecco still succeeded
+            unable to go back to levels to grind (without breaking immersion, like Goblin Sword)
+
+    hub:
+        examples: Demons' Souls, Mega Man
+        pros:   
+            less confusing, but still multi-front
+            can be sense of cohesive space...but spokes may be too separate
+        cons:
+            less cohesive narrative progression. 
+
+    GOALS FOR STRUCTURE:
+        a sense that you're exploring a single, real space.
+            good examples:
+                Half-Life. Metroids. SOTN. Fallouts. Dark Souls. Shadow of the Colossus. Outcast.
+                continuity seems pretty important. not necessarily backtracking..but maybe some.
+                MGS3.
+            bad examples:
+                Demon's Souls - the hub spokes felt too independent from each other. contrast with Dark Souls.
+
+        a sense of forward progression, towards the center/end
+            good examples: The Room. Zelda.
+                I guess to have a sense of progression towards something spatially, you need to first have an idea of where that thing is.
+                For The Room, it was obvious: get the box to open. For zelda, the compass.
+
+        sense of mystery and exploration    
+            Good: Ecco, Half Life, Metroid
+            i feel like the structure doesn't have much to do with this. it's more about tone, progression of content, etc. which can be done in any physical structure with gating.
+
+        the ability to fill out a map, as long as it doesn't take too long
+            Good: DOOM, Descent, Fallout.
+            Not so great: Metroid Prime, SOTN. I think I was annoyed by the lack of info on the map. ie. if i knew that this unexplored part required double jump, then that's fine.
+
+    NON GOALS:
+         backtracking, open-world "do whatever you want"
+         tons of secrets littered around
+
+    STUFF I JUST DIDN'T LIKE ABOUT METROIDVANIAS:
+        annoying backtracking. like in metroid prime, that part with all the colored robots that were mad annoying to fight. had to do it each time. but, other parts where you could run through were fun.
+        not knowing what to do next
+            SOTN: i got double jump, yay, now what? ok let's go to this gray spot on the map...oh it requires something ELSE. ugh ok next...
+            i could keep my own notes. or the game could do it for me...or let me do it in-game with map notes.
+            Metroid Prime: the door colors were helpful. still had some non-map info tho, like where you needed the ball and stuff. MAP NOTES!
+
+    CONCLUSION: gonna go with linear with big, non-linear levels. like Ecco, DOOM. mystery, exploration still achievable. no backtracking/confusion/planning.

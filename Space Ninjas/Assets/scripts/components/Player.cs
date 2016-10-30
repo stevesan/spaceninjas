@@ -5,6 +5,24 @@ using System;
 
 public class Player : MonoBehaviour {
 
+    class CollisionDebugger {
+        ContactPoint2D[] lastContacts = null;
+
+        public void OnCollision(Collision2D col) {
+           lastContacts = col.contacts;
+        } 
+
+        public void Update() {
+            if(lastContacts != null) {
+                foreach( var con in lastContacts ) {
+                    Debug.DrawLine(con.point, con.point + con.normal*5f);
+                }
+            }
+        }
+    }
+
+    private CollisionDebugger colDebug = new CollisionDebugger();
+
     public interface EventHandler : IEventSystemHandler {
         void OnBoost( int boostsUsed, bool isDashing );
         void OnOutOfBoosts();
@@ -49,6 +67,8 @@ public class Player : MonoBehaviour {
     private bool isDashing = false;
     private int lastMovingFrame = -1;
     private bool boostedLastUpdate = false;
+
+    public Camera mainCam;
 
 	// Use this for initialization
 	void Start () {
@@ -165,7 +185,7 @@ public class Player : MonoBehaviour {
 
 	void Update()
     {
-        UpdateGracePeriod();
+        colDebug.Update();
 
         boostedLastUpdate = false;
         if( moveState == MoveState.Idle ) {
@@ -229,6 +249,8 @@ public class Player : MonoBehaviour {
     }
 
     void OnCollisionEnter2D( Collision2D col ) {
+        colDebug.OnCollision(col);
+
         if( moveState == MoveState.Moving ) {
             // move back slightly to not actually touch the block
             transform.position += (Vector3)col.contacts[0].normal * 0.1f;
@@ -277,4 +299,15 @@ public class Player : MonoBehaviour {
         inventory.Add(item);
     }
 
+    public float GetVisibilityBoxRadius() {
+        // not sure why I have to add 1 to this...but this is from empirical truth.
+        return mainCam.orthographicSize/2f + 1f;
+    }
+
+    public bool CanSee(Transform other, float radius, float blindMargin) {
+        float dx = Mathf.Abs(other.position.x - transform.position.x);
+        float dy = Mathf.Abs(other.position.y - transform.position.y);
+        Debug.Log("ortho size: " + mainCam.orthographicSize);
+        return Mathf.Max(dx, dy) - radius < GetVisibilityBoxRadius() - blindMargin;
+    }
 }

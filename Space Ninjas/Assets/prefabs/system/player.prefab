@@ -132,8 +132,8 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1000011793594472}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 13.3, y: -25.1, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 12.7297, y: -24.202074, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children:
@@ -427,7 +427,6 @@ MonoBehaviour:
   outOfBoostsClip: {fileID: 8300000, guid: 677839b5839627e4787d4639c27132d1, type: 3}
   pickupCoinClip: {fileID: 8300000, guid: 21ea5cc618907ee40b7fbc89a240b1c2, type: 3}
   healClip: {fileID: 8300000, guid: 570a4730d5adb4927b80a7d60b31cd22, type: 3}
-  healthText: {fileID: 0}
   render: {fileID: 212000012047128732}
 --- !u!114 &114000012997264056
 MonoBehaviour:
@@ -440,13 +439,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cadbb0dc225b43243b66b05f90aab7d7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  input: {fileID: 0}
   onHurt:
     prefab: {fileID: 160660, guid: 60dbcfbe82c674a588f98d51b1578e37, type: 2}
     inheritRotation: 0
     assignParent: 1
-  main: {fileID: 0}
   inventory: []
+  mainCam: {fileID: 20000012435285240}
 --- !u!124 &124000012363740072
 Behaviour:
   m_ObjectHideFlags: 1

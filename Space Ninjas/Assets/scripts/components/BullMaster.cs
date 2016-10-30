@@ -3,7 +3,6 @@ using System.Collections;
 
 // Master component for the 'bull' enemy type
 public class BullMaster : MonoBehaviour {
-
     // Shared buffer. Obviously not thread-safe, should be immediately used and read, etc.
     private static RaycastHit2D[] SHARED_HIT_BUFFER = new RaycastHit2D[64];
 
@@ -25,22 +24,28 @@ public class BullMaster : MonoBehaviour {
     private float restTimer = 0f;
     private float chargeTimer = 0f;
     private float prechargeTimer = 0f;
-
+    private Player targetPlayer;
 
     void Start() {
         chasing = GetComponent<Chaser>();
         rb = GetComponent<Rigidbody2D>();
         laser = GetComponent<LaserBeam>();
+
+        if(targetPlayer == null) {
+            targetPlayer = GetComponentInParent<GameScope>().Get<Player>();
+            Debug.Assert(targetPlayer != null);
+        }
+        chasing.SetTarget(targetPlayer.transform);
     }
 
     void PointRightAtTarget() {
-        transform.PointRightAt(chasing.target.position);
+        transform.PointRightAt(targetPlayer.transform.position);
     }
 
     bool CanHitTarget() {
         // see if we have a clear shot at the player
         Physics2D.queriesHitTriggers = false;
-        var toTarget = (chasing.target.position - transform.position).normalized;
+        var toTarget = (targetPlayer.transform.position - transform.position).normalized;
         int numHits = Physics2D.CircleCastNonAlloc( transform.position, castRadius, toTarget, SHARED_HIT_BUFFER, chasing.maxTargetDist );
         for( int i = 0; i < numHits; i++ ) {
             var hit = SHARED_HIT_BUFFER[i];
@@ -49,7 +54,7 @@ public class BullMaster : MonoBehaviour {
                 continue;
             }
 
-            if(hit.transform.IsChildOf(chasing.target) ) {
+            if(hit.transform.IsChildOf(targetPlayer.transform) ) {
                 // can hit the target!
                 return true;
             }
@@ -62,13 +67,17 @@ public class BullMaster : MonoBehaviour {
         return false;
     }
 
+    void UpdateDebugDraws() {
+    }
+
     void Update() {
+        UpdateDebugDraws();
+
         if( state == State.Chasing ) {
             PointRightAtTarget();
             chasing.enabled = true;
 
-            bool closeEnough = Vector3.Distance(chasing.target.position, transform.position) <
-                    minChargeDist;
+            bool closeEnough = targetPlayer.CanSee(transform, 0.5f, 1.5f);
 
             if( closeEnough && CanHitTarget() ) {
                 Precharge();
@@ -111,7 +120,7 @@ public class BullMaster : MonoBehaviour {
         sprite.enabled = true;
         chasing.enabled = false;
         rb.AddStoppingForce();
-        var toTarget = (chasing.target.position - transform.position).normalized;
+        var toTarget = (targetPlayer.transform.position - transform.position).normalized;
         rb.AddForce( toTarget.GetXY() * chargeSpeed * rb.mass, ForceMode2D.Impulse );
         PointRightAtTarget();
         state = State.Charging;

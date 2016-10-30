@@ -26,6 +26,10 @@ public class Chaser : MonoBehaviour {
         }
 	}
 
+    public void SetTarget(Transform _target) {
+        target = _target;
+    }
+
     public bool IsTargetCloseEnough() {
         return Vector3.Distance(transform.position, target.position) < maxTargetDist;
     }
