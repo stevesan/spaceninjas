@@ -55,7 +55,7 @@ public class Player : MonoBehaviour {
     float gracePeriod = 0f;
 
     private MoveState moveState = MoveState.Idle;
-    private float lastBoostTime = 0f;
+    private float lastBoostTimeForDashDetection = 0f;
     private Dir2D lastBoostDir = Dir2D.Right;
     private float lastDashingTime = 0f;
 
@@ -120,9 +120,14 @@ public class Player : MonoBehaviour {
         if(IsAnyDirTriggered()) {
             bool isDash =
                 (lastBoostDir == GetMoveDirTriggered())
-                && (Time.time - lastBoostTime < 0.3f);
+                && (Time.time - lastBoostTimeForDashDetection < 0.3f);
             lastBoostDir = GetMoveDirTriggered();
-            lastBoostTime = Time.time;
+            if( isDash ) {
+                lastBoostTimeForDashDetection = 0f;
+            }
+            else {
+                lastBoostTimeForDashDetection = Time.time;
+            }
             Boost(lastBoostDir, isDash);
         }
 
