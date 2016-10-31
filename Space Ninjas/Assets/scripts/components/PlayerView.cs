@@ -22,7 +22,7 @@ public class PlayerView : MonoBehaviour, Player.EventHandler {
     private float graceFlickerFreq = 8f;
     private bool isGraceFlickering = false;
 
-    public void OnBoost(int boostsUsed, bool isDouble)
+    public void OnBoost(bool isDouble)
     {
         trail.enabled = true;
         trail.time = 0.1f;

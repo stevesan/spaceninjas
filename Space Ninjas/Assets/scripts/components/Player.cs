@@ -5,6 +5,7 @@ using System;
 
 public class Player : MonoBehaviour {
 
+    // TODO make this a separate component
     class CollisionDebugger {
         ContactPoint2D[] lastContacts = null;
 
@@ -24,8 +25,7 @@ public class Player : MonoBehaviour {
     private CollisionDebugger colDebug = new CollisionDebugger();
 
     public interface EventHandler : IEventSystemHandler {
-        void OnBoost( int boostsUsed, bool isDashing );
-        void OnOutOfBoosts();
+        void OnBoost( bool isDashing );
         void OnRest();
         void OnPickupCoin();
         void OnHealthChange(bool isHeal);
@@ -44,29 +44,22 @@ public class Player : MonoBehaviour {
 
     public SpawnSpec onHurt;
 
-
     public List<GameObject> inventory;
 
-    enum MoveState {Idle, Moving};
+    enum MoveState {Idle, Moving, Dashing};
 
     float speed = 8f;
-    int maxBoosts = 9999;
     int health = 5;
     int maxHealth = 5;
 
     float gracePeriod = 0f;
 
     private MoveState moveState = MoveState.Idle;
-    private Dir2D lastMoveDir = Dir2D.Right;
-    private Dir2D bufferedBoostDir = Dir2D.Right;
-    private bool isBoostBuffered = false;
+    private float lastBoostTime = 0f;
+    private Dir2D lastBoostDir = Dir2D.Right;
+    private float lastDashingTime = 0f;
 
     private Rigidbody2D rb;
-
-    private int boostsUsed = 0;
-    private bool isDashing = false;
-    private int lastMovingFrame = -1;
-    private bool boostedLastUpdate = false;
 
     public Camera mainCam;
 
@@ -80,63 +73,6 @@ public class Player : MonoBehaviour {
         main = scope.Get<Main>();
 	}
 
-    void TriggerBoost(Dir2D dir) {
-
-        bool boostAllowed = boostsUsed < maxBoosts;
-
-        // but allow boost in the given direction if a wall is close enough
-        // a "grab"
-        // TODO: allow this or not?
-        // Design decision. To allow this or not? If we allow it,
-        // it creates a "boring optimal" way of getting around corners.
-        // But without it, it feels "unfair". Meh.
-        // I think it's best to leave it out. Removes complexity from the rules.
-        // And, figuring out how to get around corners without this is fun.
-        //if( CheckForWall(dir) ) {
-            //Debug.Log("grab");
-            //boostAllowed = true;
-        //}
-
-        if( boostAllowed ) {
-            boostsUsed++;
-            isDashing = false;
-
-            /*
-            if( moveState == MoveState.Moving && dir != lastMoveDir ) {
-                // immediately change direction, so don't accumulate existing velocity
-                rb.velocity = Vector2.zero;
-            }
-            */
-
-            if( dir == lastMoveDir ) {
-                // if same dir, allow extra boost of speed
-                isDashing = true;
-            }
-
-            if( dir != lastMoveDir ) {
-                rb.AddStoppingForce();
-            }
-            else {
-                // do nothing - add to existing velocity as a double boost
-            }
-            rb.AddForce(dir.GetVector2() * speed * rb.mass, ForceMode2D.Impulse);
-            boostedLastUpdate = true;
-            lastMoveDir = dir;
-            moveState = MoveState.Moving;
-
-            ExecuteEvents.Execute<EventHandler>(this.gameObject, null, (x,y)=>x.OnBoost(boostsUsed, isDashing));
-
-            isBoostBuffered = false;
-        }
-        else {
-            // out of boosts
-            ExecuteEvents.Execute<EventHandler>(this.gameObject, null, (x,y)=>x.OnOutOfBoosts());
-
-            bufferedBoostDir = dir;
-            isBoostBuffered = true;
-        }
-    }
-
     void UpdateGracePeriod() {
         if( gracePeriod > 0f ) {
             gracePeriod -= Time.deltaTime;
@@ -146,59 +82,52 @@ public class Player : MonoBehaviour {
         }
     }
 
-    void TriggerBoostIfInputted() {
+    bool IsAnyDirTriggered() {
         foreach( Dir2D dir in Enum.GetValues(typeof(Dir2D)) ) {
             if( input.IsTriggerMove(dir) ) {
-                TriggerBoost(dir);
-            }
-        }
-
-    }
-
-    bool CheckForWall( Dir2D dir ) {
-        foreach( Collider2D col in OverlapAll(dir) ) {
-            if( col.gameObject == this.gameObject ) {
-                continue;
-            }
-            if( !col.isTrigger ) {
-                Debug.Log("found wall: " + col.gameObject.name);
                 return true;
             }
         }
         return false;
     }
 
-    Collider2D[] OverlapAll( Dir2D dir ) {
-        CircleCollider2D myCol = GetComponent<CircleCollider2D>();
-        Vector2 c = transform.position.GetXY() + dir.GetVector2()*myCol.radius;
-        return Physics2D.OverlapCircleAll( c, myCol.radius );
+    Dir2D GetMoveDirTriggered() {
+        foreach( Dir2D dir in Enum.GetValues(typeof(Dir2D)) ) {
+            if( input.IsTriggerMove(dir) ) {
+                return dir;
+            }
+        }
+        Debug.LogError("Called when no dir was triggered!");
+        return Dir2D.Right;
     }
 
-    RaycastHit2D[] CastAll(Dir2D dir, float maxDist) {
-        CircleCollider2D myCol = GetComponent<CircleCollider2D>();
-        return Physics2D.CircleCastAll(
-                transform.position,
-                myCol.radius,
-                dir.GetVector2(),
-                maxDist);
+    void Boost(Dir2D dir, bool isDashing) {
+        rb.AddStoppingForce();
+        float finalSpeed = isDashing ? 2f * speed : speed;
+        rb.AddForce(dir.GetVector2() * finalSpeed * rb.mass, ForceMode2D.Impulse);
+        moveState = isDashing ? MoveState.Dashing : MoveState.Moving;
+        ExecuteEvents.Execute<EventHandler>(this.gameObject, null, (x,y)=>x.OnBoost(isDashing));
     }
 
 	void Update()
     {
         colDebug.Update();
 
-        boostedLastUpdate = false;
-        if( moveState == MoveState.Idle ) {
-            // execute buffered, held command.
-            if( isBoostBuffered && input.IsHoldingMove(bufferedBoostDir) ) {
-                TriggerBoost(bufferedBoostDir);
-            }
-            else {
-                TriggerBoostIfInputted();
-            }
+        UpdateGracePeriod();
+
+        // We allow motion and dashing from any state...
+        // ..because we want to allow dashing from idle, ie. dashing into a wall you're already touching.
+        if(IsAnyDirTriggered()) {
+            bool isDash =
+                (lastBoostDir == GetMoveDirTriggered())
+                && (Time.time - lastBoostTime < 0.3f);
+            lastBoostDir = GetMoveDirTriggered();
+            lastBoostTime = Time.time;
+            Boost(lastBoostDir, isDash);
         }
-        else if( moveState == MoveState.Moving ) {
-            TriggerBoostIfInputted();
+
+        if( moveState == MoveState.Dashing ) {
+            lastDashingTime = Time.time;
         }
 
         if(GetHealth() <= 0) {
@@ -251,34 +180,26 @@ public class Player : MonoBehaviour {
     void OnCollisionEnter2D( Collision2D col ) {
         colDebug.OnCollision(col);
 
-        if( moveState == MoveState.Moving ) {
-            // move back slightly to not actually touch the block
-            transform.position += (Vector3)col.contacts[0].normal * 0.1f;
+        if( moveState != MoveState.Idle ) {
+            // If direction of collision is opposite our moving dir, stop
+            Vector2 normal = col.contacts[0].normal;
 
-            // apply impulse to zero out velocity
-            // but, don't do this if the player hit a direction on the same frame
-            // this can have the effect of canceling out the input, which feels bad
-            if(!boostedLastUpdate) {
+            if( Vector2.Dot(normal, lastBoostDir.GetVector2()) < 0f ) {
                 rb.AddStoppingForce();
+                // put us a bit away from the wall so we don't "grind" along it for parallel motion
+                transform.position += (Vector3)normal * 0.1f;
+                moveState = MoveState.Idle;
+                ExecuteEvents.Execute<EventHandler>(this.gameObject, null, (x,y)=>x.OnRest());
             }
-
-            lastMovingFrame = Time.frameCount;
-            moveState = MoveState.Idle;
-            boostsUsed = 0;
-
-            ExecuteEvents.Execute<EventHandler>(this.gameObject, null, (x,y)=>x.OnRest());
         }
     }
 
-    public int GetMaxBoosts() { return maxBoosts; }
-
     public int GetHealth() { return health; }
 
-    public int GetBoostsLeft() { return maxBoosts - boostsUsed; }
-
     public bool IsDashing() {
-        return (moveState == MoveState.Moving
-            && isDashing) || lastMovingFrame == Time.frameCount;
+        // We need this, since we often hit something and stop dashing in the same frame.
+        // So, we must guarantee that whatever we hit gets "dashed"
+        return Time.time - lastDashingTime < 0.1f;
     }
 
     public IEnumerable<GameObject> EnumInventory() {
@@ -307,7 +228,6 @@ public class Player : MonoBehaviour {
     public bool CanSee(Transform other, float radius, float blindMargin) {
         float dx = Mathf.Abs(other.position.x - transform.position.x);
         float dy = Mathf.Abs(other.position.y - transform.position.y);
-        Debug.Log("ortho size: " + mainCam.orthographicSize);
         return Mathf.Max(dx, dy) - radius < GetVisibilityBoxRadius() - blindMargin;
     }
 }
