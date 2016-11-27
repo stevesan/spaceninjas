@@ -22,26 +22,31 @@ public class PlayerView : MonoBehaviour, Player.EventHandler {
     private float graceFlickerFreq = 8f;
     private bool isGraceFlickering = false;
 
-    public void OnBoost(bool isDouble)
+    public void OnBoost(bool isDash, Dir2D dir)
     {
         trail.enabled = true;
         trail.time = 0.1f;
 
-        if(isDouble) {
+        if(isDash) {
             audioSource.PlayOneShot(doubleBoostClip, volume);
         }
         else {
             audioSource.PlayOneShot(boostClip, volume);
         }
+
+        //render.transform.up = Vector3.up;
     }
 
     public void OnOutOfBoosts() {
         //audioSource.PlayOneShot(outOfBoostsClip, volume);
     }
 
-    public void OnRest()
+    public void OnRest(Vector3 normal)
     {
         audioSource.PlayOneShot(restClip, volume);
+
+        // TODO dust particle
+        render.transform.up = normal;
     }
 
     public void OnPickupCoin() {

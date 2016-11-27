@@ -1,4 +1,6 @@
 
+level idea: escort mission, where you have to quickly destroy asteroids flying at a target. if too many hit the target, you loooose
+
 player skills progression:
 
     basic arrow movement
@@ -10,10 +12,6 @@ player skills progression:
         aiming into a hole
     stopping by going into a wall
     stalling back and forth
-
-
-locks and keys - knock a key around to get it to the door
-or just buttons to open doors
 
 TODO: platforms, ie. when you touch it, you start moving with it. could also rotate! especially for no-boost zones
 
@@ -184,3 +182,5 @@ DONE: structure.
             Metroid Prime: the door colors were helpful. still had some non-map info tho, like where you needed the ball and stuff. MAP NOTES!
 
     CONCLUSION: gonna go with linear with big, non-linear levels. like Ecco, DOOM. mystery, exploration still achievable. no backtracking/confusion/planning.
+DONE locks and keys - knock a key around to get it to the door
+DONE or just buttons to open doors

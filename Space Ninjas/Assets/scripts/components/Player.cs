@@ -25,8 +25,8 @@ public class Player : MonoBehaviour {
     private CollisionDebugger colDebug = new CollisionDebugger();
 
     public interface EventHandler : IEventSystemHandler {
-        void OnBoost( bool isDashing );
-        void OnRest();
+        void OnBoost( bool isDash, Dir2D dir );
+        void OnRest(Vector3 restNormal);
         void OnPickupCoin();
         void OnHealthChange(bool isHeal);
         void OnGracePeriodChange(bool sGracePeriod);
@@ -101,12 +101,12 @@ public class Player : MonoBehaviour {
         return Dir2D.Right;
     }
 
-    void Boost(Dir2D dir, bool isDashing) {
+    void Boost(Dir2D dir, bool isDash) {
         rb.AddStoppingForce();
-        float finalSpeed = isDashing ? 2f * speed : speed;
+        float finalSpeed = isDash ? 2f * speed : speed;
         rb.AddForce(dir.GetVector2() * finalSpeed * rb.mass, ForceMode2D.Impulse);
-        moveState = isDashing ? MoveState.Dashing : MoveState.Moving;
-        ExecuteEvents.Execute<EventHandler>(this.gameObject, null, (x,y)=>x.OnBoost(isDashing));
+        moveState = isDash ? MoveState.Dashing : MoveState.Moving;
+        ExecuteEvents.Execute<EventHandler>(this.gameObject, null, (x,y)=>x.OnBoost(isDash, dir));
     }
 
 	void Update()
@@ -122,12 +122,14 @@ public class Player : MonoBehaviour {
                 (lastBoostDir == GetMoveDirTriggered())
                 && (Time.time - lastBoostTimeForDashDetection < 0.3f);
             lastBoostDir = GetMoveDirTriggered();
-            if( isDash ) {
-                lastBoostTimeForDashDetection = 0f;
-            }
-            else {
+
+            // commenting this out. The difference is, if you press a dir soon after a boost, should you boost again or go back to normal speed?
+            //if( isDash ) {
+                //lastBoostTimeForDashDetection = 0f;
+            //}
+            //else {
                 lastBoostTimeForDashDetection = Time.time;
-            }
+            //}
             Boost(lastBoostDir, isDash);
         }
 
@@ -194,7 +196,10 @@ public class Player : MonoBehaviour {
                 // put us a bit away from the wall so we don't "grind" along it for parallel motion
                 transform.position += (Vector3)normal * 0.1f;
                 moveState = MoveState.Idle;
-                ExecuteEvents.Execute<EventHandler>(this.gameObject, null, (x,y)=>x.OnRest());
+                ExecuteEvents.Execute<EventHandler>(
+                        this.gameObject,
+                        null,
+                        (x,y)=>x.OnRest((Vector3)normal));
             }
         }
     }
