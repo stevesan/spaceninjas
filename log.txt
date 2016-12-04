@@ -1,4 +1,52 @@
 
+GOAL:
+    be able to save/load the right prefabs into the right positions. don't worry about state, etc.
+
+save/load system v2:
+    we can't save/load scene files at runtime...but we can try something similar.
+    we will just save/load our own scene files, which stores entity spawns and any dynamic state.
+    this is to say, we shouldn't even need the scene file for each level, except for the singleton systems.
+    so each 'spawn' will have transform + prefab resource path. so all entities should go into the 'resources' folder.
+
+    need to mark every object that should be saved.
+    we need to save, in the editor, the resource path. we could hook into the save event, probably.
+
+    cons: if we do it this way, we can't rename resources. we could use the guid.. but then we need a map from guid to resource path..?
+    at runtime, can we load by GUID?
+    this may not be a huge deal - if we rename something, we'd just need to re-save all maps that use it...kind of a pain, but could do it automatically.
+
+Save/load system:
+    on save:
+
+    on load:
+
+
+    this can be tricky because we don't maintain strict model-view-controller separation in our scene rep..
+    the "view" isn't easily derivable from a "model", and the model itself is embedded in the view/controller classes.
+    when a unity scene is loaded, it is deserializing from some "model", but we don't really have access to that. we can't like, 
+        save a new scene file while playing the game... that would be nice. perhaps a bit wasteful, but one could imagine
+        just saving a diff from the shipped level...there may be some inefficiencies would rapid reloading, due to resources,
+        but you could probably just keep a resource cache and do a GC right after loading.
+
+    given we can't do that, what can we do instead? first we need to decide...on load, do we reload the scene?
+    1) reload the scene.
+        upon reload, we'd have to go over the whole scene, then manipulate parts we want to reload.
+    2) don't reload.
+        we'd have to go over the whole scene..and manipulate some of it.
+
+    ok, seems like there isn't much reason to reload the scene. so let's not do that.
+
+    now, not all data of the scene needs to be saved/reloaded. obviously, some things like game settings, should be saved/loaded through a separate
+    action. and some stuff can be easily derived from upstream state, such as shader effect state dependent on health. other stuff is just not worth saving,
+    such as the state of particle systems.
+    so we have a subset of stuff we want to save. whatever this subset is should be determined in a granular way, so we want some way
+    for each node in the tree to say, "should we keep recursing" for state saving/loading? and which components should be saved?
+
+    also, the system will need to be responsible for not just change ops, but also adds and subtracts.
+    so each node should probably have an ID, and if a node is no longer existing, it should be destroyed.
+    there should be no distinction between nodes that were part of the init scene and new nodes.
+    each node that is serialized needs to specify how it was created. so this can mean, specifying the prefab ID.
+
 level idea: escort mission, where you have to quickly destroy asteroids flying at a target. if too many hit the target, you loooose
 
 player skills progression:

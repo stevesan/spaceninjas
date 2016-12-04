@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.SceneManagement;
+using System.IO;
 
 public class Main : MonoBehaviour {
 
@@ -19,6 +20,33 @@ public class Main : MonoBehaviour {
 
         Unpause();
 	}
+
+    string GetSavePath() {
+        return Application.persistentDataPath + "/test.dat";
+    }
+
+    void PollDebugKeys() {
+        if( Input.GetKeyDown("s") ) {
+            Player p = GetComponentInParent<GameScope>().Get<Player>();
+            var node = p.GetComponent<SerializedNode>();
+            Debug.Log("saving " + GetSavePath());
+            FileStream file = File.OpenWrite(GetSavePath());
+            var writer = new BinaryWriter(file);
+            node.Write(writer);
+            file.Close();
+
+        }
+
+        if( Input.GetKeyDown("l") ) {
+            Player p = GetComponentInParent<GameScope>().Get<Player>();
+            var node = p.GetComponent<SerializedNode>();
+            Debug.Log("loading " + GetSavePath());
+            FileStream file = File.OpenRead(GetSavePath());
+            var reader = new BinaryReader(file);
+            node.Read(reader);
+            file.Close();
+        }
+    }
 	
 	// Update is called once per frame
 	void Update () {
@@ -29,6 +57,7 @@ public class Main : MonoBehaviour {
             lastMinute = minute;
         }
 	
+        PollDebugKeys();
 	}
 
     public void ResetLevel() {

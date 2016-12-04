@@ -1,5 +1,6 @@
 
 using UnityEngine;
+using System.IO;
 
 public static class UnityExtensions {
 
@@ -37,5 +38,37 @@ public static class UnityExtensions {
 
     public static string ToStringXY(this Vector3 v) {
         return v.x+","+v.y;
+    }
+
+    public static Vector3 ReadVector3(this BinaryReader reader) {
+        return new Vector3(
+                reader.ReadSingle(),
+                reader.ReadSingle(),
+                reader.ReadSingle() );
+    }
+
+    public static void Write(this BinaryWriter writer, Vector3 v) {
+        Debug.Log("writing a vector " + v);
+        writer.Write(v.x);
+        writer.Write(v.y);
+        writer.Write(v.z);
+    }
+
+    public static void ReadTransform(this BinaryReader reader, Transform t) {
+        t.localPosition = reader.ReadVector3();
+    }
+
+    public static void Write(this BinaryWriter writer, Quaternion q) {
+        writer.Write(q.x);
+        writer.Write(q.y);
+        writer.Write(q.z);
+        writer.Write(q.w);
+    }
+
+    public static void WriteTransform(this BinaryWriter writer, Transform t) {
+        // TODO
+        Debug.Log("write a transform");
+        writer.Write(t.localPosition);
+        //writer.Write(t.localRotation);
     }
 }
