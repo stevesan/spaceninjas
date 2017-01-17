@@ -1,0 +1,2 @@
+
+If xcode complains about needing a developer team, click Unity-iPhone project, in the middle pane click Build Settings

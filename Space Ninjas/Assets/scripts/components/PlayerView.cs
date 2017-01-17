@@ -19,6 +19,14 @@ public class PlayerView : MonoBehaviour, Player.EventHandler {
     private AudioSource audioSource;
     private float volume = 0.5f;
 
+    public Animator anim;
+
+    private static class AnimParams {
+        public static int flying = Animator.StringToHash("flying");
+        public static int standing = Animator.StringToHash("standing");
+        public static int dashing = Animator.StringToHash("dashing");
+    }
+
     private float graceFlickerFreq = 8f;
     private bool isGraceFlickering = false;
 
@@ -29,12 +37,17 @@ public class PlayerView : MonoBehaviour, Player.EventHandler {
 
         if(isDash) {
             audioSource.PlayOneShot(doubleBoostClip, volume);
+            Debug.Log("HEY!");
         }
         else {
             audioSource.PlayOneShot(boostClip, volume);
         }
 
-        //render.transform.up = Vector3.up;
+        anim.SetBool(AnimParams.flying, !isDash);
+        anim.SetBool(AnimParams.standing, false);
+        anim.SetBool(AnimParams.dashing, isDash);
+
+        render.transform.up = dir.GetVector2();
     }
 
     public void OnOutOfBoosts() {
@@ -45,8 +58,11 @@ public class PlayerView : MonoBehaviour, Player.EventHandler {
     {
         audioSource.PlayOneShot(restClip, volume);
 
-        // TODO dust particle
         render.transform.up = normal;
+
+        anim.SetBool(AnimParams.flying, false);
+        anim.SetBool(AnimParams.standing, true);
+        anim.SetBool(AnimParams.dashing, false);
     }
 
     public void OnPickupCoin() {

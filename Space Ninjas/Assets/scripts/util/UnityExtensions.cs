@@ -48,7 +48,6 @@ public static class UnityExtensions {
     }
 
     public static void Write(this BinaryWriter writer, Vector3 v) {
-        Debug.Log("writing a vector " + v);
         writer.Write(v.x);
         writer.Write(v.y);
         writer.Write(v.z);
@@ -66,8 +65,6 @@ public static class UnityExtensions {
     }
 
     public static void WriteTransform(this BinaryWriter writer, Transform t) {
-        // TODO
-        Debug.Log("write a transform");
         writer.Write(t.localPosition);
         //writer.Write(t.localRotation);
     }

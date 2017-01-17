@@ -27,24 +27,24 @@ public class Main : MonoBehaviour {
 
     void PollDebugKeys() {
         if( Input.GetKeyDown("s") ) {
-            Player p = GetComponentInParent<GameScope>().Get<Player>();
-            var node = p.GetComponent<SerializedNode>();
+            var root = GetComponentInParent<GameScope>().gameObject;
             Debug.Log("saving " + GetSavePath());
-            FileStream file = File.OpenWrite(GetSavePath());
-            var writer = new BinaryWriter(file);
-            node.Write(writer);
-            file.Close();
 
+            using(FileStream file = File.OpenWrite(GetSavePath())) {
+                using(var writer = new BinaryWriter(file)) {
+                    SerializedNode.Save(root, writer);
+                }
+            }
         }
 
         if( Input.GetKeyDown("l") ) {
-            Player p = GetComponentInParent<GameScope>().Get<Player>();
-            var node = p.GetComponent<SerializedNode>();
+            var root = GetComponentInParent<GameScope>().gameObject;
             Debug.Log("loading " + GetSavePath());
-            FileStream file = File.OpenRead(GetSavePath());
-            var reader = new BinaryReader(file);
-            node.Read(reader);
-            file.Close();
+            using(FileStream file = File.OpenRead(GetSavePath())) {
+                using( var reader = new BinaryReader(file) ) {
+                    SerializedNode.Load(root, reader);
+                }
+            }
         }
     }
 	
