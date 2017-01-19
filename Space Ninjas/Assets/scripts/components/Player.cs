@@ -35,7 +35,7 @@ public class Player : MonoBehaviour {
     // Should be an interface...but Unity Editor does not support interface fields
     public abstract class Input : MonoBehaviour {
         public abstract bool IsTriggerMove( Dir2D dir );
-        public abstract bool IsHoldingMove( Dir2D dir );
+        public abstract void PreUpdate(float dt);
     }
 
     // scope-bound
@@ -112,6 +112,7 @@ public class Player : MonoBehaviour {
 	void Update()
     {
         colDebug.Update();
+        input.PreUpdate(Time.deltaTime);
 
         UpdateGracePeriod();
 

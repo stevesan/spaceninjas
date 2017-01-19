@@ -68168,6 +68168,10 @@ Prefab:
       propertyPath: m_RootOrder
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1000011594995748, guid: 03cbea516b8fe40daa50c55b993adfd0, type: 2}
+      propertyPath: m_Name
+      value: dpad image
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 03cbea516b8fe40daa50c55b993adfd0, type: 2}
   m_IsPrefabParent: 0

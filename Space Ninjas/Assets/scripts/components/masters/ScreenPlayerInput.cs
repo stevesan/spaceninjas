@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
+using System;
 
 // player controls via screen, ie. mouse or touch
 // Also, has key board controls, just for convenience
@@ -17,15 +18,18 @@ public class ScreenPlayerInput : Player.Input, MasterComponent {
 
     public RectTransform inputRegion;
 
+    private string state = "idle";
+    private bool triggeringAny = false;
+    private Dir2D triggeringMove;
 
-    public static Vector2 GetScreenCenter() {
+    private static Vector2 GetScreenCenter() {
         return new Vector2(Screen.width/2f, Screen.height/2f);
     }
 
     // reused
     private Vector3[] inputRegionCorners = new Vector3[4];
 
-    public Vector2 GetInputRegionCenter() {
+    private Vector2 GetInputRegionCenter() {
         inputRegion.GetWorldCorners(inputRegionCorners);
         return (inputRegionCorners[0] 
             + inputRegionCorners[1]
@@ -34,12 +38,12 @@ public class ScreenPlayerInput : Player.Input, MasterComponent {
             / 4f;
     }
 
-    public bool IsScreenPosForDirection( Vector2 screenPos, Dir2D dir ) {
+    private bool IsScreenPosForDirection( Vector2 screenPos, Dir2D dir ) {
         Vector2 fromCenter = screenPos - GetInputRegionCenter();
         return Vector2.Angle(fromCenter, dir.GetVector2()) < 45f;
     }
 
-    public bool IsTouchTriggeringMove( Dir2D dir ) {
+    private bool IsTouchTriggeringMove( Dir2D dir ) {
         foreach( var touch in Input.touches ) {
             if( touch.phase == TouchPhase.Began ) {
                 if( IsScreenPosForDirection(touch.position, dir) ) {
@@ -51,7 +55,7 @@ public class ScreenPlayerInput : Player.Input, MasterComponent {
         return false;
     }
 
-    public bool IsTouchHoldingMove( Dir2D dir ) {
+    private bool IsTouchHoldingMove( Dir2D dir ) {
         foreach( var touch in Input.touches ) {
             if( touch.phase == TouchPhase.Stationary || touch.phase == TouchPhase.Moved ) {
                 if( IsScreenPosForDirection(touch.position, dir) ) {
@@ -63,7 +67,7 @@ public class ScreenPlayerInput : Player.Input, MasterComponent {
         return false;
     }
 
-    public bool IsMouseTriggeringMove( Dir2D dir ) {
+    private bool IsMouseTriggeringMove( Dir2D dir ) {
         // check mouse
         if( Input.GetMouseButtonDown(0) ) {
             return IsScreenPosForDirection(Input.mousePosition, dir);
@@ -71,7 +75,7 @@ public class ScreenPlayerInput : Player.Input, MasterComponent {
         return false;
     }
 
-    public bool IsMouseHoldingMove( Dir2D dir ) {
+    private bool IsMouseHoldingMove( Dir2D dir ) {
         // check mouse
         if( Input.GetMouseButton(0) ) {
             return IsScreenPosForDirection(Input.mousePosition, dir);
@@ -81,13 +85,44 @@ public class ScreenPlayerInput : Player.Input, MasterComponent {
 
     public override bool IsTriggerMove( Dir2D dir ) {
         return Input.GetKeyDown(DIR_TO_KEYCODE[dir])
-            || IsTouchTriggeringMove(dir)
-            || IsMouseTriggeringMove(dir);
+            || (triggeringAny && dir == triggeringMove);
     }
 
-    public override bool IsHoldingMove( Dir2D dir ) {
-        return Input.GetKey( DIR_TO_KEYCODE[dir] )
-            || IsTouchHoldingMove(dir)
-            || IsMouseHoldingMove(dir);
+    public override void PreUpdate(float dt) {
+        if( state == "idle" ) {
+            triggeringAny = false;
+            foreach( Dir2D dir in Enum.GetValues(typeof(Dir2D)) ) {
+                if(IsMouseTriggeringMove(dir) || IsTouchTriggeringMove(dir)) {
+                    triggeringAny = true;
+                    triggeringMove = dir;
+                    break;
+                }
+            }
+
+            if( triggeringAny ) {
+                state = "held";
+            }
+        }
+        else if( state == "held" ) {
+            // if still holding, but moved to a different dir, register this as a trigger
+            // but if it's the same one, don't trigger
+            triggeringAny = false;
+            bool anyHeld = false;
+            foreach( Dir2D dir in Enum.GetValues(typeof(Dir2D)) ) {
+                if( IsMouseHoldingMove(dir) || IsTouchHoldingMove(dir) ) {
+                    anyHeld = true;
+                    if( dir != triggeringMove ) {
+                        // still holding, but changed dir. register as a trigger.
+                        triggeringAny = true;
+                        triggeringMove = dir;
+                    }
+                    break;
+                }
+            }
+
+            if( !anyHeld ) {
+                state = "idle";
+            }
+        }
     }
 }
