@@ -20,7 +20,6 @@ Save/load system:
 
     on load:
 
-
     this can be tricky because we don't maintain strict model-view-controller separation in our scene rep..
     the "view" isn't easily derivable from a "model", and the model itself is embedded in the view/controller classes.
     when a unity scene is loaded, it is deserializing from some "model", but we don't really have access to that. we can't like, 
