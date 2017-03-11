@@ -9,8 +9,8 @@ GameObject:
   m_Component:
   - component: {fileID: 470156}
   - component: {fileID: 6185048}
-  - component: {fileID: 11448754}
   - component: {fileID: 114966060389505460}
+  - component: {fileID: 114863243984560290}
   m_Layer: 0
   m_Name: wall soft
   m_TagString: Untagged
@@ -75,23 +75,6 @@ BoxCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
---- !u!114 &11448754
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 140942}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cb020b639c9894b6b9dbad2783258f66, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  spawnsOnDestroy:
-    specs:
-    - prefab: {fileID: 101646, guid: 1b2563f7b10114f9f8e6100722ae064e, type: 2}
-      inheritRotation: 0
-      assignParent: 0
-  destroyVictim: {fileID: 0}
 --- !u!212 &21258486
 SpriteRenderer:
   m_ObjectHideFlags: 1
@@ -138,6 +121,25 @@ Prefab:
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 140942}
   m_IsPrefabParent: 1
+--- !u!114 &114863243984560290
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 140942}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b95380377b5748e4844a57a523505ec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  health: 1
+  destroyOnNoHealth: 1
+  spawnsOnDestroy:
+    specs:
+    - prefab: {fileID: 101646, guid: 1b2563f7b10114f9f8e6100722ae064e, type: 2}
+      inheritRotation: 0
+      assignParent: 0
+  destroyVictim: {fileID: 0}
 --- !u!114 &114966060389505460
 MonoBehaviour:
   m_ObjectHideFlags: 1

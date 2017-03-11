@@ -59,6 +59,8 @@ public class Player : MonoBehaviour {
     private Dir2D lastBoostDir = Dir2D.Right;
     private float lastDashingTime = 0f;
 
+    private Harmful harmer;
+
     private Rigidbody2D rb;
 
     public Camera mainCam;
@@ -71,6 +73,9 @@ public class Player : MonoBehaviour {
         var scope = GetComponentInParent<GameScope>();
         input = scope.Get<Input>();
         main = scope.Get<Main>();
+
+        harmer = GetComponentInParent<Harmful>();
+        harmer.enabled = false;
 	}
 
     void UpdateGracePeriod() {
@@ -137,6 +142,8 @@ public class Player : MonoBehaviour {
         if( moveState == MoveState.Dashing ) {
             lastDashingTime = Time.time;
         }
+
+        harmer.enabled = (moveState == MoveState.Dashing);
 
         if(GetHealth() <= 0) {
             main.OnGameOver();

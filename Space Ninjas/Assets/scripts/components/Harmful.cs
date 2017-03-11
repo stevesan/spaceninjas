@@ -5,8 +5,10 @@ public class Harmful : MonoBehaviour {
 
     public int hurtAmount = 1;
 
+    // Should this object be destroyed upon inflicting harm? Such as a missile exploding.
     public bool destroyOnHarm = false;
 
+    // What effect to spawn when this object inflicts health? Such as, the explosion from a missile.
     public SpawnSpec onHarm;
 
 	// Use this for initialization
@@ -15,9 +17,17 @@ public class Harmful : MonoBehaviour {
 	}
 
     void OnTouch(GameObject other) {
-        Player p = other.gameObject.GetComponentInParent<Player>();
-        if( p != null ) {
-            if( p.OnHurt(hurtAmount) ) {
+        if( !this.enabled ) {
+            return;
+        }
+
+        if( other.transform.IsChildOf(this.transform) ) {
+            return;
+        }
+
+        Health h = other.GetComponentInParent<Health>();
+        if( h != null ) {
+            if( h.ChangeHealth(-1 * hurtAmount) ) {
                 onHarm.Spawn(transform);
                 if(destroyOnHarm) {
                     Object.Destroy(gameObject);

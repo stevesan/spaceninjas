@@ -16,18 +16,17 @@ GameObject:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  serializedVersion: 4
+  serializedVersion: 5
   m_Component:
-  - 4: {fileID: 4000013468235708}
-  - 114: {fileID: 114000010705555150}
-  - 114: {fileID: 114000012390717684}
+  - component: {fileID: 4000013468235708}
+  - component: {fileID: 114000010705555150}
   m_Layer: 0
   m_Name: autogenMap
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &4000013468235708
 Transform:
   m_ObjectHideFlags: 1
@@ -37,10 +36,10 @@ Transform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &114000010705555150
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -52,6 +51,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 823942c64cae5eb49b945940825d6d50, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  iMax: 100
+  jMax: 100
   blockPrefab: {fileID: 162072, guid: c369f789d20934a2b8b552c0c66ededc, type: 2}
   softBlockPrefab: {fileID: 140942, guid: c415131dce0f24e4cacc7e96338ef377, type: 2}
   lavaPrefab: {fileID: 145192, guid: dbc7b061448b747d88115d014e20b5c6, type: 2}
@@ -66,15 +67,5 @@ MonoBehaviour:
   - {fileID: 135000, guid: a0cf776421d964c0f855fcee02d1890c, type: 2}
   - {fileID: 124174, guid: bc388c53825d24b0dbd92c94b6aeb967, type: 2}
   - {fileID: 157114, guid: 0768dfac25a54419f9f3dda15878df0d, type: 2}
+  - {fileID: 137454, guid: 1fbe93aed9e5b47f782b399b562bd23a, type: 2}
   genOnStart: 1
---- !u!114 &114000012390717684
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1000012527061944}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 08ed6b70ace444a4db3a6b98ab0ded6a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
