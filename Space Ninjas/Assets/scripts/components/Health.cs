@@ -5,8 +5,8 @@ using System.Collections;
 
 public class Health : MonoBehaviour {
 
-    public interface EventHandler : IEventSystemHandler {
-        void OnHealthChange();
+    public interface Handler : IEventSystemHandler {
+        void OnHealthChange(int prevHealth);
     }
 
     public int health = 1;
@@ -21,11 +21,14 @@ public class Health : MonoBehaviour {
         }
     }
 
+    public int Get() { return health; }
+
     public bool ChangeHealth(int delta) {
         if( delta == 0) {
             return false;
         }
 
+        int prevHealth = health;
         health += delta;
 
         if(health == 0 && destroyOnNoHealth ) {
@@ -35,7 +38,7 @@ public class Health : MonoBehaviour {
             Object.Destroy(destroyVictim == null ? this.gameObject : destroyVictim);
         }
         else {
-            ExecuteEvents.Execute<EventHandler>(this.gameObject, null, (x,y)=>x.OnHealthChange());
+            ExecuteEvents.Execute<Handler>(this.gameObject, null, (x,y)=>x.OnHealthChange(prevHealth));
         }
 
         return true;

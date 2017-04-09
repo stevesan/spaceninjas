@@ -17,6 +17,8 @@ public class Harmful : MonoBehaviour {
 	}
 
     void OnTouch(GameObject other) {
+
+        Debug.Log(gameObject.name + " touched " + other.name);
         if( !this.enabled ) {
             return;
         }
@@ -25,8 +27,13 @@ public class Harmful : MonoBehaviour {
             return;
         }
 
-        Health h = other.GetComponentInParent<Health>();
-        if( h != null ) {
+        if( this.transform.IsChildOf(other.transform) ) {
+            return;
+        }
+
+        Health h = other.GetComponentInChildren<Health>();
+        // If health is disabled, assume it's invulnerable
+        if( h != null && h.enabled ) {
             if( h.ChangeHealth(-1 * hurtAmount) ) {
                 onHarm.Spawn(transform);
                 if(destroyOnHarm) {

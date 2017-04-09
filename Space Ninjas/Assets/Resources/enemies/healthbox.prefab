@@ -9,7 +9,7 @@ GameObject:
   m_Component:
   - component: {fileID: 473578}
   - component: {fileID: 6193600}
-  - component: {fileID: 11436668}
+  - component: {fileID: 114874987535962302}
   m_Layer: 0
   m_Name: weakspot
   m_TagString: Untagged
@@ -42,7 +42,7 @@ GameObject:
   - component: {fileID: 456188}
   - component: {fileID: 21242664}
   m_Layer: 0
-  m_Name: brick
+  m_Name: brick sprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -68,7 +68,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 124174}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 9.15, y: -12.58, z: 0}
+  m_LocalPosition: {x: 242.03084, y: -163.86842, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4000010830914222}
@@ -104,26 +104,6 @@ BoxCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
---- !u!114 &11436668
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 107168}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cb020b639c9894b6b9dbad2783258f66, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  spawnsOnDestroy:
-    specs:
-    - prefab: {fileID: 101646, guid: 1b2563f7b10114f9f8e6100722ae064e, type: 2}
-      inheritRotation: 0
-      assignParent: 0
-    - prefab: {fileID: 163564, guid: 5b1d14ea46d2948cc8149d926d34b5b6, type: 2}
-      inheritRotation: 0
-      assignParent: 0
-  destroyVictim: {fileID: 124174}
 --- !u!212 &21242664
 SpriteRenderer:
   m_ObjectHideFlags: 1
@@ -180,7 +160,7 @@ GameObject:
   - component: {fileID: 4000010830914222}
   - component: {fileID: 212000013277047034}
   m_Layer: 0
-  m_Name: icon
+  m_Name: health sprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -199,6 +179,28 @@ Transform:
   m_Father: {fileID: 468226}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &114874987535962302
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 107168}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b95380377b5748e4844a57a523505ec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  health: 1
+  destroyOnNoHealth: 1
+  spawnsOnDestroy:
+    specs:
+    - prefab: {fileID: 101646, guid: 1b2563f7b10114f9f8e6100722ae064e, type: 2}
+      inheritRotation: 0
+      assignParent: 0
+    - prefab: {fileID: 163564, guid: 5b1d14ea46d2948cc8149d926d34b5b6, type: 2}
+      inheritRotation: 0
+      assignParent: 0
+  destroyVictim: {fileID: 124174}
 --- !u!212 &212000013277047034
 SpriteRenderer:
   m_ObjectHideFlags: 1

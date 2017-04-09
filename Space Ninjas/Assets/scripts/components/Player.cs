@@ -3,7 +3,7 @@ using UnityEngine.EventSystems;
 using System.Collections.Generic;
 using System;
 
-public class Player : MonoBehaviour {
+public class Player : MonoBehaviour, Health.Handler {
 
     // TODO make this a separate component
     class CollisionDebugger {
@@ -49,7 +49,6 @@ public class Player : MonoBehaviour {
     enum MoveState {Idle, Moving, Dashing};
 
     float speed = 8f;
-    int health = 5;
     int maxHealth = 5;
 
     float gracePeriod = 0f;
@@ -60,6 +59,7 @@ public class Player : MonoBehaviour {
     private float lastDashingTime = 0f;
 
     private Harmful harmer;
+    private Health health;
 
     private Rigidbody2D rb;
 
@@ -76,6 +76,7 @@ public class Player : MonoBehaviour {
 
         harmer = GetComponentInParent<Harmful>();
         harmer.enabled = false;
+        health = GetComponentInParent<Health>();
 	}
 
     void UpdateGracePeriod() {
@@ -83,6 +84,7 @@ public class Player : MonoBehaviour {
             gracePeriod -= Time.deltaTime;
             if( gracePeriod < 0f ) {
                 ExecuteEvents.Execute<EventHandler>(this.gameObject, null, (x,y)=>x.OnGracePeriodChange(false));
+                health.enabled = true;
             }
         }
     }
@@ -154,42 +156,22 @@ public class Player : MonoBehaviour {
         ExecuteEvents.Execute<EventHandler>(this.gameObject, null, (x,y)=>x.OnPickupCoin());
     }
 
-    public bool OnHeal(int amt) {
-        return OnHurt(-1 * amt);
-    }
-
-    public bool OnHurt(int amt) {
-        if(amt == 0) {
-            return false;
-        }
-
-        if( amt > 0 ) {
+    public void OnHealthChange(int prevHealth) {
+        if( health.Get() < prevHealth ) {
             // hurting
-            if( amt > 0 && gracePeriod <= 0f ) {
-                health -= amt;
-                ExecuteEvents.Execute<EventHandler>(this.gameObject, null, (x,y)=>x.OnHealthChange(amt < 0));
+            ExecuteEvents.Execute<EventHandler>(this.gameObject, null, (x,y)=>x.OnHealthChange(false));
 
-                gracePeriod = 2f;
-                onHurt.Spawn(transform);
-                ExecuteEvents.Execute<EventHandler>(this.gameObject, null, (x,y)=>x.OnGracePeriodChange(true));
-                return true;
-            }
-            else {
-                return false;
-            }
+            // initialize grace period
+            gracePeriod = 2f;
+            health.enabled = false;
+            onHurt.Spawn(transform);
+            ExecuteEvents.Execute<EventHandler>(this.gameObject, null, (x,y)=>x.OnGracePeriodChange(true));
         }
-        else {
+        else if( health.Get() > prevHealth ) {
             // healing
-            if( health < maxHealth ) {
-                health -= amt;
-                ExecuteEvents.Execute<EventHandler>(this.gameObject, null, (x,y)=>x.OnHealthChange(amt < 0));
-                return true;
-            }
-            else {
-                return false;
-            }
+            // TODO enforce max health here..?
+            ExecuteEvents.Execute<EventHandler>(this.gameObject, null, (x,y)=>x.OnHealthChange(true));
         }
-
     }
 
     void OnCollisionEnter2D( Collision2D col ) {
@@ -212,7 +194,9 @@ public class Player : MonoBehaviour {
         }
     }
 
-    public int GetHealth() { return health; }
+    public int GetHealth() { return health.Get(); }
+
+    public Health GetHealthComponent() { return health; }
 
     public bool IsDashing() {
         // We need this, since we often hit something and stop dashing in the same frame.

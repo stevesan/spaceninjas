@@ -9,8 +9,8 @@ GameObject:
   m_Component:
   - component: {fileID: 450184}
   - component: {fileID: 6126442}
-  - component: {fileID: 11405364}
   - component: {fileID: 11403072}
+  - component: {fileID: 114356435348575900}
   m_Layer: 0
   m_Name: turret protected
   m_TagString: Untagged
@@ -91,26 +91,7 @@ MonoBehaviour:
   bulletPrefab: {fileID: 198804, guid: c5718dfc4708949a5b868d12c5c81ac8, type: 2}
   targetPlayer: {fileID: 0}
   cooldown: 2
---- !u!114 &11405364
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 137454}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cb020b639c9894b6b9dbad2783258f66, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  spawnsOnDestroy:
-    specs:
-    - prefab: {fileID: 163564, guid: 5b1d14ea46d2948cc8149d926d34b5b6, type: 2}
-      inheritRotation: 0
-      assignParent: 0
-    - prefab: {fileID: 101646, guid: 1b2563f7b10114f9f8e6100722ae064e, type: 2}
-      inheritRotation: 0
-      assignParent: 0
-  destroyVictim: {fileID: 0}
+  offset: 1
 --- !u!212 &21247476
 SpriteRenderer:
   m_ObjectHideFlags: 1
@@ -353,6 +334,28 @@ MonoBehaviour:
     prefab: {fileID: 0}
     inheritRotation: 1
     assignParent: 0
+--- !u!114 &114356435348575900
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 137454}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b95380377b5748e4844a57a523505ec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  health: 1
+  destroyOnNoHealth: 1
+  spawnsOnDestroy:
+    specs:
+    - prefab: {fileID: 101646, guid: 1b2563f7b10114f9f8e6100722ae064e, type: 2}
+      inheritRotation: 0
+      assignParent: 0
+    - prefab: {fileID: 163564, guid: 5b1d14ea46d2948cc8149d926d34b5b6, type: 2}
+      inheritRotation: 0
+      assignParent: 0
+  destroyVictim: {fileID: 0}
 --- !u!114 &114722302066327052
 MonoBehaviour:
   m_ObjectHideFlags: 1

@@ -15,15 +15,19 @@ public class Shooter : MonoBehaviour {
     // min seconds between shots
     public float cooldown = 2f;
 
+    public float offset = 1f;
+
     private float lastShotTime = 0f;
 
-    public void ShootAt(Vector3 pos) {
-        Vector3 dir = (pos - transform.position).normalized;
+    public void ShootAt(Vector3 targetPos) {
+        Vector3 dir = (targetPos - transform.position).normalized;
         // assume prefab is pointing right
         Quaternion rot = Quaternion.FromToRotation(Vector3.right, dir);
 
+        Vector3 pos = transform.position + dir * offset;
+
         GameObject inst = (GameObject)GameObject.Instantiate(bulletPrefab,
-                transform.position, rot );
+                pos, rot );
         inst.name = bulletPrefab.name + " (shot from " + gameObject.name + ")";
         inst.transform.parent = GetComponentInParent<GameScope>().transform;
         inst.SetActive(true);
