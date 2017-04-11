@@ -30,7 +30,7 @@ public class PlayerView : MonoBehaviour, Player.EventHandler {
     private float graceFlickerFreq = 8f;
     private bool isGraceFlickering = false;
 
-    public void OnBoost(bool isDash, Dir2D dir)
+    public void OnDash(bool isDash, Dir2D dir)
     {
         trail.enabled = true;
         trail.time = 0.1f;

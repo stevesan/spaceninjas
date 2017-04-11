@@ -5,6 +5,13 @@ public enum Dir2D { Right = 0, Up = 1, Left = 2, Down = 3 };
 
 public static class Dir2DMethods {
 
+    // TODO do this using Enum.GetValues somehow..
+    private static readonly Dir2D[] DirsArray = {Dir2D.Right, Dir2D.Up, Dir2D.Left, Dir2D.Down};
+
+    public static Dir2D[] GetDirs() {
+        return DirsArray;
+    }
+
     public static Vector3 GetXYVector3( this Dir2D dir ) {
         var v2 = dir.GetVector2();
         return new Vector3(v2.x, v2.y, 0);

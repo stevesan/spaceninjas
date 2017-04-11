@@ -91,7 +91,7 @@ public class ScreenPlayerInput : Player.Input, MasterComponent {
     public override void PreUpdate(float dt) {
         if( state == "idle" ) {
             triggeringAny = false;
-            foreach( Dir2D dir in Enum.GetValues(typeof(Dir2D)) ) {
+            foreach( Dir2D dir in Dir2DMethods.GetDirs() ) {
                 if(IsMouseTriggeringMove(dir) || IsTouchTriggeringMove(dir)) {
                     triggeringAny = true;
                     triggeringMove = dir;
@@ -108,7 +108,7 @@ public class ScreenPlayerInput : Player.Input, MasterComponent {
             // but if it's the same one, don't trigger
             triggeringAny = false;
             bool anyHeld = false;
-            foreach( Dir2D dir in Enum.GetValues(typeof(Dir2D)) ) {
+            foreach( Dir2D dir in Dir2DMethods.GetDirs() ) {
                 if( IsMouseHoldingMove(dir) || IsTouchHoldingMove(dir) ) {
                     anyHeld = true;
                     if( dir != triggeringMove ) {

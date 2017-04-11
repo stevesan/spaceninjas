@@ -25,7 +25,7 @@ public class Player : MonoBehaviour, Health.Handler {
     private CollisionDebugger colDebug = new CollisionDebugger();
 
     public interface EventHandler : IEventSystemHandler {
-        void OnBoost( bool isDash, Dir2D dir );
+        void OnDash( bool isDash, Dir2D dir );
         void OnRest(Vector3 restNormal);
         void OnPickupCoin();
         void OnHealthChange(bool isHeal);
@@ -54,8 +54,8 @@ public class Player : MonoBehaviour, Health.Handler {
     float gracePeriod = 0f;
 
     private MoveState moveState = MoveState.Idle;
-    private float lastBoostTimeForDashDetection = 0f;
-    private Dir2D lastBoostDir = Dir2D.Right;
+    private float lastDashTimeForDashDetection = 0f;
+    private Dir2D lastDashDir = Dir2D.Right;
     private float lastDashingTime = 0f;
 
     private Harmful harmer;
@@ -108,12 +108,12 @@ public class Player : MonoBehaviour, Health.Handler {
         return Dir2D.Right;
     }
 
-    void Boost(Dir2D dir, bool isDash) {
+    void Dash(Dir2D dir, bool isDash) {
         rb.AddStoppingForce();
         float finalSpeed = isDash ? 2f * speed : speed;
         rb.AddForce(dir.GetVector2() * finalSpeed * rb.mass, ForceMode2D.Impulse);
         moveState = isDash ? MoveState.Dashing : MoveState.Moving;
-        ExecuteEvents.Execute<EventHandler>(this.gameObject, null, (x,y)=>x.OnBoost(isDash, dir));
+        ExecuteEvents.Execute<EventHandler>(this.gameObject, null, (x,y)=>x.OnDash(isDash, dir));
     }
 
 	void Update()
@@ -127,18 +127,18 @@ public class Player : MonoBehaviour, Health.Handler {
         // ..because we want to allow dashing from idle, ie. dashing into a wall you're already touching.
         if(IsAnyDirTriggered()) {
             bool isDash =
-                (lastBoostDir == GetMoveDirTriggered())
-                && (Time.time - lastBoostTimeForDashDetection < 0.3f);
-            lastBoostDir = GetMoveDirTriggered();
+                (lastDashDir == GetMoveDirTriggered())
+                && (Time.time - lastDashTimeForDashDetection < 0.3f);
+            lastDashDir = GetMoveDirTriggered();
 
             // commenting this out. The difference is, if you press a dir soon after a boost, should you boost again or go back to normal speed?
             //if( isDash ) {
-                //lastBoostTimeForDashDetection = 0f;
+                //lastDashTimeForDashDetection = 0f;
             //}
             //else {
-                lastBoostTimeForDashDetection = Time.time;
+                lastDashTimeForDashDetection = Time.time;
             //}
-            Boost(lastBoostDir, isDash);
+            Dash(lastDashDir, isDash);
         }
 
         if( moveState == MoveState.Dashing ) {
@@ -181,7 +181,7 @@ public class Player : MonoBehaviour, Health.Handler {
             // If direction of collision is opposite our moving dir, stop
             Vector2 normal = col.contacts[0].normal;
 
-            if( Vector2.Dot(normal, lastBoostDir.GetVector2()) < 0f ) {
+            if( Vector2.Dot(normal, lastDashDir.GetVector2()) < 0f ) {
                 rb.AddStoppingForce();
                 // put us a bit away from the wall so we don't "grind" along it for parallel motion
                 transform.position += (Vector3)normal * 0.1f;

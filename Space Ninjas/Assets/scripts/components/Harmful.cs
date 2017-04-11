@@ -18,7 +18,7 @@ public class Harmful : MonoBehaviour {
 
     void OnTouch(GameObject other) {
 
-        Debug.Log(gameObject.name + " touched " + other.name);
+        //Debug.Log(gameObject.name + " touched " + other.name);
         if( !this.enabled ) {
             return;
         }
