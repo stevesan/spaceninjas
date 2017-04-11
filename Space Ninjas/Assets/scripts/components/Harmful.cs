@@ -31,7 +31,7 @@ public class Harmful : MonoBehaviour {
             return;
         }
 
-        Health h = other.GetComponentInChildren<Health>();
+        Health h = other.GetComponentInParent<Health>();
         // If health is disabled, assume it's invulnerable
         if( h != null && h.enabled ) {
             if( h.ChangeHealth(-1 * hurtAmount) ) {
@@ -44,7 +44,11 @@ public class Harmful : MonoBehaviour {
     }
 
     void OnCollisionEnter2D( Collision2D other ) {
-        OnTouch(other.gameObject);
+        // Important to use other.collider. instead of just other.
+        // 'other.gameObject' will be the rigidbody, which is usually the root.
+        // But, if we hit a collider that was not vulnerable, we don't want to do harm.
+        // So, we need to distinguish between which collider was hit.
+        OnTouch(other.collider.gameObject);
     }
 
     void OnTriggerEnter2D( Collider2D other ) {
