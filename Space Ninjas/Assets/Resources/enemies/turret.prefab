@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 11403072}
   - component: {fileID: 114428180605255258}
   - component: {fileID: 58287995196862000}
+  - component: {fileID: 50788444433005438}
   m_Layer: 0
   m_Name: turret
   m_TagString: Untagged
@@ -123,6 +124,26 @@ Prefab:
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 137454}
   m_IsPrefabParent: 1
+--- !u!50 &50788444433005438
+Rigidbody2D:
+  serializedVersion: 4
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 137454}
+  m_BodyType: 0
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDrag: 2
+  m_AngularDrag: 0.05
+  m_GravityScale: 1
+  m_Material: {fileID: 0}
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 4
 --- !u!58 &58287995196862000
 CircleCollider2D:
   m_ObjectHideFlags: 1
@@ -155,6 +176,11 @@ MonoBehaviour:
     - prefab: {fileID: 163564, guid: 5b1d14ea46d2948cc8149d926d34b5b6, type: 2}
       inheritRotation: 0
       assignParent: 0
+    - prefab: {fileID: 101646, guid: 1b2563f7b10114f9f8e6100722ae064e, type: 2}
+      inheritRotation: 0
+      assignParent: 0
+  spawnsOnHarm:
+    specs:
     - prefab: {fileID: 101646, guid: 1b2563f7b10114f9f8e6100722ae064e, type: 2}
       inheritRotation: 0
       assignParent: 0

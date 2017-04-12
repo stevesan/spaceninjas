@@ -21,6 +21,7 @@ public class ScreenPlayerInput : Player.Input, MasterComponent {
     private string state = "idle";
     private bool triggeringAny = false;
     private Dir2D triggeringMove;
+    private Dir2D heldMove;
 
     private static Vector2 GetScreenCenter() {
         return new Vector2(Screen.width/2f, Screen.height/2f);
@@ -110,6 +111,7 @@ public class ScreenPlayerInput : Player.Input, MasterComponent {
             bool anyHeld = false;
             foreach( Dir2D dir in Dir2DMethods.GetDirs() ) {
                 if( IsMouseHoldingMove(dir) || IsTouchHoldingMove(dir) ) {
+                    heldMove = dir;
                     anyHeld = true;
                     if( dir != triggeringMove ) {
                         // still holding, but changed dir. register as a trigger.
@@ -124,5 +126,10 @@ public class ScreenPlayerInput : Player.Input, MasterComponent {
                 state = "idle";
             }
         }
+    }
+
+    public override bool IsHoldingMove( Dir2D dir ) {
+        return state == "held" && heldMove == dir
+            || Input.GetKey(DIR_TO_KEYCODE[dir]);
     }
 }

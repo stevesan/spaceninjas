@@ -5,6 +5,19 @@ using System;
 
 public class Player : MonoBehaviour, Health.Handler {
 
+    private static bool EnableDashThrough = true;
+
+    // As opposed to dash being unlimited, and you can cancel it anytime.
+    // Uncontrolled is: dash has limited max time, and you can't cancel it with buttons.
+    private static bool UncontrolledDash = false;
+
+    private static bool AutostopDash = true;
+    private static float AutostopDashTime = 0.25f;
+
+    private static void log(string msg) {
+        Debug.Log( "(" + Time.frameCount + ") " + msg);
+    }
+
     // TODO make this a separate component
     class CollisionDebugger {
         ContactPoint2D[] lastContacts = null;
@@ -25,16 +38,18 @@ public class Player : MonoBehaviour, Health.Handler {
     private CollisionDebugger colDebug = new CollisionDebugger();
 
     public interface EventHandler : IEventSystemHandler {
-        void OnDash( bool isDash, Dir2D dir );
+        void OnMove( bool isDash, Dir2D dir );
         void OnRest(Vector3 restNormal);
         void OnPickupCoin();
         void OnHealthChange(bool isHeal);
         void OnGracePeriodChange(bool sGracePeriod);
+        void OnLandedHit(GameObject victim);
     }
 
     // Should be an interface...but Unity Editor does not support interface fields
     public abstract class Input : MonoBehaviour {
         public abstract bool IsTriggerMove( Dir2D dir );
+        public abstract bool IsHoldingMove( Dir2D dir );
         public abstract void PreUpdate(float dt);
     }
 
@@ -46,7 +61,13 @@ public class Player : MonoBehaviour, Health.Handler {
 
     public List<GameObject> inventory;
 
-    enum MoveState {Idle, Moving, Dashing};
+    enum MoveState {Idle, Moving, Dashing, DashingLastFrame};
+
+    static bool IsDashingState(MoveState state) {
+        return state == MoveState.Dashing
+            || state == MoveState.DashingLastFrame;
+    }
+
 
     float speed = 8f;
     int maxHealth = 5;
@@ -54,9 +75,11 @@ public class Player : MonoBehaviour, Health.Handler {
     float gracePeriod = 0f;
 
     private MoveState moveState = MoveState.Idle;
-    private float lastDashTimeForDashDetection = 0f;
-    private Dir2D lastDashDir = Dir2D.Right;
-    private float lastDashingTime = 0f;
+    private float lastDashTriggerTime = 0f;
+
+    // only meaningful if moveState in [Moving, Dashing]
+    private float lastMoveTriggerTime = 0f;
+    private Dir2D lastMoveDir = Dir2D.Right;    
 
     private Harmful harmer;
     private Health health;
@@ -75,7 +98,10 @@ public class Player : MonoBehaviour, Health.Handler {
         main = scope.Get<Main>();
 
         harmer = GetComponentInParent<Harmful>();
+        // we will manage all harmer inputs/events ourselves.
         harmer.enabled = false;
+        harmer.Start();
+
         health = GetComponentInParent<Health>();
 	}
 
@@ -108,12 +134,56 @@ public class Player : MonoBehaviour, Health.Handler {
         return Dir2D.Right;
     }
 
-    void Dash(Dir2D dir, bool isDash) {
+    void Move(Dir2D dir, bool isDash) {
         rb.AddStoppingForce();
-        float finalSpeed = isDash ? 2f * speed : speed;
+        float dashScale = AutostopDash ? 2.5f : 2f;   // feels better to go faster if autostopping..
+        float finalSpeed = isDash ? dashScale * speed : speed;
         rb.AddForce(dir.GetVector2() * finalSpeed * rb.mass, ForceMode2D.Impulse);
         moveState = isDash ? MoveState.Dashing : MoveState.Moving;
-        ExecuteEvents.Execute<EventHandler>(this.gameObject, null, (x,y)=>x.OnDash(isDash, dir));
+        ExecuteEvents.Execute<EventHandler>(this.gameObject, null, (x,y)=>x.OnMove(isDash, dir));
+    }
+
+    void UpdateMoveState() {
+        if(moveState == MoveState.DashingLastFrame) {
+            moveState = MoveState.Idle;
+        }
+
+        if(AutostopDash && IsDashingState(moveState)) {
+            // allow no change until dash is done
+            if( Time.time - lastDashTriggerTime > AutostopDashTime ) {
+                // back to normal moving
+                Move(lastMoveDir, false);
+            }
+        }
+
+        if(UncontrolledDash && IsDashingState(moveState))
+        {
+            // allow no input to cancel dashing
+            return;
+        }
+
+        // We allow motion and dashing from any state...
+        // ..because we want to allow dashing from idle, ie. dashing into a wall you're already touching.
+        if(IsAnyDirTriggered()) {
+            bool dashTriggered =
+                (lastMoveDir == GetMoveDirTriggered())
+                && (Time.time - lastDashTriggerTime > 0.0f)    // cooldown
+                && (Time.time - lastMoveTriggerTime < 0.3f); // double-tap
+            bool isDirChange = moveState == MoveState.Idle || lastMoveDir != GetMoveDirTriggered();
+
+            lastMoveDir = GetMoveDirTriggered();
+            lastMoveTriggerTime = Time.time;
+            if(dashTriggered) {
+                // used to enforce dash cooldown
+                lastDashTriggerTime = Time.time;
+
+                lastMoveTriggerTime = 0f;   // don't let the next tap result in another dash
+            }
+
+            if( dashTriggered || isDirChange ) {
+                Move(lastMoveDir, dashTriggered);
+            }
+        }
     }
 
 	void Update()
@@ -123,29 +193,7 @@ public class Player : MonoBehaviour, Health.Handler {
 
         UpdateGracePeriod();
 
-        // We allow motion and dashing from any state...
-        // ..because we want to allow dashing from idle, ie. dashing into a wall you're already touching.
-        if(IsAnyDirTriggered()) {
-            bool isDash =
-                (lastDashDir == GetMoveDirTriggered())
-                && (Time.time - lastDashTimeForDashDetection < 0.3f);
-            lastDashDir = GetMoveDirTriggered();
-
-            // commenting this out. The difference is, if you press a dir soon after a boost, should you boost again or go back to normal speed?
-            //if( isDash ) {
-                //lastDashTimeForDashDetection = 0f;
-            //}
-            //else {
-                lastDashTimeForDashDetection = Time.time;
-            //}
-            Dash(lastDashDir, isDash);
-        }
-
-        if( moveState == MoveState.Dashing ) {
-            lastDashingTime = Time.time;
-        }
-
-        harmer.enabled = (moveState == MoveState.Dashing);
+        UpdateMoveState();
 
         if(GetHealth() <= 0) {
             main.OnGameOver();
@@ -174,22 +222,49 @@ public class Player : MonoBehaviour, Health.Handler {
         }
     }
 
+    void MaybeStopDueToCollision(Collision2D col) {
+        // If direction of collision is opposite our moving dir, stop
+        Vector2 normal = col.contacts[0].normal;
+
+        if( Vector2.Dot(normal, lastMoveDir.GetVector2()) < 0f ) {
+            rb.AddStoppingForce();
+            // put us a bit away from the wall so we don't "grind" along it for parallel motion
+            transform.position += (Vector3)normal * 0.1f;
+
+            if(moveState == MoveState.Dashing) {
+                moveState = MoveState.DashingLastFrame;
+            }
+            else {
+                moveState = MoveState.Idle;
+            }
+            ExecuteEvents.Execute<EventHandler>(
+                    this.gameObject,
+                    null,
+                    (x,y)=>x.OnRest((Vector3)normal));
+        }
+    }
+
     void OnCollisionEnter2D( Collision2D col ) {
         colDebug.OnCollision(col);
 
         if( moveState != MoveState.Idle ) {
-            // If direction of collision is opposite our moving dir, stop
-            Vector2 normal = col.contacts[0].normal;
-
-            if( Vector2.Dot(normal, lastDashDir.GetVector2()) < 0f ) {
-                rb.AddStoppingForce();
-                // put us a bit away from the wall so we don't "grind" along it for parallel motion
-                transform.position += (Vector3)normal * 0.1f;
-                moveState = MoveState.Idle;
-                ExecuteEvents.Execute<EventHandler>(
-                        this.gameObject,
-                        null,
-                        (x,y)=>x.OnRest((Vector3)normal));
+            if(IsDashingState(moveState)) {
+                if(harmer.OnTouch(col.collider.gameObject)) {
+                    if(EnableDashThrough
+                            && Health.IsDead(col.collider.gameObject))
+                    {
+                        Move(lastMoveDir, true);
+                    }
+                    else {
+                        MaybeStopDueToCollision(col);
+                    }
+                }
+                else {
+                    MaybeStopDueToCollision(col);
+                }
+            }
+            else {
+                MaybeStopDueToCollision(col);
             }
         }
     }
@@ -197,12 +272,6 @@ public class Player : MonoBehaviour, Health.Handler {
     public int GetHealth() { return health.Get(); }
 
     public Health GetHealthComponent() { return health; }
-
-    public bool IsDashing() {
-        // We need this, since we often hit something and stop dashing in the same frame.
-        // So, we must guarantee that whatever we hit gets "dashed"
-        return Time.time - lastDashingTime < 0.1f;
-    }
 
     public IEnumerable<GameObject> EnumInventory() {
         foreach( var item in inventory ) {

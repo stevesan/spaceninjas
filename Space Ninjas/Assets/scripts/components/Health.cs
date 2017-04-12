@@ -9,15 +9,37 @@ public class Health : MonoBehaviour {
         void OnHealthChange(int prevHealth);
     }
 
+    public static Health GetRelevantHealthComponent(GameObject obj) {
+        return obj.GetComponentInParent<Health>();
+    }
+
+    public static int GetRelevantHealth(GameObject obj) {
+        Health h = GetRelevantHealthComponent(obj);
+        if( h == null ) {
+            return -1;
+        }
+        else {
+            return h.Get();
+        }
+    }
+
+    public static bool IsDead(GameObject obj) {
+        return GetRelevantHealth(obj) <= 0;
+    }
+
     public int health = 1;
 
     public bool destroyOnNoHealth;
     public MultiSpawnSpec spawnsOnDestroy;
+    public MultiSpawnSpec spawnsOnHarm;
     public GameObject destroyVictim;    // set if this should destroy something aside from this.gameObject
 
     public void Start() {
         if(spawnsOnDestroy != null) {
             spawnsOnDestroy.OnStart();
+        }
+        if(spawnsOnHarm != null) {
+            spawnsOnHarm.OnStart();
         }
     }
 
@@ -38,6 +60,9 @@ public class Health : MonoBehaviour {
             Object.Destroy(destroyVictim == null ? this.gameObject : destroyVictim);
         }
         else {
+            if( delta < 0 ) {
+                foreach( var s in spawnsOnHarm.Spawn(transform) ) { }
+            }
             ExecuteEvents.Execute<Handler>(this.gameObject, null, (x,y)=>x.OnHealthChange(prevHealth));
         }
 

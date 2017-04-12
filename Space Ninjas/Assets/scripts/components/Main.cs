@@ -46,6 +46,10 @@ public class Main : MonoBehaviour {
                 }
             }
         }
+
+        if(Input.GetKeyDown("r")) {
+            ResetLevel();
+        }
     }
 	
 	// Update is called once per frame

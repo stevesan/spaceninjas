@@ -504,11 +504,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   trail: {fileID: 96000011440671110}
   boostClip: {fileID: 8300000, guid: 1d96f01808d4b5042a2412b02533626c, type: 3}
-  doubleBoostClip: {fileID: 8300000, guid: 66b83b42b04b17140a737ed978519b46, type: 3}
+  doubleBoostClip: {fileID: 8300000, guid: e2a06b9f1181b4c1d9940ecbae34937c, type: 3}
   restClip: {fileID: 8300000, guid: 5379a1359b3214cb7b8105df17a0e976, type: 3}
   outOfBoostsClip: {fileID: 8300000, guid: 677839b5839627e4787d4639c27132d1, type: 3}
   pickupCoinClip: {fileID: 8300000, guid: 21ea5cc618907ee40b7fbc89a240b1c2, type: 3}
   healClip: {fileID: 8300000, guid: 570a4730d5adb4927b80a7d60b31cd22, type: 3}
+  enableDuringDash: {fileID: 1000013364255820}
   render: {fileID: 212000012047128732}
   anim: {fileID: 95149597592249138}
 --- !u!114 &114000012997264056
@@ -542,6 +543,8 @@ MonoBehaviour:
   health: 5
   destroyOnNoHealth: 0
   spawnsOnDestroy:
+    specs: []
+  spawnsOnHarm:
     specs: []
   destroyVictim: {fileID: 0}
 --- !u!114 &114649417263066686

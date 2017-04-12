@@ -1,7 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.EventSystems;
 
 public class Harmful : MonoBehaviour {
+
+    public interface Handler : IEventSystemHandler {
+        void OnDidHarm(Health victim);
+    }
 
     public int hurtAmount = 1;
 
@@ -12,50 +17,55 @@ public class Harmful : MonoBehaviour {
     public SpawnSpec onHarm;
 
 	// Use this for initialization
-	void Start () {
+	public void Start () {
         onHarm.OnStart();
 	}
 
-    void OnTouch(GameObject other) {
-
-        //Debug.Log(gameObject.name + " touched " + other.name);
-        if( !this.enabled ) {
-            return;
-        }
-
+    // Returns true if harm was done to the given other
+    public bool OnTouch(GameObject other) {
         if( other.transform.IsChildOf(this.transform) ) {
-            return;
+            return false;
         }
 
         if( this.transform.IsChildOf(other.transform) ) {
-            return;
+            return false;
         }
 
-        Health h = other.GetComponentInParent<Health>();
+        Health h = Health.GetRelevantHealthComponent(other);
         // If health is disabled, assume it's invulnerable
         if( h != null && h.enabled ) {
             if( h.ChangeHealth(-1 * hurtAmount) ) {
                 onHarm.Spawn(transform);
+                ExecuteEvents.Execute<Handler>(this.gameObject, null, (x,y)=>x.OnDidHarm(h));
                 if(destroyOnHarm) {
                     Object.Destroy(gameObject);
                 }
+                return true;
             }
+        }
+
+        return false;
+    }
+
+    void OnCollisionEnter2D( Collision2D col ) {
+        // Important to use col.collider instead of just col.
+        // 'col.gameObject' will be the rigidbody, which is usually the root.
+        // But, if we hit a collider that was not vulnerable, we don't want to do harm.
+        // So, we need to distinguish between which collider was hit.
+        if(this.enabled) {
+            OnTouch(col.collider.gameObject);
         }
     }
 
-    void OnCollisionEnter2D( Collision2D other ) {
-        // Important to use other.collider. instead of just other.
-        // 'other.gameObject' will be the rigidbody, which is usually the root.
-        // But, if we hit a collider that was not vulnerable, we don't want to do harm.
-        // So, we need to distinguish between which collider was hit.
-        OnTouch(other.collider.gameObject);
-    }
-
     void OnTriggerEnter2D( Collider2D other ) {
-        OnTouch(other.gameObject);
+        if(this.enabled) {
+            OnTouch(other.gameObject);
+        }
     }
 
     void OnTriggerStay2D( Collider2D other ) {
-        OnTouch( other.gameObject );
+        if(this.enabled) {
+            OnTouch( other.gameObject );
+        }
     }
 }

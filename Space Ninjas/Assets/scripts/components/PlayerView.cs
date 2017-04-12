@@ -14,6 +14,8 @@ public class PlayerView : MonoBehaviour, Player.EventHandler {
     public AudioClip pickupCoinClip;
     public AudioClip healClip;
 
+    public GameObject enableDuringDash;
+
     private Player player;
     public Renderer render;
     private AudioSource audioSource;
@@ -30,18 +32,19 @@ public class PlayerView : MonoBehaviour, Player.EventHandler {
     private float graceFlickerFreq = 8f;
     private bool isGraceFlickering = false;
 
-    public void OnDash(bool isDash, Dir2D dir)
+    public void OnMove(bool isDash, Dir2D dir)
     {
         trail.enabled = true;
-        trail.time = 0.1f;
+        //trail.time = 0.1f;
 
         if(isDash) {
             audioSource.PlayOneShot(doubleBoostClip, volume);
-            Debug.Log("HEY!");
         }
         else {
             audioSource.PlayOneShot(boostClip, volume);
         }
+
+        enableDuringDash.SetActive(isDash);
 
         anim.SetBool(AnimParams.flying, !isDash);
         anim.SetBool(AnimParams.standing, false);
@@ -63,6 +66,8 @@ public class PlayerView : MonoBehaviour, Player.EventHandler {
         anim.SetBool(AnimParams.flying, false);
         anim.SetBool(AnimParams.standing, true);
         anim.SetBool(AnimParams.dashing, false);
+
+        enableDuringDash.SetActive(false);
     }
 
     public void OnPickupCoin() {
@@ -93,5 +98,8 @@ public class PlayerView : MonoBehaviour, Player.EventHandler {
 
     public void OnGracePeriodChange(bool isGracePeriod) {
         isGraceFlickering = isGracePeriod;
+    }
+
+    public void OnLandedHit(GameObject victim) {
     }
 }
