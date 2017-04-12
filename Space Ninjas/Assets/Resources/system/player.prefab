@@ -512,6 +512,7 @@ MonoBehaviour:
   enableDuringDash: {fileID: 1000013364255820}
   render: {fileID: 212000012047128732}
   anim: {fileID: 95149597592249138}
+  shakeCamRoot: {fileID: 4000010937293406}
 --- !u!114 &114000012997264056
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -541,6 +542,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   health: 5
+  maxHealth: 5
   destroyOnNoHealth: 0
   spawnsOnDestroy:
     specs: []

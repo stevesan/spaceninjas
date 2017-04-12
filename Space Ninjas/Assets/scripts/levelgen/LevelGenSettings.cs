@@ -35,8 +35,10 @@ public class LevelGenSettings : MonoBehaviour
 
     public void Generate(GameObject root) {
         float perlinScale = 10f;
-        float perlinXOfs = (float)rng.NextDouble()*10f;
-        float perlinYOfs = (float)rng.NextDouble()*10f;
+        //float perlinXOfs = (float)rng.NextDouble()*10f;
+        //float perlinYOfs = (float)rng.NextDouble()*10f;
+        float perlinXOfs = 0f;
+        float perlinYOfs = 0f;
 
         for( int i = 0; i < iMax; i++ ) {
             for( int j = 0; j < jMax; j++ ) {

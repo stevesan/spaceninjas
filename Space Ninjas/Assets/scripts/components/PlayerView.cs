@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
-using System;
 
 // Effects for player state and events
 public class PlayerView : MonoBehaviour, Player.EventHandler {
@@ -22,6 +21,8 @@ public class PlayerView : MonoBehaviour, Player.EventHandler {
     private float volume = 0.5f;
 
     public Animator anim;
+
+    public Transform shakeCamRoot;
 
     private static class AnimParams {
         public static int flying = Animator.StringToHash("flying");
@@ -84,10 +85,14 @@ public class PlayerView : MonoBehaviour, Player.EventHandler {
     void Start () {
         player = GetComponent<Player>();
         audioSource = GetComponent<AudioSource>();
+
+        StartCamShake();
 	}
 	
 	// Update is called once per frame
 	void Update() {
+        UpdateCamShake();
+
         if( isGraceFlickering ) {
             render.enabled = Util.SquareWave(graceFlickerFreq);
         }
@@ -100,6 +105,31 @@ public class PlayerView : MonoBehaviour, Player.EventHandler {
         isGraceFlickering = isGracePeriod;
     }
 
+    //----------------------------------------
+    //  Cam shake
+    //  TODO move this out of here..
+    //----------------------------------------
+    private static float CamShakeDecayTime = 0.5f;
+    private float camShakeStart = 0f;
+    private Vector3 camOrigLocalPos;
+
+    public void StartCamShake() {
+        camOrigLocalPos = shakeCamRoot.localPosition;
+    }
+
+    public void UpdateCamShake() {
+        float shakeFrac = (Time.time - camShakeStart) / CamShakeDecayTime;
+        if(shakeFrac > 1f) {
+            shakeCamRoot.localPosition = camOrigLocalPos;
+        }
+        else {
+            float mag = 0.15f * (1.0f - shakeFrac);
+            shakeCamRoot.localPosition = camOrigLocalPos + mag * UnityEngine.Random.insideUnitCircle.AsXY();
+        }
+    }
+
     public void OnLandedHit(GameObject victim) {
+        bool killed = Health.IsDead(victim);
+        camShakeStart = Time.time;
     }
 }

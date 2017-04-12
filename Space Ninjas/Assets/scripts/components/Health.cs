@@ -28,6 +28,7 @@ public class Health : MonoBehaviour {
     }
 
     public int health = 1;
+    public int maxHealth = -1;
 
     public bool destroyOnNoHealth;
     public MultiSpawnSpec spawnsOnDestroy;
@@ -50,8 +51,16 @@ public class Health : MonoBehaviour {
             return false;
         }
 
+        if(health == maxHealth) {
+            return false;
+        }
+
         int prevHealth = health;
         health += delta;
+
+        if(health > maxHealth) {
+            health = maxHealth;
+        }
 
         if(health == 0 && destroyOnNoHealth ) {
             //Debug.Log(transform.GetComponentInParent<GameScope>().gameObject.name);

@@ -258,6 +258,8 @@ public class Player : MonoBehaviour, Health.Handler {
                     else {
                         MaybeStopDueToCollision(col);
                     }
+
+                    ExecuteEvents.Execute<EventHandler>(this.gameObject, null, (x,y)=>x.OnLandedHit(col.collider.gameObject));
                 }
                 else {
                     MaybeStopDueToCollision(col);
