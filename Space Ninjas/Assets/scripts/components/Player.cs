@@ -69,7 +69,7 @@ public class Player : MonoBehaviour, Health.Handler {
     }
 
 
-    float speed = 8f;
+    float speed = 10f;
     int maxHealth = 5;
 
     float gracePeriod = 0f;

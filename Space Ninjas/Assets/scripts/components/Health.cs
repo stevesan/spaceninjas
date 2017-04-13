@@ -46,19 +46,21 @@ public class Health : MonoBehaviour {
 
     public int Get() { return health; }
 
+    public bool EnforceMaxHealth() { return maxHealth > 0; }
+
     public bool ChangeHealth(int delta) {
         if( delta == 0) {
             return false;
         }
 
-        if(health == maxHealth) {
+        if(EnforceMaxHealth() && health == maxHealth && delta > 0) {
             return false;
         }
 
         int prevHealth = health;
         health += delta;
 
-        if(health > maxHealth) {
+        if(EnforceMaxHealth() && health > maxHealth) {
             health = maxHealth;
         }
 
