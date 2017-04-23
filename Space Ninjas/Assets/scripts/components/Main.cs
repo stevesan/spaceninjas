@@ -132,13 +132,17 @@ public class Main : MonoBehaviour {
             // update, and enforce the slowest, still valid request
             float slowest = 1f;
             for( int i = 0; i < requests.Length; i++ ) {
-                requests[i].Update();
                 if(requests[i].IsValid()) {
                     slowest = Mathf.Min(slowest, requests[i].scale);
                 }
             }
 
             Time.timeScale = slowest;
+
+            // update
+            for( int i = 0; i < requests.Length; i++ ) {
+                requests[i].Update();
+            }
         }
 
         public void Trigger(float scale, float duration) {
