@@ -1,8 +1,9 @@
 
 hitscan enemy? with laser sight
+
 snake enemy (tail is vulnerable)
+
 enemy that follows you, has fire spinning around it, but center is vulnerable
-rocks that bounce around, with one fire side. or a fire tail
 
 GOAL:
     be able to save/load the right prefabs into the right positions. don't worry about state, etc.
@@ -209,3 +210,5 @@ player skills progression:
     stalling back and forth
 levels and structure
 DONE: way of making sure enemies are in-view before they attack? for things like the bull
+DONE: rocks that bounce around, with one fire side. or a fire tail
+    bouncing too fast is not fun.

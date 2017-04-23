@@ -141,18 +141,24 @@ public class PlayerView : MonoBehaviour, Player.EventHandler {
         main.TriggerBulletTime(0.0f, 0.15f);
     }
 
-    public static float CamLookAheadMagnitude = 2f;
-    public static float AheadTime = 1.0f;
-    public static float ReturnTime = 1f;
+    public static float aheadMagnitude = 0f;
+    public static float dashAheadMagnitude = 0f;
+    public static float AheadTime = 0.5f;
+    public static float ReturnTime = 0.5f;
     public static float CamLookAheadMaxSpeed = 999999f;
     private Vector2 camLookAheadDampVelocity = Vector2.zero;
 
     void UpdateCamLookAhead() {
+        if( aheadMagnitude == 0 && dashAheadMagnitude == 0 ) {
+            return;
+        }
+
         Vector2 targetOffset = Vector2.zero;
         float dampTime = ReturnTime;
 
-        if( player.IsDashing() ) {
-            targetOffset = player.GetLastMoveDir().GetVector2() * CamLookAheadMagnitude;
+        if( player.IsMoving() ) {
+            float mag = player.IsDashing() ? dashAheadMagnitude : aheadMagnitude;
+            targetOffset = player.GetLastMoveDir().GetVector2() * mag;
             dampTime = AheadTime;
         }
 
