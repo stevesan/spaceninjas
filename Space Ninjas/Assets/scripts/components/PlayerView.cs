@@ -23,7 +23,8 @@ public class PlayerView : MonoBehaviour, Player.EventHandler {
 
     public Animator anim;
 
-    public Transform shakeCamRoot;
+    public Transform camShakeOffsetTransform;
+    public Transform camLookAheadTransform;
 
     private static class AnimParams {
         public static int flying = Animator.StringToHash("flying");
@@ -88,9 +89,6 @@ public class PlayerView : MonoBehaviour, Player.EventHandler {
     void Start () {
         player = GetComponent<Player>();
         audioSource = GetComponent<AudioSource>();
-
-        StartCamShake();
-
         var scope = GetComponentInParent<GameScope>();
         main = scope.Get<Main>();
 	}
@@ -98,6 +96,7 @@ public class PlayerView : MonoBehaviour, Player.EventHandler {
 	// Update is called once per frame
 	void Update() {
         UpdateCamShake();
+        UpdateCamLookAhead();
 
         if( isGraceFlickering ) {
             render.enabled = Util.SquareWave(graceFlickerFreq);
@@ -117,31 +116,52 @@ public class PlayerView : MonoBehaviour, Player.EventHandler {
     //  Should be its own component that is injected via GameScope.
     //----------------------------------------
     private static float CamShakeDecayTime = 0.5f;
-    private long camShakeStart = -1 * CamShakeDecayTime.SecsToMillis();
-    private Vector3 camOrigLocalPos;
-    private Diag.Stopwatch shakeWatch = new Diag.Stopwatch();
+    private float shakeTimeRemain = 0f;
 
-    public void StartCamShake() {
-        camOrigLocalPos = shakeCamRoot.localPosition;
-        shakeWatch.Start();
+    void TriggerCamShake() {
+        shakeTimeRemain = CamShakeDecayTime;
     }
 
-    public void UpdateCamShake() {
-        long dtMillis = shakeWatch.ElapsedMilliseconds - camShakeStart;
-        float shakeFrac = dtMillis / CamShakeDecayTime.SecsToMillis();
+    void UpdateCamShake() {
+        float shakeFrac = (CamShakeDecayTime - shakeTimeRemain) / CamShakeDecayTime;
         if(shakeFrac > 1f) {
-            shakeCamRoot.localPosition = camOrigLocalPos;
+            camShakeOffsetTransform.localPosition = Vector3.zero;
         }
         else {
             float mag = 0.20f * (1.0f - shakeFrac);
-            shakeCamRoot.localPosition = camOrigLocalPos + mag * UnityEngine.Random.insideUnitCircle.AsXY();
+            camShakeOffsetTransform.localPosition = mag * UnityEngine.Random.insideUnitCircle.AsXY();
+            shakeTimeRemain -= Time.unscaledDeltaTime;
         }
     }
 
     public void OnLandedHit(GameObject victim) {
         bool killed = Health.IsDead(victim);
-        camShakeStart = shakeWatch.ElapsedMilliseconds;
-
+        // TODO could do something else if killed..
+        TriggerCamShake();
         main.TriggerBulletTime(0.0f, 0.15f);
+    }
+
+    public static float CamLookAheadMagnitude = 2f;
+    public static float AheadTime = 1.0f;
+    public static float ReturnTime = 1f;
+    public static float CamLookAheadMaxSpeed = 999999f;
+    private Vector2 camLookAheadDampVelocity = Vector2.zero;
+
+    void UpdateCamLookAhead() {
+        Vector2 targetOffset = Vector2.zero;
+        float dampTime = ReturnTime;
+
+        if( player.IsDashing() ) {
+            targetOffset = player.GetLastMoveDir().GetVector2() * CamLookAheadMagnitude;
+            dampTime = AheadTime;
+        }
+
+        camLookAheadTransform.localPosition = Vector2.SmoothDamp(
+                camLookAheadTransform.localPosition.GetXY(),
+                targetOffset,
+                ref camLookAheadDampVelocity,
+                dampTime,
+                CamLookAheadMaxSpeed,
+                Time.deltaTime);
     }
 }

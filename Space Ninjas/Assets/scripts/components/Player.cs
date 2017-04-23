@@ -306,4 +306,16 @@ public class Player : MonoBehaviour, Health.Handler {
         float dy = Mathf.Abs(other.position.y - transform.position.y);
         return Mathf.Max(dx, dy) - radius < GetVisibilityBoxRadius() - blindMargin;
     }
+
+    public bool IsDashing() {
+        return IsDashingState(moveState);
+    }
+
+    public bool IsMoving() {
+        return moveState != MoveState.Idle;
+    }
+
+    public Dir2D GetLastMoveDir() {
+        return lastMoveDir;
+    }
 }

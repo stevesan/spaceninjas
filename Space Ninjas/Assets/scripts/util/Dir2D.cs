@@ -19,11 +19,11 @@ public static class Dir2DMethods {
 
     public static Vector2 GetVector2( this Dir2D dir ) {
         switch(dir) {
-            case Dir2D.Right: return new Vector3(1, 0);
-            case Dir2D.Up: return new Vector3(0, 1);
-            case Dir2D.Left: return new Vector3(-1, 0);
-            case Dir2D.Down: return new Vector3(0, -1);
-            default: return Vector3.zero;
+            case Dir2D.Right: return new Vector2(1, 0);
+            case Dir2D.Up: return new Vector2(0, 1);
+            case Dir2D.Left: return new Vector2(-1, 0);
+            case Dir2D.Down: return new Vector2(0, -1);
+            default: return Vector2.zero;
         }
     }
 }

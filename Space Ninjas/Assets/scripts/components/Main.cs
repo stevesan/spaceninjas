@@ -98,9 +98,10 @@ public class Main : MonoBehaviour {
         ResetLevel();
     }
 
-
+    [System.Serializable]
     private class BulletTime
     {
+        [System.Serializable]
         struct Request {
             public float scale;
             public long endTimeMillis;
@@ -112,7 +113,10 @@ public class Main : MonoBehaviour {
         }
 
         // support fixed number of requests for now
+        [SerializeField]
         private Request[] requests = new Request[10];
+
+        // TODO switch to using Time.unscaledDeltaTime instead.
         private Diag.Stopwatch realTime = new Diag.Stopwatch();
 
         public void Start() {
