@@ -3,6 +3,8 @@ using System.Collections;
 
 public enum Dir2D { Right = 0, Up = 1, Left = 2, Down = 3 };
 
+public enum Axis2D { X = 0, Y = 1 };
+
 public static class Dir2DMethods {
 
     // TODO do this using Enum.GetValues somehow..
@@ -23,7 +25,17 @@ public static class Dir2DMethods {
             case Dir2D.Up: return new Vector2(0, 1);
             case Dir2D.Left: return new Vector2(-1, 0);
             case Dir2D.Down: return new Vector2(0, -1);
-            default: return Vector2.zero;
+            default: throw new System.ArgumentException("Bad Dir2D value: " + dir);
+        }
+    }
+
+    public static Axis2D GetAxis(this Dir2D dir) {
+        switch(dir) {
+            case Dir2D.Right: return Axis2D.X;
+            case Dir2D.Up: return Axis2D.Y;
+            case Dir2D.Left: return Axis2D.X;
+            case Dir2D.Down: return Axis2D.Y;
+            default: throw new System.ArgumentException("Bad Dir2D value: " + dir);
         }
     }
 }

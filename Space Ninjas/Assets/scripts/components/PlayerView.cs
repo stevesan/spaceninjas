@@ -141,9 +141,9 @@ public class PlayerView : MonoBehaviour, Player.EventHandler {
         main.TriggerBulletTime(0.0f, 0.15f);
     }
 
-    public static float aheadMagnitude = 2.5f;
-    public static float dashAheadMagnitude = 4f;
-    public static float lookAheadMaxSpeed = 7.0f;
+    public static float aheadMagnitude = 1.0f;
+    public static float dashAheadMagnitude = 2f;
+    public static float lookAheadMaxSpeed = 3.0f;
 
     public static float recenterDelaySecs = 0.2f;
     public static float recenterMaxSpeed = 10f;
