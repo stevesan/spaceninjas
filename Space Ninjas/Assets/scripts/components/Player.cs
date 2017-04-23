@@ -11,8 +11,15 @@ public class Player : MonoBehaviour, Health.Handler {
     // Uncontrolled is: dash has limited max time, and you can't cancel it with buttons.
     private static bool UncontrolledDash = false;
 
-    private static bool AutostopDash = true;
-    private static float AutostopDashTime = 0.25f;
+    private static bool AutostopDash = false;
+    private static float AutostopDashTime = 0.30f;
+
+    private static float normalSpeed = 8f;  // used to be 8..
+    private static float autostopDashSpeed = 23;
+    private static float dashSpeed = 16f;
+    private static int maxHealth = 5;
+
+    private static float gracePeriod = 1.0f;
 
     private static void log(string msg) {
         Debug.Log( "(" + Time.frameCount + ") " + msg);
@@ -69,10 +76,7 @@ public class Player : MonoBehaviour, Health.Handler {
     }
 
 
-    float speed = 10f;
-    int maxHealth = 5;
-
-    float gracePeriod = 0f;
+    float graceRemainSecs = 0f;
 
     private MoveState moveState = MoveState.Idle;
     private float lastDashTriggerTime = 0f;
@@ -106,9 +110,9 @@ public class Player : MonoBehaviour, Health.Handler {
 	}
 
     void UpdateGracePeriod() {
-        if( gracePeriod > 0f ) {
-            gracePeriod -= Time.deltaTime;
-            if( gracePeriod < 0f ) {
+        if( graceRemainSecs > 0f ) {
+            graceRemainSecs -= Time.deltaTime;
+            if( graceRemainSecs < 0f ) {
                 ExecuteEvents.Execute<EventHandler>(this.gameObject, null, (x,y)=>x.OnGracePeriodChange(false));
                 health.enabled = true;
             }
@@ -136,9 +140,8 @@ public class Player : MonoBehaviour, Health.Handler {
 
     void Move(Dir2D dir, bool isDash) {
         rb.AddStoppingForce();
-        float dashScale = AutostopDash ? 2.5f : 2f;   // feels better to go faster if autostopping..
-        float finalSpeed = isDash ? dashScale * speed : speed;
-        rb.AddForce(dir.GetVector2() * finalSpeed * rb.mass, ForceMode2D.Impulse);
+        float currSpeed = isDash ? (AutostopDash ? autostopDashSpeed : dashSpeed) : normalSpeed;
+        rb.AddForce(dir.GetVector2() * currSpeed * rb.mass, ForceMode2D.Impulse);
         moveState = isDash ? MoveState.Dashing : MoveState.Moving;
         ExecuteEvents.Execute<EventHandler>(this.gameObject, null, (x,y)=>x.OnMove(isDash, dir));
     }
@@ -210,7 +213,7 @@ public class Player : MonoBehaviour, Health.Handler {
             ExecuteEvents.Execute<EventHandler>(this.gameObject, null, (x,y)=>x.OnHealthChange(false));
 
             // initialize grace period
-            gracePeriod = 2f;
+            graceRemainSecs = gracePeriod;
             health.enabled = false;
             onHurt.Spawn(transform);
             ExecuteEvents.Execute<EventHandler>(this.gameObject, null, (x,y)=>x.OnGracePeriodChange(true));

@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
-using System.Collections;
+using System.Collections.Generic;
 using UnityEngine.SceneManagement;
 using System.IO;
+using Diag = System.Diagnostics;
 
 public class Main : MonoBehaviour {
 
@@ -17,7 +18,7 @@ public class Main : MonoBehaviour {
 	void Start () {
         // for IOS, must set this for 60 FPS
         Application.targetFrameRate = 60;
-
+        bulletTime.Start();
         Unpause();
 	}
 
@@ -62,6 +63,7 @@ public class Main : MonoBehaviour {
         }
 	
         PollDebugKeys();
+        bulletTime.Update();
 	}
 
     public void ResetLevel() {
@@ -94,5 +96,68 @@ public class Main : MonoBehaviour {
 
     public void OnGameOver() {
         ResetLevel();
+    }
+
+
+    private class BulletTime
+    {
+        struct Request {
+            public float scale;
+            public long endTimeMillis;
+
+            public Request(float scale, long endTimeMillis) {
+                this.scale = scale;
+                this.endTimeMillis = endTimeMillis;
+            }
+        }
+
+        // support fixed number of requests for now
+        private Request[] requests = new Request[10];
+        private Diag.Stopwatch realTime = new Diag.Stopwatch();
+
+        public void Start() {
+            Time.timeScale = 1.0f;
+            realTime.Start();
+        }
+
+        public void Update() {
+            // enforce the slowest, still valid request
+            float slowest = 1f;
+            for( int i = 0; i < requests.Length; i++ ) {
+                if(IsRequestValid(requests[i])) {
+                    slowest = Mathf.Min(slowest, requests[i].scale);
+                }
+            }
+
+            Time.timeScale = slowest;
+        }
+
+        public void Trigger(float scale, float duration) {
+            // find a free slot, enter
+            for( int i = 0; i < requests.Length; i++ ) {
+                if(!IsRequestValid(requests[i])) {
+                    long endMillis = GetRealTimeMillis() + duration.SecsToMillis();
+                    requests[i] = new Request(scale, endMillis);
+                    break;
+                }
+            }
+
+            // immedatiately update, in case
+            Update();
+        }
+
+        private long GetRealTimeMillis() {
+            return realTime.ElapsedMilliseconds;
+        }
+
+        private bool IsRequestValid( Request req ) {
+            return GetRealTimeMillis() < req.endTimeMillis;
+        }
+    }
+
+    private BulletTime bulletTime = new BulletTime();
+
+    public void TriggerBulletTime(float scale, float duration) {
+        bulletTime.Trigger(scale, duration);
     }
 }

@@ -6,9 +6,13 @@ using System.Collections.Generic;
 public class Util
 {
     // Assuming +Z for forward, returns a rotation that points the transform's
-    // local right in the givne direction
+    // local right in the given direction
     public static Quaternion RightRotation( Vector3 dir ) {
         Vector3 up = Vector3.Cross( dir, -1 * Vector3.forward );
+        return Quaternion.LookRotation( Vector3.forward, up );
+    }
+
+    public static Quaternion UpRotation( Vector3 up ) {
         return Quaternion.LookRotation( Vector3.forward, up );
     }
 
@@ -34,5 +38,4 @@ public class Util
                 r * Mathf.Cos(angleDegs * Mathf.Deg2Rad),
                 r * Mathf.Sin(angleDegs * Mathf.Deg2Rad));
     }
-
 }

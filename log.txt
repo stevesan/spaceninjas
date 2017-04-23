@@ -1,4 +1,9 @@
 
+hitscan enemy? with laser sight
+snake enemy (tail is vulnerable)
+enemy that follows you, has fire spinning around it, but center is vulnerable
+rocks that bounce around, with one fire side. or a fire tail
+
 GOAL:
     be able to save/load the right prefabs into the right positions. don't worry about state, etc.
 
@@ -48,30 +53,15 @@ Save/load system:
 
 level idea: escort mission, where you have to quickly destroy asteroids flying at a target. if too many hit the target, you loooose
 
-player skills progression:
-
-    basic arrow movement
-        all 4 dirs
-    avoiding lava with:
-        1 quick turn
-        2 quick turns
-        3 quick turns
-        aiming into a hole
-    stopping by going into a wall
-    stalling back and forth
-
 TODO: platforms, ie. when you touch it, you start moving with it. could also rotate! especially for no-boost zones
 
 environmental weapons:
     touch a thing, get ability to touch-attack once
 
-checkpoints
-levels and structure
-
 corrosive zones and heal zones
     can make time-sensitive traversal parts
 
-hugger: enemy that wraps around you. you have to get it off by touching lava.
+hugger: enemy that wraps around you. you have to get it off by grazing lava.
     ala metroid
 
 puzzles where you have to lead a smartbomb into an area. maybe multiple!
@@ -79,18 +69,12 @@ puzzles where you have to lead a smartbomb into an area. maybe multiple!
 force zones
     need player interface to add forces...temporary and sustained
 
-way of making sure enemies are in-view before they attack? for things like the bull
-
-hitscan enemy? with laser sight
-
 puzzles where you draw out a line, like infinite snake
     could copy some Witness puzzles - heh! maybe with action elements
 walls that bounce you off immediately...? not that interesting.
 no-boost zones
     puzzles?
     could do single-boost-only puzzles with no-boost zones and a boost-OK hole
-
-enemies with snake-like tails (head is harmful, but tail is vulnerable)
 
 change size, ala. badland
 
@@ -102,28 +86,9 @@ minimap
 Boomerang throw by out and back motion
 
 powerups:
-    explosion on boost
-    triple-boost
+    forward-explosion on boost
     digging
 
-skills to teach: (for no-boost zone puzzles)
-    wall hugging: move paralell to wall, then boost into it to just slide.
-    out-and-back: go out to scout, then boost back for safety
-
-    getting over a bump by first going to a back wall.
-    need to go to the ceiling first!
-
-    OOOOOOO
-    O     L
-    Op    L
-    O     L
-    OOO   L
-    OOO   L
-    O     L
-    O     L
-    O     L
-
-    p = player, L = lava, 0 = rock
 
 -----------------------------
 -----------------------------
@@ -231,3 +196,16 @@ DONE: structure.
     CONCLUSION: gonna go with linear with big, non-linear levels. like Ecco, DOOM. mystery, exploration still achievable. no backtracking/confusion/planning.
 DONE locks and keys - knock a key around to get it to the door
 DONE or just buttons to open doors
+player skills progression:
+
+    basic arrow movement
+        all 4 dirs
+    avoiding lava with:
+        1 quick turn
+        2 quick turns
+        3 quick turns
+        aiming into a hole
+    stopping by going into a wall
+    stalling back and forth
+levels and structure
+DONE: way of making sure enemies are in-view before they attack? for things like the bull

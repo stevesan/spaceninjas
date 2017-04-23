@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using Diag = System.Diagnostics;
 
 // Effects for player state and events
 public class PlayerView : MonoBehaviour, Player.EventHandler {
@@ -32,6 +33,8 @@ public class PlayerView : MonoBehaviour, Player.EventHandler {
 
     private float graceFlickerFreq = 8f;
     private bool isGraceFlickering = false;
+
+    private Main main;
 
     public void OnMove(bool isDash, Dir2D dir)
     {
@@ -87,6 +90,9 @@ public class PlayerView : MonoBehaviour, Player.EventHandler {
         audioSource = GetComponent<AudioSource>();
 
         StartCamShake();
+
+        var scope = GetComponentInParent<GameScope>();
+        main = scope.Get<Main>();
 	}
 	
 	// Update is called once per frame
@@ -108,28 +114,34 @@ public class PlayerView : MonoBehaviour, Player.EventHandler {
     //----------------------------------------
     //  Cam shake
     //  TODO move this out of here..
+    //  Should be its own component that is injected via GameScope.
     //----------------------------------------
     private static float CamShakeDecayTime = 0.5f;
-    private float camShakeStart = 0f;
+    private long camShakeStart = -1 * CamShakeDecayTime.SecsToMillis();
     private Vector3 camOrigLocalPos;
+    private Diag.Stopwatch shakeWatch = new Diag.Stopwatch();
 
     public void StartCamShake() {
         camOrigLocalPos = shakeCamRoot.localPosition;
+        shakeWatch.Start();
     }
 
     public void UpdateCamShake() {
-        float shakeFrac = (Time.time - camShakeStart) / CamShakeDecayTime;
+        long dtMillis = shakeWatch.ElapsedMilliseconds - camShakeStart;
+        float shakeFrac = dtMillis / CamShakeDecayTime.SecsToMillis();
         if(shakeFrac > 1f) {
             shakeCamRoot.localPosition = camOrigLocalPos;
         }
         else {
-            float mag = 0.15f * (1.0f - shakeFrac);
+            float mag = 0.20f * (1.0f - shakeFrac);
             shakeCamRoot.localPosition = camOrigLocalPos + mag * UnityEngine.Random.insideUnitCircle.AsXY();
         }
     }
 
     public void OnLandedHit(GameObject victim) {
         bool killed = Health.IsDead(victim);
-        camShakeStart = Time.time;
+        camShakeStart = shakeWatch.ElapsedMilliseconds;
+
+        main.TriggerBulletTime(0.0f, 0.15f);
     }
 }

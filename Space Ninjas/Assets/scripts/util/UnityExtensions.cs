@@ -18,7 +18,7 @@ public static class UnityExtensions {
     }
 
     public static void AddStoppingForce( this Rigidbody2D rb ) {
-        rb.AddForce( -1 * rb.velocity * rb.mass, ForceMode2D.Impulse );
+        rb.AddVelocity( -1 * rb.velocity );
     }
 
     public static Vector2 Rotated( this Vector2 v, float degrees ) {
@@ -26,6 +26,22 @@ public static class UnityExtensions {
         float c = Mathf.Cos(rads);
         float s = Mathf.Sin(rads);
         return new Vector2( v.x * c - v.y * s, v.x * s + v.y * c );
+    }
+
+    public static void AddVelocity( this Rigidbody2D rb, Vector2 deltaVelocity ) {
+        rb.AddForce( deltaVelocity * rb.mass, ForceMode2D.Impulse );
+    }
+
+    public static bool EnforceMaxSpeed( this Rigidbody2D rb, float maxSpeed ) {
+        float speed = rb.velocity.magnitude;
+        if(speed > maxSpeed + 1e-2) {
+            float deltaSpeed = maxSpeed - speed;
+            rb.AddVelocity( rb.velocity.normalized * deltaSpeed );
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 
     public static void PointRightAt(this Transform transform, Vector3 target) {

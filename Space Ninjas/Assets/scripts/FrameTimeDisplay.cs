@@ -2,41 +2,45 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System;
+using Diag = System.Diagnostics;
 
 public class FrameTimeDisplay : MonoBehaviour {
     public int windowSize = 10;
     public Text text;
 
-    private float[] samples;
-
+    private long[] samplesDeltaMS;
     private int sampleCount = 0;
+    private Diag.Stopwatch watch = new Diag.Stopwatch();
+    private long prevMs = -1;
 
     void Awake() {
-        samples = new float[windowSize];
+        samplesDeltaMS = new long[windowSize];
+        watch.Start();
     }
 
-    float computeAverage() {
-        float total = 0f;
-        for( int i = 0; i < samples.Length; i++ ) {
-            total += samples[i];
+    float computeMeanDtMs() {
+        long total = 0L;
+        for( int i = 0; i < samplesDeltaMS.Length; i++ ) {
+            total += samplesDeltaMS[i];
         }
-        return total / samples.Length;
+        return total *1f / samplesDeltaMS.Length;
+    }
+
+    private void RecordSample(long dtMs) {
+        samplesDeltaMS[ sampleCount % samplesDeltaMS.Length ] = dtMs;
+        sampleCount++;
     }
 
     void Update() {
-        if( Time.timeScale < 1e-4 ) {
-            // we are likely paused
-            // reset sample window and ignore
-            sampleCount = 0;
+        long nowMs = watch.ElapsedMilliseconds;
+        if(prevMs != -1) {
+            RecordSample(nowMs - prevMs);
         }
-        else {
-            samples[sampleCount % samples.Length] = Time.deltaTime / Time.timeScale;
-            sampleCount++;
+        prevMs = nowMs;
 
-            if( sampleCount > windowSize ) {
-                float meanMs = computeAverage() * 1000f;
-                text.text = Math.Round((Decimal)meanMs, 2) + " ms";
-            }
+        if( sampleCount > windowSize ) {
+            float meanDtMs = computeMeanDtMs();
+            text.text = Math.Round((Decimal)meanDtMs, 2) + " ms";
         }
     }
 }

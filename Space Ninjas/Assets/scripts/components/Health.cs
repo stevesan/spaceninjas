@@ -29,6 +29,7 @@ public class Health : MonoBehaviour {
 
     public int health = 1;
     public int maxHealth = -1;
+    public bool isPlayer = false;
 
     public bool destroyOnNoHealth;
     public MultiSpawnSpec spawnsOnDestroy;

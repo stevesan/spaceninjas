@@ -9,6 +9,7 @@ public class Harmful : MonoBehaviour {
     }
 
     public int hurtAmount = 1;
+    public bool hurtPlayerOnly = true;
 
     // Should this object be destroyed upon inflicting harm? Such as a missile exploding.
     public bool destroyOnHarm = false;
@@ -32,8 +33,10 @@ public class Harmful : MonoBehaviour {
         }
 
         Health h = Health.GetRelevantHealthComponent(other);
+        Player p = other.GetComponentInParent<Player>();
+
         // If health is disabled, assume it's invulnerable
-        if( h != null && h.enabled ) {
+        if( h != null && h.enabled && (!hurtPlayerOnly || p != null) ) {
             if( h.ChangeHealth(-1 * hurtAmount) ) {
                 onHarm.Spawn(transform);
                 ExecuteEvents.Execute<Handler>(this.gameObject, null, (x,y)=>x.OnDidHarm(h));
