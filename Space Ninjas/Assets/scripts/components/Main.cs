@@ -104,11 +104,19 @@ public class Main : MonoBehaviour {
         [System.Serializable]
         struct Request {
             public float scale;
-            public long endTimeMillis;
+            public float remainSecs;
 
-            public Request(float scale, long endTimeMillis) {
+            public Request(float scale, float durationSecs) {
                 this.scale = scale;
-                this.endTimeMillis = endTimeMillis;
+                this.remainSecs = durationSecs;
+            }
+
+            public void Update() {
+                this.remainSecs -= Time.unscaledDeltaTime;
+            }
+
+            public bool IsValid() {
+                return this.remainSecs > 0f;
             }
         }
 
@@ -116,19 +124,16 @@ public class Main : MonoBehaviour {
         [SerializeField]
         private Request[] requests = new Request[10];
 
-        // TODO switch to using Time.unscaledDeltaTime instead.
-        private Diag.Stopwatch realTime = new Diag.Stopwatch();
-
         public void Start() {
             Time.timeScale = 1.0f;
-            realTime.Start();
         }
 
         public void Update() {
-            // enforce the slowest, still valid request
+            // update, and enforce the slowest, still valid request
             float slowest = 1f;
             for( int i = 0; i < requests.Length; i++ ) {
-                if(IsRequestValid(requests[i])) {
+                requests[i].Update();
+                if(requests[i].IsValid()) {
                     slowest = Mathf.Min(slowest, requests[i].scale);
                 }
             }
@@ -139,23 +144,11 @@ public class Main : MonoBehaviour {
         public void Trigger(float scale, float duration) {
             // find a free slot, enter
             for( int i = 0; i < requests.Length; i++ ) {
-                if(!IsRequestValid(requests[i])) {
-                    long endMillis = GetRealTimeMillis() + duration.SecsToMillis();
-                    requests[i] = new Request(scale, endMillis);
+                if(!requests[i].IsValid()) {
+                    requests[i] = new Request(scale, duration);
                     break;
                 }
             }
-
-            // immedatiately update, in case
-            Update();
-        }
-
-        private long GetRealTimeMillis() {
-            return realTime.ElapsedMilliseconds;
-        }
-
-        private bool IsRequestValid( Request req ) {
-            return GetRealTimeMillis() < req.endTimeMillis;
         }
     }
 
