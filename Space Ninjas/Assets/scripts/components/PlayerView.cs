@@ -141,33 +141,50 @@ public class PlayerView : MonoBehaviour, Player.EventHandler {
         main.TriggerBulletTime(0.0f, 0.15f);
     }
 
-    public static float aheadMagnitude = 0f;
-    public static float dashAheadMagnitude = 0f;
-    public static float AheadTime = 0.5f;
-    public static float ReturnTime = 0.5f;
-    public static float CamLookAheadMaxSpeed = 999999f;
-    private Vector2 camLookAheadDampVelocity = Vector2.zero;
+    public static float aheadMagnitude = 2.5f;
+    public static float dashAheadMagnitude = 4f;
+    public static float lookAheadMaxSpeed = 7.0f;
+
+    public static float recenterDelaySecs = 0.2f;
+    public static float recenterMaxSpeed = 10f;
+
+    // State
+    private Vector2 lookAheadDampVelocity = Vector2.zero;
+    private float recenterTimerSecs = 1f;
+
+    void ApplyCameraLookAhead( Vector2 targetOffset, float maxSpeed ) {
+        camLookAheadTransform.localPosition = Vector2.SmoothDamp(
+                camLookAheadTransform.localPosition.GetXY(),
+                targetOffset,
+                ref lookAheadDampVelocity,
+                0.1f,   // This time doesn't matter much. It's really the max speed that matters.
+                maxSpeed,
+                Time.deltaTime);
+    }
 
     void UpdateCamLookAhead() {
         if( aheadMagnitude == 0 && dashAheadMagnitude == 0 ) {
             return;
         }
 
-        Vector2 targetOffset = Vector2.zero;
-        float dampTime = ReturnTime;
-
         if( player.IsMoving() ) {
             float mag = player.IsDashing() ? dashAheadMagnitude : aheadMagnitude;
-            targetOffset = player.GetLastMoveDir().GetVector2() * mag;
-            dampTime = AheadTime;
+            ApplyCameraLookAhead( 
+                    player.GetLastMoveDir().GetVector2() * mag,
+                    lookAheadMaxSpeed );
+            recenterTimerSecs = recenterDelaySecs;
+        }
+        else {
+            recenterTimerSecs -= Time.deltaTime;
+
+            if( recenterTimerSecs < 0f ) {
+                // Recenter
+                ApplyCameraLookAhead(Vector2.zero, recenterMaxSpeed);
+            }
+            else {
+                // Do nothing. It feels bad to immediately recenter upon stopping.
+            }
         }
 
-        camLookAheadTransform.localPosition = Vector2.SmoothDamp(
-                camLookAheadTransform.localPosition.GetXY(),
-                targetOffset,
-                ref camLookAheadDampVelocity,
-                dampTime,
-                CamLookAheadMaxSpeed,
-                Time.deltaTime);
     }
 }

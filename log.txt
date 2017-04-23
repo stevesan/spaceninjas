@@ -1,6 +1,8 @@
 
 hitscan enemy? with laser sight
 
+dash sound should be attack/loop/decay
+
 snake enemy (tail is vulnerable)
 
 enemy that follows you, has fire spinning around it, but center is vulnerable
