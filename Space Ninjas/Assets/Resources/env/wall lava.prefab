@@ -10,6 +10,7 @@ GameObject:
   - component: {fileID: 493018}
   - component: {fileID: 6155724}
   - component: {fileID: 11481718}
+  - component: {fileID: 114864140154054444}
   m_Layer: 0
   m_Name: wall lava
   m_TagString: Untagged
@@ -86,6 +87,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   hurtAmount: 1
+  hurtPlayerOnly: 0
   destroyOnHarm: 0
   onHarm:
     prefab: {fileID: 0}
@@ -137,3 +139,23 @@ Prefab:
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 145192}
   m_IsPrefabParent: 1
+--- !u!114 &114864140154054444
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 145192}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b95380377b5748e4844a57a523505ec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  health: 50
+  maxHealth: -1
+  isPlayer: 0
+  destroyOnNoHealth: 0
+  spawnsOnDestroy:
+    specs: []
+  spawnsOnHarm:
+    specs: []
+  destroyVictim: {fileID: 0}

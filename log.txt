@@ -1,5 +1,10 @@
 
 hitscan enemy? with laser sight
+    factor out the Bull's raycast. RaycastService
+
+knock-back
+
+multiple hitpt enemies (knock back upon initial hit)
 
 dash sound should be attack/loop/decay
 

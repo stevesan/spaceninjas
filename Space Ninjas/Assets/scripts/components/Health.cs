@@ -66,10 +66,10 @@ public class Health : MonoBehaviour {
         }
 
         if(health == 0 && destroyOnNoHealth ) {
-            //Debug.Log(transform.GetComponentInParent<GameScope>().gameObject.name);
-
             foreach( var s in spawnsOnDestroy.Spawn(transform) ) { }
-            Object.Destroy(destroyVictim == null ? this.gameObject : destroyVictim);
+            var destroyTarget = destroyVictim == null ? this.gameObject : destroyVictim;
+            Object.Destroy(destroyTarget);
+            Debug.Log("Death: " + destroyTarget.name);
         }
         else {
             if( delta < 0 ) {

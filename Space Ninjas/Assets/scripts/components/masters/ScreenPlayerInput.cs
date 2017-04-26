@@ -8,12 +8,12 @@ using System;
 // player controls via screen, ie. mouse or touch
 // Also, has key board controls, just for convenience
 public class ScreenPlayerInput : Player.Input, MasterComponent {
-    private static Dictionary<Dir2D, KeyCode> DIR_TO_KEYCODE = new Dictionary<Dir2D, KeyCode>()
+    private static Dictionary<Dir2D, KeyCode[]> DIR_TO_KEYCODES = new Dictionary<Dir2D, KeyCode[]>()
     {
-        { Dir2D.Right, KeyCode.RightArrow },
-        { Dir2D.Up, KeyCode.UpArrow },
-        { Dir2D.Left, KeyCode.LeftArrow },
-        { Dir2D.Down, KeyCode.DownArrow }
+        { Dir2D.Right , new KeyCode[]{KeyCode.D , KeyCode.RightArrow} } , 
+        { Dir2D.Up    , new KeyCode[]{KeyCode.W , KeyCode.UpArrow} }    , 
+        { Dir2D.Left  , new KeyCode[]{KeyCode.A , KeyCode.LeftArrow} }  , 
+        { Dir2D.Down  , new KeyCode[]{KeyCode.S , KeyCode.DownArrow} }
     };
 
     public RectTransform inputRegion;
@@ -85,7 +85,7 @@ public class ScreenPlayerInput : Player.Input, MasterComponent {
     }
 
     public override bool IsTriggerMove( Dir2D dir ) {
-        return Input.GetKeyDown(DIR_TO_KEYCODE[dir])
+        return AnyKeyDown(DIR_TO_KEYCODES[dir])
             || (triggeringAny && dir == triggeringMove);
     }
 
@@ -130,6 +130,24 @@ public class ScreenPlayerInput : Player.Input, MasterComponent {
 
     public override bool IsHoldingMove( Dir2D dir ) {
         return state == "held" && heldMove == dir
-            || Input.GetKey(DIR_TO_KEYCODE[dir]);
+            || AnyKey(DIR_TO_KEYCODES[dir]);
+    }
+
+    static bool AnyKeyDown(KeyCode[] codes) {
+        for( int i = 0; i < codes.Length; i++ ) {
+            if( Input.GetKeyDown(codes[i]) ) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    static bool AnyKey(KeyCode[] codes) {
+        for( int i = 0; i < codes.Length; i++ ) {
+            if( Input.GetKey(codes[i]) ) {
+                return true;
+            }
+        }
+        return false;
     }
 }

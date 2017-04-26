@@ -13,6 +13,7 @@ public class PlayerView : MonoBehaviour, Player.EventHandler {
     public AudioClip outOfBoostsClip;
     public AudioClip pickupCoinClip;
     public AudioClip healClip;
+    public MultiSpawnSpec spawnOnRest;
 
     public GameObject enableDuringDash;
 
@@ -25,6 +26,7 @@ public class PlayerView : MonoBehaviour, Player.EventHandler {
 
     public Transform camShakeOffsetTransform;
     public Transform camLookAheadTransform;
+    public Transform foot;
 
     private static class AnimParams {
         public static int flying = Animator.StringToHash("flying");
@@ -73,6 +75,8 @@ public class PlayerView : MonoBehaviour, Player.EventHandler {
         anim.SetBool(AnimParams.dashing, false);
 
         enableDuringDash.SetActive(false);
+
+        foreach( var s in spawnOnRest.Spawn(foot) ) { }
     }
 
     public void OnPickupCoin() {
@@ -91,6 +95,7 @@ public class PlayerView : MonoBehaviour, Player.EventHandler {
         audioSource = GetComponent<AudioSource>();
         var scope = GetComponentInParent<GameScope>();
         main = scope.Get<Main>();
+        spawnOnRest.OnStart();
 	}
 	
 	// Update is called once per frame

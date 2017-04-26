@@ -27,7 +27,7 @@ public class Main : MonoBehaviour {
     }
 
     void PollDebugKeys() {
-        if( Input.GetKeyDown("s") ) {
+        if( Input.GetKeyDown("5") ) {
             var root = GetComponentInParent<GameScope>().gameObject;
             Debug.Log("saving " + GetSavePath());
 
@@ -38,7 +38,7 @@ public class Main : MonoBehaviour {
             }
         }
 
-        if( Input.GetKeyDown("l") ) {
+        if( Input.GetKeyDown("9") ) {
             var root = GetComponentInParent<GameScope>().gameObject;
             Debug.Log("loading " + GetSavePath());
             using(FileStream file = File.OpenRead(GetSavePath())) {

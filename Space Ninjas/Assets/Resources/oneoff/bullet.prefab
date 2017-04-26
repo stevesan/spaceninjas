@@ -28,7 +28,6 @@ GameObject:
   - component: {fileID: 11493554}
   - component: {fileID: 11440720}
   - component: {fileID: 11474502}
-  - component: {fileID: 50778243640523688}
   m_Layer: 0
   m_Name: bullet
   m_TagString: Untagged
@@ -72,7 +71,7 @@ BoxCollider2D:
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_Offset: {x: 0.2, y: 0}
   serializedVersion: 2
@@ -113,6 +112,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   hurtAmount: 1
+  hurtPlayerOnly: 1
   destroyOnHarm: 1
   onHarm:
     prefab: {fileID: 101646, guid: 1b2563f7b10114f9f8e6100722ae064e, type: 2}
@@ -164,23 +164,3 @@ Prefab:
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 198804}
   m_IsPrefabParent: 1
---- !u!50 &50778243640523688
-Rigidbody2D:
-  serializedVersion: 4
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 198804}
-  m_BodyType: 0
-  m_Simulated: 1
-  m_UseFullKinematicContacts: 0
-  m_UseAutoMass: 0
-  m_Mass: 1
-  m_LinearDrag: 0
-  m_AngularDrag: 0.05
-  m_GravityScale: 1
-  m_Material: {fileID: 0}
-  m_Interpolate: 0
-  m_SleepingMode: 1
-  m_CollisionDetection: 0
-  m_Constraints: 0
