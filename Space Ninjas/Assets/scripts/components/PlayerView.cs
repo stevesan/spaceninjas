@@ -13,9 +13,9 @@ public class PlayerView : MonoBehaviour, Player.EventHandler {
     public AudioClip outOfBoostsClip;
     public AudioClip pickupCoinClip;
     public AudioClip healClip;
-    public MultiSpawnSpec spawnOnRest;
 
     public GameObject enableDuringDash;
+    public ParticleSystem dashParticles;
 
     private Player player;
     public Renderer render;
@@ -46,12 +46,15 @@ public class PlayerView : MonoBehaviour, Player.EventHandler {
 
         if(isDash) {
             audioSource.PlayOneShot(doubleBoostClip, volume);
+            TriggerCamShake(0.1f);
         }
         else {
             audioSource.PlayOneShot(boostClip, volume);
         }
 
         enableDuringDash.SetActive(isDash);
+        //dashParticles.enableEmission = isDash;
+        //dashParticles.gameObject.SetActive(true);
 
         anim.SetBool(AnimParams.flying, !isDash);
         anim.SetBool(AnimParams.standing, false);
@@ -75,8 +78,7 @@ public class PlayerView : MonoBehaviour, Player.EventHandler {
         anim.SetBool(AnimParams.dashing, false);
 
         enableDuringDash.SetActive(false);
-
-        foreach( var s in spawnOnRest.Spawn(foot) ) { }
+        dashParticles.enableEmission = false;
     }
 
     public void OnPickupCoin() {
@@ -95,7 +97,9 @@ public class PlayerView : MonoBehaviour, Player.EventHandler {
         audioSource = GetComponent<AudioSource>();
         var scope = GetComponentInParent<GameScope>();
         main = scope.Get<Main>();
-        spawnOnRest.OnStart();
+
+        enableDuringDash.SetActive(false);
+        dashParticles.enableEmission = false;
 	}
 	
 	// Update is called once per frame
@@ -122,9 +126,11 @@ public class PlayerView : MonoBehaviour, Player.EventHandler {
     //----------------------------------------
     private static float CamShakeDecayTime = 0.5f;
     private float shakeTimeRemain = 0f;
+    private float currMag = 0f;
 
-    void TriggerCamShake() {
+    void TriggerCamShake(float mag) {
         shakeTimeRemain = CamShakeDecayTime;
+        currMag = mag;
     }
 
     void UpdateCamShake() {
@@ -133,7 +139,7 @@ public class PlayerView : MonoBehaviour, Player.EventHandler {
             camShakeOffsetTransform.localPosition = Vector3.zero;
         }
         else {
-            float mag = 0.20f * (1.0f - shakeFrac);
+            float mag = currMag * (1.0f - shakeFrac);
             camShakeOffsetTransform.localPosition = mag * UnityEngine.Random.insideUnitCircle.AsXY();
             shakeTimeRemain -= Time.unscaledDeltaTime;
         }
@@ -142,7 +148,7 @@ public class PlayerView : MonoBehaviour, Player.EventHandler {
     public void OnLandedHit(GameObject victim) {
         bool killed = Health.IsDead(victim);
         // TODO could do something else if killed..
-        TriggerCamShake();
+        TriggerCamShake(0.2f);
         main.TriggerBulletTime(0.0f, 0.15f);
     }
 
@@ -190,6 +196,5 @@ public class PlayerView : MonoBehaviour, Player.EventHandler {
                 // Do nothing. It feels bad to immediately recenter upon stopping.
             }
         }
-
     }
 }

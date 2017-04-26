@@ -77,7 +77,7 @@ MonoBehaviour:
   bulletPrefab: {fileID: 198804, guid: c5718dfc4708949a5b868d12c5c81ac8, type: 2}
   targetPlayer: {fileID: 0}
   cooldown: 2
-  offset: 1
+  offset: 0
 --- !u!212 &21247476
 SpriteRenderer:
   m_ObjectHideFlags: 1
@@ -170,6 +170,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   health: 1
+  maxHealth: -1
+  isPlayer: 0
   destroyOnNoHealth: 1
   spawnsOnDestroy:
     specs:
