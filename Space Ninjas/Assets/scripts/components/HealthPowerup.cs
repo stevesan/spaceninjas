@@ -17,7 +17,7 @@ public class HealthPowerup : MonoBehaviour {
     {
         if( Vector3.Distance(transform.position, player.transform.position) < 0.5f ) {
             Health h = player.GetHealthComponent();
-            h.ChangeHealth(1);
+            h.ChangeHealth(1, gameObject);
             Object.Destroy(gameObject);
         }
     }

@@ -38,7 +38,7 @@ public class Harmful : MonoBehaviour {
         // If health is disabled, assume it's invulnerable
         if( h != null && h.enabled && (!hurtPlayerOnly || p != null) ) {
             Debug.Log(this.gameObject.name + " damaging " + h.gameObject.name + " x " + hurtAmount);
-            if( h.ChangeHealth(-1 * hurtAmount) ) {
+            if( h.ChangeHealth(-1 * hurtAmount, this.gameObject) ) {
                 onHarm.Spawn(transform);
                 ExecuteEvents.Execute<Handler>(this.gameObject, null, (x,y)=>x.OnDidHarm(h));
                 if(destroyOnHarm) {

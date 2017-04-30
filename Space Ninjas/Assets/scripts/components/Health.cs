@@ -6,7 +6,7 @@ using System.Collections;
 public class Health : MonoBehaviour {
 
     public interface Handler : IEventSystemHandler {
-        void OnHealthChange(int prevHealth);
+        void OnHealthChange(int prevHealth, GameObject causer);
     }
 
     public static Health GetRelevantHealthComponent(GameObject obj) {
@@ -49,7 +49,7 @@ public class Health : MonoBehaviour {
 
     public bool EnforceMaxHealth() { return maxHealth > 0; }
 
-    public bool ChangeHealth(int delta) {
+    public bool ChangeHealth(int delta, GameObject causer) {
         if( delta == 0) {
             return false;
         }
@@ -75,7 +75,7 @@ public class Health : MonoBehaviour {
             if( delta < 0 ) {
                 foreach( var s in spawnsOnHarm.Spawn(transform) ) { }
             }
-            ExecuteEvents.Execute<Handler>(this.gameObject, null, (x,y)=>x.OnHealthChange(prevHealth));
+            ExecuteEvents.Execute<Handler>(this.gameObject, null, (x,y)=>x.OnHealthChange(prevHealth, causer));
         }
 
         return true;
