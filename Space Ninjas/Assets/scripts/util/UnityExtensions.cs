@@ -56,6 +56,16 @@ public static class UnityExtensions {
         return v.x+","+v.y;
     }
 
+    // Returns a vector with the same direction as v, but with a different given magnitude.
+    public static Vector3 WithMagnitude(this Vector3 v, float magnitude) {
+        if( v.sqrMagnitude < Mathf.Epsilon ) {
+            return v;
+        }
+        else {
+            return v.normalized * magnitude;
+        }
+    }
+
     public static Vector3 ReadVector3(this BinaryReader reader) {
         return new Vector3(
                 reader.ReadSingle(),

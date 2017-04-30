@@ -58,14 +58,14 @@ public class Player : MonoBehaviour, Health.Handler {
 
     public List<GameObject> inventory;
 
-    enum MoveState {Idle, Moving, Dashing, Knockback};
+    enum MoveState {Idle, Moving, Dashing, Dazed};
 
     static bool IsDashingState(MoveState state) {
         return state == MoveState.Dashing;
     }
 
     float graceRemainSecs = 0f;
-    float maxKnockRemainSecs = 0f;
+    float dazeRemainSecs = 0f;
 
     private MoveState moveState = MoveState.Idle;
     private float lastDashTriggerTime = 0f;
@@ -131,6 +131,7 @@ public class Player : MonoBehaviour, Health.Handler {
         rb.AddStoppingForce();
         float currSpeed = isDash ? dashSpeed : normalSpeed;
         rb.AddForce(dir.GetVector2() * currSpeed * rb.mass, ForceMode2D.Impulse);
+        rb.drag = 0f;
         moveState = isDash ? MoveState.Dashing : MoveState.Moving;
         ExecuteEvents.Execute<EventHandler>(this.gameObject, null, (x,y)=>x.OnMove(isDash, dir));
     }
@@ -149,7 +150,8 @@ public class Player : MonoBehaviour, Health.Handler {
                 // used to enforce dash cooldown
                 lastDashTriggerTime = Time.time;
 
-                lastMoveTriggerTime = 0f;   // don't let the next tap result in another dash
+                // don't let the next tap result in another dash
+                lastMoveTriggerTime = 0f;  
             }
 
             if( dashTriggered || isDirChange ) {
@@ -168,16 +170,11 @@ public class Player : MonoBehaviour, Health.Handler {
                 RespondToInput();
                 break;
 
-            case MoveState.Knockback:
-                // Stop knockback when player comes to rest, or when max remain has passed.
-                if(maxKnockRemainSecs < 0f || rb.velocity.magnitude < 1e-1) {
-                    rb.AddStoppingForce();
-                    rb.drag = 0f;
+            case MoveState.Dazed:
+                dazeRemainSecs -= Time.deltaTime;
+                if(dazeRemainSecs < 0f) {
                     moveState = MoveState.Idle;
                     RespondToInput();
-                }
-                else {
-                    maxKnockRemainSecs -= Time.deltaTime;
                 }
                 break;
         }
@@ -201,7 +198,17 @@ public class Player : MonoBehaviour, Health.Handler {
         ExecuteEvents.Execute<EventHandler>(this.gameObject, null, (x,y)=>x.OnPickupCoin());
     }
 
-    public void OnHealthChange(int prevHealth, GameObject causer) {
+    private void TriggerKnockback(Vector3 initVel, float dazeSecs) {
+        rb.AddStoppingForce();
+        rb.AddVelocity(initVel);
+        rb.drag = 10f;
+        if( dazeSecs > 0f ) {
+            moveState = MoveState.Dazed;
+            dazeRemainSecs = dazeSecs;
+        }
+    }
+
+    public void OnHealthChange(int prevHealth, GameObject cause) {
         if( health.Get() < prevHealth ) {
             // hurting
             ExecuteEvents.Execute<EventHandler>(this.gameObject, null, (x,y)=>x.OnHealthChange(false));
@@ -213,22 +220,16 @@ public class Player : MonoBehaviour, Health.Handler {
             ExecuteEvents.Execute<EventHandler>(this.gameObject, null, (x,y)=>x.OnGracePeriodChange(true));
 
             // Knockback
-            Vector3 knockDir = (this.transform.position - causer.transform.position).normalized;
-            rb.AddStoppingForce();
-            rb.AddVelocity(knockDir * 30f);
-            moveState = MoveState.Knockback;
-            maxKnockRemainSecs = 0.3f;
-            rb.drag = 10f;
-            Debug.Log("knocked back");
+            Vector3 knockVel = (this.transform.position - cause.transform.position).WithMagnitude(20f);
+            TriggerKnockback(knockVel, 0.3f);
         }
         else if( health.Get() > prevHealth ) {
             // healing
-            // TODO enforce max health here..?
             ExecuteEvents.Execute<EventHandler>(this.gameObject, null, (x,y)=>x.OnHealthChange(true));
         }
     }
 
-    void MaybeStopDueToCollision(Collision2D col) {
+    void StopIfOpposingDir(Collision2D col) {
         // If direction of collision is opposite our moving dir, stop
         Vector2 normal = col.contacts[0].normal;
 
@@ -249,7 +250,7 @@ public class Player : MonoBehaviour, Health.Handler {
 
         switch(moveState) {
             case MoveState.Moving:
-                MaybeStopDueToCollision(col);
+                StopIfOpposingDir(col);
                 break;
 
             case MoveState.Dashing:
@@ -259,17 +260,19 @@ public class Player : MonoBehaviour, Health.Handler {
                         Move(lastMoveDir, true);
                     }
                     else {
-                        MaybeStopDueToCollision(col);
+                        // Bounce off enemy just a little bit for feel.
+                        Vector3 dir = lastMoveDir.GetVector2() * -1;
+                        TriggerKnockback( dir.WithMagnitude(10f), 0f );
                     }
 
                     ExecuteEvents.Execute<EventHandler>(this.gameObject, null, (x,y)=>x.OnLandedHit(col.collider.gameObject));
                 }
                 else {
-                    MaybeStopDueToCollision(col);
+                    StopIfOpposingDir(col);
                 }
                 break;
 
-            case MoveState.Knockback:
+            case MoveState.Dazed:
                 break;
         }
     }
