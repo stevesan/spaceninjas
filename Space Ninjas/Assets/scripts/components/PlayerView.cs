@@ -28,6 +28,8 @@ public class PlayerView : MonoBehaviour, Player.EventHandler {
     public Transform camLookAheadTransform;
     public Transform foot;
 
+    public Renderer attackChargeRender;
+
     private static class AnimParams {
         public static int flying = Animator.StringToHash("flying");
         public static int standing = Animator.StringToHash("standing");
@@ -113,7 +115,10 @@ public class PlayerView : MonoBehaviour, Player.EventHandler {
         else {
             render.enabled = true;
         }
-	}
+
+        attackChargeRender.material.SetFloat("_FullAmount", player.GetAttackCharge());
+        attackChargeRender.material.SetFloat("_Segments", Player.maxAttackCharge);
+    }
 
     public void OnGracePeriodChange(bool isGracePeriod) {
         isGraceFlickering = isGracePeriod;

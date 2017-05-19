@@ -8,7 +8,8 @@ public class Player : MonoBehaviour, Health.Handler {
     private static float normalSpeed = 8f;  // used to be 8..
     private static float dashSpeed = 16f;
     private static int maxHealth = 5;
-
+    public static float maxAttackCharge = 3f;
+    private static float secsPerCharge = 0.5f;
     private static float gracePeriod = 1.0f;
 
     private static void log(string msg) {
@@ -64,8 +65,9 @@ public class Player : MonoBehaviour, Health.Handler {
         return state == MoveState.Dashing;
     }
 
-    float graceRemainSecs = 0f;
-    float dazeRemainSecs = 0f;
+    private float graceRemainSecs = 0f;
+    private float dazeRemainSecs = 0f;
+    private float attackCharge = 0;
 
     private MoveState moveState = MoveState.Idle;
     private float lastDashTriggerTime = 0f;
@@ -192,6 +194,9 @@ public class Player : MonoBehaviour, Health.Handler {
         if(GetHealth() <= 0) {
             main.OnGameOver();
         }
+
+        attackCharge += Time.deltaTime / secsPerCharge;
+        attackCharge = Mathf.Min(attackCharge, maxAttackCharge);
 	}
 
     public void OnGetCoin(Coin coin) {
@@ -254,20 +259,28 @@ public class Player : MonoBehaviour, Health.Handler {
                 break;
 
             case MoveState.Dashing:
-                if(harmer.OnTouch(col.collider.gameObject)) {
-                    if(Health.IsDead(col.collider.gameObject))
+                if (attackCharge > 1f
+                    && harmer.OnTouch(col.collider.gameObject))
+                {
+                    attackCharge -= 1f;
+
+                    if (Health.IsDead(col.collider.gameObject))
                     {
+                        // dash-through
                         Move(lastMoveDir, true);
                     }
-                    else {
+                    else
+                    {
                         // Bounce off enemy just a little bit for feel.
                         Vector3 dir = lastMoveDir.GetVector2() * -1;
-                        TriggerKnockback( dir.WithMagnitude(10f), 0f );
+                        TriggerKnockback(dir.WithMagnitude(10f), 0f);
                     }
 
-                    ExecuteEvents.Execute<EventHandler>(this.gameObject, null, (x,y)=>x.OnLandedHit(col.collider.gameObject));
+                    ExecuteEvents.Execute<EventHandler>(this.gameObject, null, (x, y) => x.OnLandedHit(col.collider.gameObject));
                 }
-                else {
+                else
+                {
+                    // No more attacks left.
                     StopIfOpposingDir(col);
                 }
                 break;
@@ -320,5 +333,10 @@ public class Player : MonoBehaviour, Health.Handler {
 
     public Dir2D GetLastMoveDir() {
         return lastMoveDir;
+    }
+
+    public float GetAttackCharge()
+    {
+        return attackCharge;
     }
 }
