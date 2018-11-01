@@ -31,6 +31,8 @@ public class PlayerView : MonoBehaviour, Player.EventHandler
 
   public Renderer attackChargeRender;
 
+  public GameObject spawnOnRest;
+
   private static class AnimParams
   {
     public static int flying = Animator.StringToHash("flying");
@@ -86,6 +88,11 @@ public class PlayerView : MonoBehaviour, Player.EventHandler
 
     enableDuringDash.SetActive(false);
     dashParticles.enableEmission = false;
+
+    if (spawnOnRest != null)
+    {
+      GameObject.Instantiate(spawnOnRest, render.transform.position - 0.5f * render.transform.up, render.transform.rotation);
+    }
   }
 
   public void OnPickupCoin()
