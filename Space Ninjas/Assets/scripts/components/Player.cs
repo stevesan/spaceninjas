@@ -5,7 +5,6 @@ using System;
 
 public class Player : MonoBehaviour, Health.Handler
 {
-
   private static float normalSpeed = 8f;  // used to be 8..
   private static float dashSpeed = 16f;
   private static int maxHealth = 5;
