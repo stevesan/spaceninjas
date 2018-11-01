@@ -9,7 +9,7 @@ public class Player : MonoBehaviour, Health.Handler
   private static float dashSpeed = 16f;
   private static int maxHealth = 5;
   public static float maxAttackCharge = 3f;
-  private static float secsPerCharge = 0.5f;
+  private static float secsPerCharge = 0.01f;
   private static float gracePeriod = 1.0f;
 
   private static void log(string msg)
