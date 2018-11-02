@@ -44,7 +44,7 @@ PlayerSettings:
   m_HolographicTrackingLossScreen: {fileID: 0}
   defaultScreenWidth: 405
   defaultScreenHeight: 720
-  defaultScreenWidthWeb: 375
+  defaultScreenWidthWeb: 325
   defaultScreenHeightWeb: 667
   m_StereoRenderingPath: 0
   m_ActiveColorSpace: 0
@@ -77,7 +77,7 @@ PlayerSettings:
   usePlayerLog: 1
   bakeCollisionMeshes: 0
   forceSingleInstance: 0
-  resizableWindow: 1
+  resizableWindow: 0
   useMacAppStoreValidation: 0
   macAppStoreCategory: public.app-category.games
   gpuSkinning: 0
@@ -90,7 +90,7 @@ PlayerSettings:
   visibleInBackground: 0
   allowFullscreenSwitch: 0
   graphicsJobMode: 0
-  fullscreenMode: 1
+  fullscreenMode: 3
   xboxSpeechDB: 0
   xboxEnableHeadOrientation: 0
   xboxEnableGuest: 0

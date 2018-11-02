@@ -1,3 +1,19 @@
+NEW DIRECTION:
+hand-crafted short-levels. like Space Pirate Trainer and BADLAND. like < 30s each.
+
+types of levels:
+    - destroy all enemies
+        - under time
+    - survive for 15s
+    - get item without dying
+    - get item before time runs out
+    - forced scroll
+
+bonus levels:
+    - get as many stars as possible in 30s
+        
+S-rank challenges:
+    - destroy all enemies under 15s
 
 hitscan enemy? with laser sight
     factor out the Bull's raycast. RaycastService
