@@ -357,8 +357,7 @@ public class Player : MonoBehaviour, Health.Handler
 
   public float GetVisibilityBoxRadius()
   {
-    // not sure why I have to add 1 to this...but this is from empirical truth.
-    return mainCam.orthographicSize / 2f + 1f;
+    return 8.5f;
   }
 
   public bool CanSee(Transform other, float radius, float blindMargin)

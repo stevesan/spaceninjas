@@ -11,9 +11,12 @@ types of levels:
 
 bonus levels:
     - get as many stars as possible in 30s
+        fun to break tiles!
+    - endless mode!
         
-S-rank challenges:
+special challenges:
     - destroy all enemies under 15s
+
 
 hitscan enemy? with laser sight
     factor out the Bull's raycast. RaycastService
