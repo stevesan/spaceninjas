@@ -1,11 +1,29 @@
 NEW DIRECTION:
 hand-crafted short-levels. like Space Pirate Trainer and BADLAND. like < 30s each.
+    Space Pirate Trainer
+    BADLAND
+    Slayin'
+    Super Hexagon
+
+meta-mechanics:
+    - upgrades (like Slayin')
+        - 1up
+        - HP
+        - regen shield (saves 1hp, but takes 3s to regen)
+    - more upgrade pts if you beat levels S-rank, etc.
+    - at beginning, choose one "hold power". ie hold an arrow 0.5s to trigger it.
+        - AoE weapon
+        - invulnerability
+        - temp double damage
+        - shrink - become 2x smaller. to navigate tough situations
+        - freeze enemies
+
 
 types of levels:
-    - destroy all enemies
+    - destroy all enemies (SPT style)
         - under time
-    - survive for 15s
-    - get item without dying
+    - survive for 15s (infinite regen enemies)
+    - get item without dying (larger map)
     - get item before time runs out
     - forced scroll
 

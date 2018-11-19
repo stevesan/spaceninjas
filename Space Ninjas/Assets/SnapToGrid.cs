@@ -6,6 +6,8 @@ public class SnapToGrid : MonoBehaviour
 {
   public float PPU = 16; // pixels per unit (your tile size)
 
+  public bool nullifyRotations = false;
+
   private void LateUpdate()
   {
     Vector3 position = transform.localPosition;
@@ -14,5 +16,10 @@ public class SnapToGrid : MonoBehaviour
     position.y = (Mathf.Round(transform.parent.position.y * PPU) / PPU) - transform.parent.position.y;
 
     transform.localPosition = position;
+
+    if (nullifyRotations)
+    {
+      this.transform.rotation = Quaternion.identity;
+    }
   }
 }
