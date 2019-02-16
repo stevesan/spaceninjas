@@ -12,7 +12,7 @@ window.onload = function () {
   });
 
   /** @type {Phaser.Group} */
-  var platforms;
+  var walls;
 
   /** @type {Phaser.Group} */
   var stars;
@@ -105,6 +105,8 @@ window.onload = function () {
   }
 
   const coinAudio = new PreloadedAudio("wavs/coin.wav");
+  const boopAudio = new PreloadedAudio("wavs/boop.wav");
+  const scratchAudio = new PreloadedAudio("wavs/landscratch.wav");
 
   /**
    * @param {Phaser.Sprite} sprite
@@ -119,15 +121,15 @@ window.onload = function () {
     assetEntries.forEach(asset => asset.create());
     game.physics.startSystem(Phaser.Physics.ARCADE);
     game.add.sprite(0, 0, 'sky');
-    platforms = game.add.group();
-    platforms.enableBody = true;
-    const ground = platforms.create(0, game.world.height - 64, 'ground');
+    walls = game.add.group();
+    walls.enableBody = true;
+    const ground = walls.create(0, game.world.height - 64, 'ground');
     ground.scale.setTo(2, 2);
     ground.body.immovable = true;
 
-    var ledge = platforms.create(400, 400, 'ground');
+    var ledge = walls.create(400, 400, 'ground');
     ledge.body.immovable = true;
-    ledge = platforms.create(-150, 250, 'ground');
+    ledge = walls.create(-150, 250, 'ground');
     ledge.body.immovable = true;
 
     // Setup player
@@ -176,6 +178,8 @@ window.onload = function () {
         [oh, ow, oh, ow][dir],
         [0, 0, -ow, -oh][dir],
         [0, -ow, -oh, 0][dir]);
+
+      boopAudio.get().play();
     }
 
     const speed = 200;
@@ -220,21 +224,51 @@ window.onload = function () {
 
   var wasTouchingGround = false;
 
+  /**
+   * @param {Phaser.Physics.Arcade.Body} body
+   * @param {string} dir 
+   * @return {boolean}
+   */
+  function startedTouching(body, dir) {
+    return !body.wasTouching[dir] && body.touching[dir];
+  }
+
+  const DIR_STRINGS = ['up', 'left', 'down', 'right'];
+
+  /**
+   * @param {Phaser.Physics.Arcade.Body} body
+   * @return {boolean}
+   */
+  function startedTouchingInAnyDir(body) {
+    return startedTouching(body, DIR_STRINGS[0])
+      || startedTouching(body, DIR_STRINGS[1])
+      || startedTouching(body, DIR_STRINGS[2])
+      || startedTouching(body, DIR_STRINGS[3]);
+  }
+
+  function onPlayerHitWall() {
+    scratchAudio.get().play();
+  }
+
   function update() {
     scoreText.y = 32 + 16 * Math.sin(game.time.time * 6.28 * 2);
-    var hitPlatform = game.physics.arcade.collide(player, platforms);
+    var hitWall = game.physics.arcade.collide(player, walls);
 
-    game.physics.arcade.collide(stars, platforms);
+    if (hitWall && startedTouchingInAnyDir(player.body)) {
+      onPlayerHitWall();
+    }
+
+    game.physics.arcade.collide(stars, walls);
     game.physics.arcade.overlap(player, stars, collectStar, null, this);
 
     cursors = game.input.keyboard.createCursorKeys();
 
     //  Allow the player to jump if they are touching the ground.
-    if (cursors.up.isDown && player.body.touching.down && hitPlatform) {
+    if (cursors.up.isDown && player.body.touching.down && hitWall) {
       player.body.velocity.y = -350;
     }
 
-    const isTouchingGround = player.body.touching.down && hitPlatform;
+    const isTouchingGround = player.body.touching.down && hitWall;
     if (isTouchingGround && !wasTouchingGround) {
       onLanded();
     }
