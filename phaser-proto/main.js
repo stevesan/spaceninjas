@@ -10,6 +10,9 @@ let game;
 var walls;
 
 /** @type {Phaser.Group} */
+var breakables;
+
+/** @type {Phaser.Group} */
 var stars;
 
 var score = 0;
@@ -41,6 +44,7 @@ function preload() {
   game.stage.backgroundColor = '#88aaff';
   game.load.image('ground', 'phaser_tutorial_02/assets/platform.png');
   game.load.image('star', 'phaser_tutorial_02/assets/star.png');
+  game.load.image('baddie', 'phaser_tutorial_02/assets/baddie.png');
   game.load.spritesheet('dude', 'phaser_tutorial_02/assets/dude.png', 32, 48);
 }
 
@@ -48,6 +52,7 @@ const coinAudio = new PreloadedAudio("wavs/coin.wav");
 const boopAudio = new PreloadedAudio("wavs/boop.wav");
 const scratchAudio = new PreloadedAudio("wavs/landscratch.wav");
 const dashAudio = new PreloadedAudio("wavs/dash.wav");
+const explodeAudio = new PreloadedAudio("wavs/explode.wav");
 
 /**
  * @param {Phaser.Sprite} sprite
@@ -65,8 +70,17 @@ function create() {
 
   walls = game.add.group();
   walls.enableBody = true;
-  for (let i = 0; i < 100; i++) {
+  for (let i = 0; i < 50; i++) {
     const wall = walls.create(game.world.randomX, game.world.randomY, 'ground');
+    wall.body.immovable = true;
+  }
+
+  breakables = game.add.group();
+  breakables.enableBody = true;
+  for (let i = 0; i < 50; i++) {
+    /** @type {Phaser.Sprite} */
+    const wall = breakables.create(game.world.randomX, game.world.randomY, 'ground');
+    wall.tint = 0xff0000;
     wall.body.immovable = true;
   }
 
@@ -98,21 +112,23 @@ function create() {
     goRight: Phaser.Keyboard.D,
   });
 
-  const origWidth = player.getBounds().width;
-  const origHeight = player.getBounds().height;
+  ninja = new NinjaControls(game, player);
 
-  function onDirChange(dir) {
+  function onDirPressed(dir) {
     ninja.onDirPressed(dir);
     boopAudio.get().play();
   }
 
-  keys.goUp.onDown.add(() => onDirChange(0));
-  keys.goLeft.onDown.add(() => onDirChange(1));
-  keys.goDown.onDown.add(() => onDirChange(2));
-  keys.goRight.onDown.add(() => onDirChange(3));
+  keys.goUp.onDown.add(() => onDirPressed(0));
+  keys.goLeft.onDown.add(() => onDirPressed(1));
+  keys.goDown.onDown.add(() => onDirPressed(2));
+  keys.goRight.onDown.add(() => onDirPressed(3));
 
-  ninja = new NinjaControls(game, player);
   ninja.onDash = () => dashAudio.get().play();
+
+  const origWidth = player.getBounds().width;
+  const origHeight = player.getBounds().height;
+
   ninja.onDirChanged = () => {
     const dir = ninja.getDirection();
 
@@ -152,7 +168,6 @@ function triggerSlowMo(slowFactor, durationMs) {
     game.time.slowMotion = 1;
     game.time.desiredFps = 60;
   });
-
 }
 
 function onPlayerHitWall() {
@@ -171,6 +186,16 @@ function update() {
   }
 
   game.physics.arcade.overlap(player, stars, collectStar, null, this);
+
+  game.physics.arcade.collide(player, breakables, (player, wall) => {
+    if (ninja.isDashing()) {
+      wall.kill();
+      // The collision does stop the player, but we want to break through!
+      ninja.continueDashing();
+      hitPause(100);
+      explodeAudio.get().play();
+    }
+  }, null, null);
 
   // MINOR BUG: camera fidgets in non-pleasing way when you run into a wall..
   game.camera.focusOnXY(player.x, player.y);

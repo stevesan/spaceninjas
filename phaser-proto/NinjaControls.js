@@ -19,6 +19,10 @@ class NinjaControls {
     return this.currentDir;
   }
 
+  continueDashing() {
+    this.setVelocity_(this.currentDir, DASHING_SPEED);
+  }
+
   setVelocity_(dir, speed) {
     const player = this.playerSprite;
     player.body.velocity.set(
