@@ -5,6 +5,7 @@ const S = 1.2;
 
 const assetEntries = [];
 
+/** @type {Phaser.Game} */
 let game;
 
 /**
@@ -96,6 +97,9 @@ var player;
 /** @type {Phaser.Particles.Arcade.Emitter} */
 var scoreFx;
 
+/** @type {NinjaControls} */
+var ninja;
+
 function createStars() {
   stars = game.add.group();
 
@@ -119,6 +123,7 @@ function preload() {
 const coinAudio = new PreloadedAudio("wavs/coin.wav");
 const boopAudio = new PreloadedAudio("wavs/boop.wav");
 const scratchAudio = new PreloadedAudio("wavs/landscratch.wav");
+const dashAudio = new PreloadedAudio("wavs/dash.wav");
 
 /**
  * @param {Phaser.Sprite} sprite
@@ -144,18 +149,6 @@ function create() {
   ledge = walls.create(-150, 250, 'ground');
   ledge.body.immovable = true;
 
-  // Setup player
-  player = game.add.sprite(game.world.width / 2, game.world.height / 2, 'dude');
-  centerPivot(player);
-  game.physics.arcade.enable(player);
-
-  player.body.bounce.y = 0;
-  player.body.gravity.y = 0;
-  player.body.collideWorldBounds = true;
-
-  //  Our two animations, walking left and right.
-  player.animations.add('left', [0, 1, 2, 3], 10, true);
-  player.animations.add('right', [5, 6, 7, 8], 10, true);
   createStars();
 
   scoreText = game.add.text(16, 16, 'score: 0', { fontSize: '32px', fill: '#000' });
@@ -163,6 +156,17 @@ function create() {
   scoreFx = game.add.emitter(0, 0, 100);
   scoreFx.makeParticles('star');
   scoreFx.gravity = 200;
+
+  // Setup player
+  player = game.add.sprite(game.world.width / 2, game.world.height / 2, 'dude');
+  centerPivot(player);
+  game.physics.arcade.enable(player);
+  player.body.bounce.y = 0;
+  player.body.gravity.y = 0;
+
+  //  Our two animations, walking left and right.
+  player.animations.add('left', [0, 1, 2, 3], 10, true);
+  player.animations.add('right', [5, 6, 7, 8], 10, true);
 
   const keys = game.input.keyboard.addKeys({
     goUp: Phaser.Keyboard.W,
@@ -175,12 +179,7 @@ function create() {
   const origHeight = player.getBounds().height;
 
   function onDirChange(dir) {
-    currPlayerDir = dir;
-    player.body.velocity.set(
-      [0, -speed, 0, speed][dir],
-      [-speed, 0, speed, 0][dir]
-    );
-    player.rotation = [0, -0.25, 0.5, 0.25][dir] * Math.PI * 2;
+    ninja.onDirPressed(dir);
 
     // Update collider
     const ow = origWidth;
@@ -194,11 +193,13 @@ function create() {
     boopAudio.get().play();
   }
 
-  const speed = 200;
   keys.goUp.onDown.add(() => onDirChange(0));
   keys.goLeft.onDown.add(() => onDirChange(1));
   keys.goDown.onDown.add(() => onDirChange(2));
   keys.goRight.onDown.add(() => onDirChange(3));
+
+  ninja = new NinjaControls(game, player);
+  ninja.onDash = () => dashAudio.get().play();
 }
 
 function collectStar(player, star) {
@@ -227,17 +228,9 @@ function triggerSlowMo(slowFactor, durationMs) {
 
 }
 
-function onLanded() {
-  const b = player.getBounds();
-
-  // scoreFx.position.set((b.left + b.right) * 0.5, b.bottom);
-  // scoreFx.start(true, 5000, null, 10);
-}
-
-var wasTouchingGround = false;
-
 function onPlayerHitWall() {
   scratchAudio.get().play();
+  ninja.onHitWall();
 }
 
 function update() {
@@ -250,19 +243,6 @@ function update() {
 
   game.physics.arcade.collide(stars, walls);
   game.physics.arcade.overlap(player, stars, collectStar, null, this);
-
-  cursors = game.input.keyboard.createCursorKeys();
-
-  //  Allow the player to jump if they are touching the ground.
-  if (cursors.up.isDown && player.body.touching.down && hitWall) {
-    player.body.velocity.y = -350;
-  }
-
-  const isTouchingGround = player.body.touching.down && hitWall;
-  if (isTouchingGround && !wasTouchingGround) {
-    onLanded();
-  }
-  wasTouchingGround = isTouchingGround;
 }
 
 function render() {
