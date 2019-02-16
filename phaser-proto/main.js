@@ -1,10 +1,66 @@
+const DIR_STRINGS = ['up', 'left', 'down', 'right'];
+const W = 512;
+const H = 544;
+const S = 1.2;
+
+const assetEntries = [];
+
+let game;
+
+class PreloadedSprite {
+  /**
+   * 
+   * @param {string} path 
+   */
+  constructor(path) {
+    this.key = `${path}-${assetEntries.length}`;
+    this.path = path;
+    this.asset = null;
+    assetEntries.push(this);
+  }
+
+  preload() {
+    game.load.image(this.key, this.path);
+  }
+
+  create() {
+    this.asset = game.add.sprite(0, 0, this.key);
+  }
+
+  /**
+   * @return {Phaser.Sound}
+   */
+  get() { return this.asset; }
+}
+
+class PreloadedAudio {
+  /**
+   * 
+   * @param {string} path 
+   */
+  constructor(path) {
+    this.key = `${path}-${assetEntries.length}`;
+    this.path = path;
+    this.asset = null;
+    assetEntries.push(this);
+  }
+
+  preload() {
+    game.load.audio(this.key, this.path);
+  }
+
+  create() {
+    this.asset = game.add.audio(this.key);
+  }
+
+  /**
+   * @return {Phaser.Sound}
+   */
+  get() { return this.asset; }
+}
 
 window.onload = function () {
-
-  const W = 512;
-  const H = 544;
-  const S = 1.2;
-  var game = new Phaser.Game(W * S, H * S, Phaser.AUTO, '', {
+  game = new Phaser.Game(W * S, H * S, Phaser.AUTO, '', {
     preload: preload,
     create: create,
     update: update,
@@ -24,7 +80,6 @@ window.onload = function () {
 
   /** @type {Phaser.Sprite} */
   var player;
-  var currPlayerDir = 0;
 
   /** @type {Phaser.Particles.Arcade.Emitter} */
   var scoreFx;
@@ -47,61 +102,6 @@ window.onload = function () {
     game.load.image('ground', 'phaser_tutorial_02/assets/platform.png');
     game.load.image('star', 'phaser_tutorial_02/assets/star.png');
     game.load.spritesheet('dude', 'phaser_tutorial_02/assets/dude.png', 32, 48);
-    game.load.audio('coin', 'wavs/coin.wav');
-  }
-
-  const assetEntries = [];
-
-  class PreloadedSprite {
-    /**
-     * 
-     * @param {string} path 
-     */
-    constructor(path) {
-      this.key = `${path}-${assetEntries.length}`;
-      this.path = path;
-      this.asset = null;
-      assetEntries.push(this);
-    }
-
-    preload() {
-      game.load.image(this.key, this.path);
-    }
-
-    create() {
-      this.asset = game.add.sprite(0, 0, this.key);
-    }
-
-    /**
-     * @return {Phaser.Sound}
-     */
-    get() { return this.asset; }
-  }
-
-  class PreloadedAudio {
-    /**
-     * 
-     * @param {string} path 
-     */
-    constructor(path) {
-      this.key = `${path}-${assetEntries.length}`;
-      this.path = path;
-      this.asset = null;
-      assetEntries.push(this);
-    }
-
-    preload() {
-      game.load.audio(this.key, this.path);
-    }
-
-    create() {
-      this.asset = game.add.audio(this.key);
-    }
-
-    /**
-     * @return {Phaser.Sound}
-     */
-    get() { return this.asset; }
   }
 
   const coinAudio = new PreloadedAudio("wavs/coin.wav");
@@ -233,7 +233,6 @@ window.onload = function () {
     return !body.wasTouching[dir] && body.touching[dir];
   }
 
-  const DIR_STRINGS = ['up', 'left', 'down', 'right'];
 
   /**
    * @param {Phaser.Physics.Arcade.Body} body
