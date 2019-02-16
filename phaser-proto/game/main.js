@@ -86,7 +86,7 @@ function create() {
 
   createStars();
 
-  scoreText = game.add.text(16, 16, 'score: 0', { fontSize: '32px', fill: '#000' });
+  scoreText = game.add.text(16, 16, 'WASD to move\nDouble-tap to dash', { fontSize: '32px', fill: '#000' });
   scoreText.fixedToCamera = true;
 
   scoreFx = game.add.emitter(0, 0, 100);
@@ -148,9 +148,6 @@ function create() {
 function collectStar(player, star) {
   star.kill();
 
-  //  Add and update the score
-  score += 10;
-  scoreText.text = 'Score: ' + score;
 
   coinAudio.asset.play();
   // hitPause(100);
