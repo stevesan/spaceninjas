@@ -31,7 +31,7 @@ window.onload = function () {
     //  Here we'll create 12 of them evenly spaced apart
     for (var i = 0; i < 12; i++) {
       //  Create a star inside of the 'stars' group
-      var star = stars.create(i * 70, 0, 'star');
+      var star = stars.create(i * 70, game.world.height * 0.75, 'star');
 
       //  Let gravity do its thing
       star.body.gravity.y = 60;
@@ -147,22 +147,36 @@ window.onload = function () {
     score += 10;
     scoreText.text = 'Score: ' + score;
 
-    scoreFx.position.set(player.position.x, player.position.y);
-    scoreFx.start(true, 400, null, 10);
-
     coinAudio.asset.play();
+    hitPause(100);
+    // triggerSlowMo(3, 500);
+  }
+
+  function hitPause(durationMs) {
+    triggerSlowMo(100, durationMs);
+  }
+
+  function triggerSlowMo(slowFactor, durationMs) {
+    game.time.slowMotion = slowFactor;
+    game.time.desiredFps = 60 + (slowFactor > 1 ? slowFactor * 60 : 0);
+    game.time.events.add(durationMs, () => {
+      game.time.slowMotion = 1;
+      game.time.desiredFps = 60;
+    });
+
   }
 
   function onLanded() {
     const b = player.getBounds();
 
-    scoreFx.position.set((b.left + b.right) * 0.5, b.bottom);
-    scoreFx.start(true, 400, null, 10);
+    // scoreFx.position.set((b.left + b.right) * 0.5, b.bottom);
+    // scoreFx.start(true, 5000, null, 10);
   }
 
   var wasTouchingGround = false;
 
   function update() {
+    scoreText.y = 32 + 16 * Math.sin(game.time.time * 6.28 * 2);
     var hitPlatform = game.physics.arcade.collide(player, platforms);
 
     game.physics.arcade.collide(stars, platforms);
