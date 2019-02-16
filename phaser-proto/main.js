@@ -4,7 +4,12 @@ window.onload = function () {
   const W = 512;
   const H = 544;
   const S = 1.2;
-  var game = new Phaser.Game(W * S, H * S, Phaser.AUTO, '', { preload: preload, create: create, update: update });
+  var game = new Phaser.Game(W * S, H * S, Phaser.AUTO, '', {
+    preload: preload,
+    create: create,
+    update: update,
+    render: render
+  });
 
   /** @type {Phaser.Group} */
   var platforms;
@@ -19,6 +24,7 @@ window.onload = function () {
 
   /** @type {Phaser.Sprite} */
   var player;
+  var currPlayerDir = 0;
 
   /** @type {Phaser.Particles.Arcade.Emitter} */
   var scoreFx;
@@ -31,13 +37,7 @@ window.onload = function () {
     //  Here we'll create 12 of them evenly spaced apart
     for (var i = 0; i < 12; i++) {
       //  Create a star inside of the 'stars' group
-      var star = stars.create(i * 70, game.world.height * 0.75, 'star');
-
-      //  Let gravity do its thing
-      star.body.gravity.y = 60;
-
-      //  This just gives each star a slightly random bounce value
-      star.body.bounce.y = 0.7 + Math.random() * 0.2;
+      stars.create(i * 70, game.world.height * 0.75, 'star');
     }
   }
 
@@ -106,6 +106,15 @@ window.onload = function () {
 
   const coinAudio = new PreloadedAudio("wavs/coin.wav");
 
+  /**
+   * @param {Phaser.Sprite} sprite
+   */
+  function centerPivot(sprite) {
+    const b = sprite.getBounds();
+    const L = Math.min(b.width, b.height);
+    sprite.pivot.set(b.width / 2, L / 2);
+  }
+
   function create() {
     assetEntries.forEach(asset => asset.create());
     game.physics.startSystem(Phaser.Physics.ARCADE);
@@ -122,10 +131,12 @@ window.onload = function () {
     ledge.body.immovable = true;
 
     // Setup player
-    player = game.add.sprite(32, game.world.height - 150, 'dude');
+    player = game.add.sprite(game.world.width / 2, game.world.height / 2, 'dude');
+    centerPivot(player);
     game.physics.arcade.enable(player);
+
     player.body.bounce.y = 0;
-    player.body.gravity.y = 2000;
+    player.body.gravity.y = 0;
     player.body.collideWorldBounds = true;
 
     //  Our two animations, walking left and right.
@@ -138,6 +149,40 @@ window.onload = function () {
     scoreFx = game.add.emitter(0, 0, 100);
     scoreFx.makeParticles('star');
     scoreFx.gravity = 200;
+
+    const keys = game.input.keyboard.addKeys({
+      goUp: Phaser.Keyboard.W,
+      goDown: Phaser.Keyboard.S,
+      goLeft: Phaser.Keyboard.A,
+      goRight: Phaser.Keyboard.D,
+    });
+
+    const origWidth = player.getBounds().width;
+    const origHeight = player.getBounds().height;
+
+    function onDirChange(dir) {
+      currPlayerDir = dir;
+      player.body.velocity.set(
+        [0, -speed, 0, speed][dir],
+        [-speed, 0, speed, 0][dir]
+      );
+      player.rotation = [0, -0.25, 0.5, 0.25][dir] * Math.PI * 2;
+
+      // Update collider
+      const ow = origWidth;
+      const oh = origHeight;
+      player.body.setSize(
+        [ow, oh, ow, oh][dir],
+        [oh, ow, oh, ow][dir],
+        [0, 0, -ow, -oh][dir],
+        [0, -ow, -oh, 0][dir]);
+    }
+
+    const speed = 200;
+    keys.goUp.onDown.add(() => onDirChange(0));
+    keys.goLeft.onDown.add(() => onDirChange(1));
+    keys.goDown.onDown.add(() => onDirChange(2));
+    keys.goRight.onDown.add(() => onDirChange(3));
   }
 
   function collectStar(player, star) {
@@ -184,27 +229,6 @@ window.onload = function () {
 
     cursors = game.input.keyboard.createCursorKeys();
 
-    player.body.velocity.x = 0; // Autorun?
-
-    if (cursors.left.isDown) {
-      //  Move to the left
-      player.body.velocity.x = -150;
-      player.animations.play('left');
-    }
-    else if (cursors.right.isDown) {
-      //  Move to the right
-      player.body.velocity.x = 150;
-      player.animations.play('right');
-    }
-
-    // "pull down" hack
-    if (player.body.velocity.y > 0) {
-      player.body.gravity.y = 2000;
-    }
-    else {
-      player.body.gravity.y = 1000;
-    }
-
     //  Allow the player to jump if they are touching the ground.
     if (cursors.up.isDown && player.body.touching.down && hitPlatform) {
       player.body.velocity.y = -350;
@@ -215,5 +239,10 @@ window.onload = function () {
       onLanded();
     }
     wasTouchingGround = isTouchingGround;
+  }
+
+  function render() {
+    game.debug.rectangle(player.getBounds(), '#ff0000', false);
+    // game.debug.body(player);
   }
 };
