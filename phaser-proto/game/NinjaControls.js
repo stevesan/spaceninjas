@@ -5,18 +5,16 @@ const DOUBLE_TAP_MS = 300;
 class NinjaControls {
   /**
    * @param {Phaser.Game} game
-   * @param {Phaser.Sprite} playerSprite
+   * @param {Phaser.Sprite} player
    */
-  constructor(game, playerSprite) {
+  constructor(game, player) {
     this.game = game;
-    this.playerSprite = playerSprite;
+    this.player = player;
     this.state = 'idle';
     this.currentDir = 0;
     this.lastDirPressTime = 0;
-  }
-
-  getDirection() {
-    return this.currentDir;
+    this.origWidth = player.getBounds().width;
+    this.origHeight = player.getBounds().height;
   }
 
   continueDashing() {
@@ -27,15 +25,28 @@ class NinjaControls {
     return this.state;
   }
 
+  setDirection_(dir) {
+    console.log(`setting dir to ${DIR_STRINGS[dir]}`);
+    player.rotation = [0, -0.25, 0.5, 0.25][dir] * Math.PI * 2;
+    this.currentDir = dir;
+
+    // Update collider
+    const ow = this.origWidth;
+    const oh = this.origHeight;
+    player.body.setSize(
+      [ow, oh, ow, oh][dir],
+      [oh, ow, oh, ow][dir],
+      [0, 0, -ow, -oh][dir],
+      [0, -ow, -oh, 0][dir]);
+  }
+
   setVelocity_(dir, speed) {
-    const player = this.playerSprite;
+    const player = this.player;
     player.body.velocity.set(
       [0, -speed, 0, speed][dir],
       [-speed, 0, speed, 0][dir]
     );
-    player.rotation = [0, -0.25, 0.5, 0.25][dir] * Math.PI * 2;
-    this.currentDir = dir;
-    if (this.onDirChanged) this.onDirChanged();
+    this.setDirection_(dir);
   }
 
   isFlying() {
@@ -65,10 +76,12 @@ class NinjaControls {
     this.lastDirPressTime = Date.now()
   }
 
-  onHitWall() {
+  onHitWall(dir) {
+    console.log(`hit wall dir ${DIR_STRINGS[dir]}`);
+
     this.state = 'idle';
-    this.currentDir = -1;
-    this.playerSprite.body.velocity.set(0, 0);
+    this.player.body.velocity.set(0, 0);
+    this.setDirection_(opposite(dir));
   }
 }
 

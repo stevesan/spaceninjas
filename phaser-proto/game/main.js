@@ -138,22 +138,6 @@ function create() {
 
   ninja.onDash = () => dashAudio.get().play();
 
-  const origWidth = player.getBounds().width;
-  const origHeight = player.getBounds().height;
-
-  ninja.onDirChanged = () => {
-    const dir = ninja.getDirection();
-
-    // Update collider
-    const ow = origWidth;
-    const oh = origHeight;
-    player.body.setSize(
-      [ow, oh, ow, oh][dir],
-      [oh, ow, oh, ow][dir],
-      [0, 0, -ow, -oh][dir],
-      [0, -ow, -oh, 0][dir]);
-  }
-
   // game.camera.follow(player);
 }
 
@@ -181,7 +165,7 @@ function triggerSlowMo(slowFactor, durationMs) {
 
 function onPlayerHitWall() {
   scratchAudio.get().play();
-  ninja.onHitWall();
+  ninja.onHitWall(getTouchingDir(player.body));
 }
 
 function update() {

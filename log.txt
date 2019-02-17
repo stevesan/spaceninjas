@@ -1,3 +1,13 @@
+game graphics specs:
+we'll use the "tile" as our unit of length.
+the viewport is exactly 16x17 tiles in size
+a single tile in art-pixels is 16x16 (ie. our PNGs for a single tile is 16x16 pixels)
+this means the viewport is 256 wide in art-pixels.
+the player is 1x1 tile big in idle, but 1x2 tile in flight/dashing
+
+iPhone6/7 is 750x1334, which almost fits 3x viewports. this is good enough, so we'll just scale (with NN-sampling)
+for web, we'll do 2x, so 512x544
+
 NEW DIRECTION:
 hand-crafted short-levels. like Space Pirate Trainer and BADLAND. like < 30s each.
     Space Pirate Trainer
