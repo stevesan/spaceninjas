@@ -1,7 +1,8 @@
 const W = 512;
 const H = 544;
-const S = 1.2;
+const S = 1;
 
+const PPT = 16; // Pixels per tile.
 
 /** @type {Phaser.Game} */
 let game;
@@ -41,11 +42,12 @@ function createStars() {
 
 function preload() {
   PRELOAD_CREATE_LIST.forEach(asset => asset.preload());
-  game.stage.backgroundColor = '#88aaff';
+  game.stage.backgroundColor = '#000000';
   game.load.image('ground', 'phaser_tutorial_02/assets/platform.png');
   game.load.image('star', 'phaser_tutorial_02/assets/star.png');
   game.load.image('baddie', 'phaser_tutorial_02/assets/baddie.png');
   game.load.spritesheet('dude', 'phaser_tutorial_02/assets/dude.png', 32, 48);
+  game.load.spritesheet('ninja', 'sprites/ninja-sheet.png', 16, 32);
 }
 
 const coinAudio = new PreloadedAudio("wavs/coin.wav");
@@ -94,7 +96,8 @@ function create() {
   scoreFx.gravity = 200;
 
   // Setup player
-  player = game.add.sprite(game.world.width / 2, game.world.height / 2, 'dude');
+  player = game.add.sprite(game.world.width / 2, game.world.height / 2, 'ninja');
+  player.scale.setTo(2, 2);
   console.log(`player is ${player.width} x ${player.height}`);
   centerPivot(player);
   game.physics.arcade.enable(player);
@@ -102,8 +105,9 @@ function create() {
   player.body.gravity.y = 0;
 
   //  Our two animations, walking left and right.
-  player.animations.add('left', [0, 1, 2, 3], 10, true);
-  player.animations.add('right', [5, 6, 7, 8], 10, true);
+  player.animations.add('idle', [2, 10], 4, true);
+  player.animations.add('dashing', [0, 8], 16, true);
+  player.animations.add('flying', [1, 9], 12, true);
 
   const keys = game.input.keyboard.addKeys({
     goUp: Phaser.Keyboard.W,
@@ -178,14 +182,12 @@ function update() {
 
   var hitWall = game.physics.arcade.collide(player, walls);
 
-  if (hitWall && startedTouchingInAnyDir(player.body)) {
-    onPlayerHitWall();
-  }
-
   game.physics.arcade.overlap(player, stars, collectStar, null, this);
 
-  game.physics.arcade.collide(player, breakables, (player, wall) => {
+  let brokeSoftWall = false;
+  var hitSoftWall = game.physics.arcade.collide(player, breakables, (player, wall) => {
     if (ninja.isDashing()) {
+      brokeSoftWall = true;
       wall.kill();
       // The collision does stop the player, but we want to break through!
       ninja.continueDashing();
@@ -194,8 +196,15 @@ function update() {
     }
   }, null, null);
 
+  if (((hitSoftWall && !brokeSoftWall) || hitWall) && startedTouchingInAnyDir(player.body)) {
+    onPlayerHitWall();
+  }
+
   // MINOR BUG: camera fidgets in non-pleasing way when you run into a wall..
+  // TODO: we should snap this to our retro-pixel size
   game.camera.focusOnXY(player.x, player.y);
+
+  player.animations.play(ninja.getState());
 
 }
 
@@ -205,10 +214,14 @@ function render() {
 }
 
 window.onload = function () {
-  game = new Phaser.Game(W * S, H * S, Phaser.AUTO, '', {
+  game = new Phaser.Game(W * S, H * S, Phaser.AUTO, 'phaserOutput', {
     preload: preload,
     create: create,
     update: update,
     render: render
-  });
+  },
+     /* transparent */ false,
+     /* antialias */ false
+  );
+  // Antialias: false makes scaled sprites use NN-filter
 };
