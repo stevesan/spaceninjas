@@ -217,6 +217,8 @@ function updateCamShake() {
 function render() {
   // game.debug.rectangle(player.getBounds(), '#ff0000', false);
   // game.debug.body(player);
+  // const t = player.body.touching;
+  // game.debug.text(`body touch: ${t['up'] ? 'u' : ' '}${t['left'] ? 'l' : ' '}${t['down'] ? 'd' : ' '}${t['right'] ? 'r' : ' '}`, 0, 50);
 }
 
 window.onload = function () {

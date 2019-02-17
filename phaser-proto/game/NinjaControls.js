@@ -25,13 +25,17 @@ class NinjaControls {
     return this.state;
   }
 
+  isIdle() {
+    return this.state == 'idle';
+  }
+
   setDirection_(dir) {
     player.rotation = [0, -0.25, 0.5, 0.25][dir] * Math.PI * 2;
     this.currentDir = dir;
 
     // Update collider
-    const ow = this.origWidth;
-    const oh = this.origHeight;
+    const ow = 16;
+    const oh = this.isIdle() ? 16 : 32;
     player.body.setSize(
       [ow, oh, ow, oh][dir],
       [oh, ow, oh, ow][dir],
@@ -66,13 +70,17 @@ class NinjaControls {
   onDirPressed(dir) {
     const isDash = dir == this.lastPressedDir
       && (Date.now() - this.lastDirPressTime) < DOUBLE_TAP_MS;
-    this.setVelocity_(dir, isDash ? DASHING_SPEED : NORMAL_SPEED);
+    this.lastPressedDir = dir;
+    this.lastDirPressTime = Date.now()
+
+    // TODO somehow check if we can even move in this dir!
+
     this.state = isDash ? "dashing" : "flying";
+
+    this.setVelocity_(dir, isDash ? DASHING_SPEED : NORMAL_SPEED);
     if (isDash && this.onDash) {
       this.onDash();
     }
-    this.lastPressedDir = dir;
-    this.lastDirPressTime = Date.now()
   }
 
   onHitWall(dir) {
