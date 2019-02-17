@@ -1,5 +1,0 @@
-{
-  "include": [
-    "typescript/*.d.ts"
-  ]
-}
