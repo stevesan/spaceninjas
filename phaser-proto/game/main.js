@@ -36,18 +36,19 @@ function createStars() {
   stars.enableBody = true;
 
   for (var i = 0; i < 200; i++) {
-    stars.create(game.world.randomX, game.world.randomY, 'star');
+    stars.create(snap(game.world.randomX, 32), snap(game.world.randomY, 32), 'star');
   }
 }
 
 function preload() {
   PRELOAD_CREATE_LIST.forEach(asset => asset.preload());
-  game.stage.backgroundColor = '#000000';
+  game.stage.backgroundColor = '#2e0e39';
   game.load.image('ground', 'phaser_tutorial_02/assets/platform.png');
   game.load.image('star', 'phaser_tutorial_02/assets/star.png');
   game.load.image('baddie', 'phaser_tutorial_02/assets/baddie.png');
   game.load.spritesheet('dude', 'phaser_tutorial_02/assets/dude.png', 32, 48);
   game.load.spritesheet('ninja', 'sprites/ninja-sheet.png', 16, 32);
+  game.load.spritesheet('inca32', 'sprites/inca_front.png', 32, 32);
 }
 
 const coinAudio = new PreloadedAudio("wavs/coin.wav");
@@ -73,7 +74,8 @@ function create() {
   walls = game.add.group();
   walls.enableBody = true;
   for (let i = 0; i < 50; i++) {
-    const wall = walls.create(game.world.randomX, game.world.randomY, 'ground');
+    const wall = walls.create(snap(game.world.randomX, 32), snap(game.world.randomY, 32), 'inca32');
+    wall.frame = 4;
     wall.body.immovable = true;
   }
 
@@ -81,8 +83,9 @@ function create() {
   breakables.enableBody = true;
   for (let i = 0; i < 50; i++) {
     /** @type {Phaser.Sprite} */
-    const wall = breakables.create(game.world.randomX, game.world.randomY, 'ground');
-    wall.tint = 0xff0000;
+    const wall = breakables.create(snap(game.world.randomX, 32), snap(game.world.randomY, 32), 'inca32');
+    wall.frame = 6;
+    wall.tint = 0x8888ff;
     wall.body.immovable = true;
   }
 
