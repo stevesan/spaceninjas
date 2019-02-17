@@ -2,7 +2,8 @@ const W = 512;
 const H = 544;
 const S = 1;
 
-const PPT = 16; // Pixels per tile.
+const CANVAS_PIXELS_PER_SPRITE_PIXEL = 2;
+const CPPSP = CANVAS_PIXELS_PER_SPRITE_PIXEL;
 
 /** @type {Phaser.Game} */
 let game;
@@ -104,7 +105,7 @@ function create() {
 
   // Setup player
   player = game.add.sprite(game.world.width / 2, game.world.height / 2, 'ninja');
-  player.scale.setTo(2, 2);
+  player.scale.setTo(CPPSP, CPPSP);
   console.log(`player is ${player.width} x ${player.height}`);
   centerPivot(player);
   game.physics.arcade.enable(player);
@@ -210,7 +211,9 @@ function update() {
   // MINOR BUG: camera fidgets in non-pleasing way when you run into a wall..
   // TODO: we should snap this to our retro-pixel size
   const shakeWave = Math.sin(Date.now() / 1000 * 2 * Math.PI * 10);
-  game.camera.focusOnXY(player.x + shakeX * shakeWave, player.y + shakeY * shakeWave);
+  game.camera.focusOnXY(
+    player.x + shakeX * shakeWave,
+    player.y + shakeY * shakeWave);
 
   player.animations.play(ninja.getState());
 }
