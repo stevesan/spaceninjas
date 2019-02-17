@@ -68,6 +68,7 @@ class NinjaControls {
   onHitWall() {
     this.state = 'idle';
     this.currentDir = -1;
+    this.playerSprite.body.velocity.set(0, 0);
   }
 }
 

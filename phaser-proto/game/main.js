@@ -19,7 +19,7 @@ var stars;
 var score = 0;
 
 /** @type {Phaser.Text} */
-var scoreText;
+var helpTest;
 
 /** @type {Phaser.Sprite} */
 var player;
@@ -30,12 +30,15 @@ var scoreFx;
 /** @type {NinjaControls} */
 var ninja;
 
+var shakeX = 0;
+var shakeY = 0;
+
 function createStars() {
   stars = game.add.group();
 
   stars.enableBody = true;
 
-  for (var i = 0; i < 200; i++) {
+  for (var i = 0; i < 100; i++) {
     stars.create(snap(game.world.randomX, 32), snap(game.world.randomY, 32), 'star');
   }
 }
@@ -91,8 +94,9 @@ function create() {
 
   createStars();
 
-  scoreText = game.add.text(16, 16, 'WASD to move\nDouble-tap to dash', { fontSize: '32px', fill: '#000' });
-  scoreText.fixedToCamera = true;
+  helpTest = game.add.text(game.world.width / 2 - 100, game.world.height / 2 - 100,
+    'WASD to move\nDouble-tap to dash', { font: 'Courier New', fontSize: '24px', fill: '#fff' });
+  // helpTest.fixedToCamera = true;
 
   scoreFx = game.add.emitter(0, 0, 100);
   scoreFx.makeParticles('star');
@@ -180,9 +184,6 @@ function onPlayerHitWall() {
 }
 
 function update() {
-  // NOTE: this doesn't work because of fixedToCamera...
-  scoreText.y = 100 + 16 * Math.sin(game.time.time * 6.28 * 2);
-
   var hitWall = game.physics.arcade.collide(player, walls);
 
   game.physics.arcade.overlap(player, stars, collectStar, null, this);
@@ -194,7 +195,8 @@ function update() {
       wall.kill();
       // The collision does stop the player, but we want to break through!
       ninja.continueDashing();
-      hitPause(100);
+      hitPause(110);
+      addShake(8, 8);
       explodeAudio.get().play();
     }
   }, null, null);
@@ -203,12 +205,28 @@ function update() {
     onPlayerHitWall();
   }
 
+  updateCamShake();
+
   // MINOR BUG: camera fidgets in non-pleasing way when you run into a wall..
   // TODO: we should snap this to our retro-pixel size
-  game.camera.focusOnXY(player.x, player.y);
+  const shakeWave = Math.sin(Date.now() / 1000 * 2 * Math.PI * 10);
+  game.camera.focusOnXY(player.x + shakeX * shakeWave, player.y + shakeY * shakeWave);
 
   player.animations.play(ninja.getState());
+}
 
+function addShake(x, y) {
+  shakeX += x;
+  shakeY += y;
+}
+
+function updateCamShake() {
+  // Yes, I realize this isn't rate-independent.
+  const gamma = 0.9;
+  shakeX *= gamma;
+  if (shakeX < 0.1) shakeX = 0;
+  shakeY *= gamma;
+  if (shakeY < 0.1) shakeY = 0;
 }
 
 function render() {
