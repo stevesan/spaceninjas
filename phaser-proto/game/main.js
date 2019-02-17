@@ -17,8 +17,6 @@ var breakables;
 /** @type {Phaser.Group} */
 var stars;
 
-var score = 0;
-
 /** @type {Phaser.Text} */
 var helpTest;
 
@@ -108,6 +106,7 @@ function create() {
   player.scale.setTo(CPPSP, CPPSP);
   console.log(`player is ${player.width} x ${player.height}`);
   centerPivot(player);
+  // player.anchor.set(0.5, 0.5);
   game.physics.arcade.enable(player);
   player.body.bounce.y = 0;
   player.body.gravity.y = 0;
@@ -143,8 +142,6 @@ function create() {
 
 function collectStar(player, star) {
   star.kill();
-
-
   coinAudio.asset.play();
   // hitPause(100);
   // triggerSlowMo(3, 500);
@@ -186,6 +183,7 @@ function update() {
     }
   }, null, null);
 
+  // NOTE: can probably fix some "sticky" bugs by only checking in the direction that we're flying in.
   if (((hitSoftWall && !brokeSoftWall) || hitWall) && startedTouchingInAnyDir(player.body)) {
     onPlayerHitWall();
   }

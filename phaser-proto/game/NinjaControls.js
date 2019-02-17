@@ -26,7 +26,6 @@ class NinjaControls {
   }
 
   setDirection_(dir) {
-    console.log(`setting dir to ${DIR_STRINGS[dir]}`);
     player.rotation = [0, -0.25, 0.5, 0.25][dir] * Math.PI * 2;
     this.currentDir = dir;
 
@@ -77,8 +76,6 @@ class NinjaControls {
   }
 
   onHitWall(dir) {
-    console.log(`hit wall dir ${DIR_STRINGS[dir]}`);
-
     this.state = 'idle';
     this.player.body.velocity.set(0, 0);
     this.setDirection_(opposite(dir));
