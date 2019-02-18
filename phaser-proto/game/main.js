@@ -14,14 +14,23 @@ class GameScene {
     this.phaserGame = phaserGame;
 
     // Sprite arrays
+    /** @type {Array<Phaser.Sprite>} */
     this.environment = [];
+    /** @type {Array<Phaser.Sprite>} */
     this.enemies = [];
+    /** @type {Array<Phaser.Sprite>} */
     this.bullets = [];
 
     /** @type {Array<GameObject>} */
     this.objects = [];
 
     /** @type {NinjaPlayer} */
+    this.player = null;
+
+    this.createRandomScene();
+  }
+
+  createRandomScene() {
     this.player = new NinjaPlayer(this);
     this.objects.push(this.player);
 
@@ -55,6 +64,15 @@ class GameScene {
       this.objects.push(obj);
       this.enemies.push(obj.sprite);
     }
+  }
+
+  clear() {
+    this.objects.forEach(o => o.destroy());
+    this.objects.length = 0;
+    this.environment.length = 0;
+    this.enemies.length = 0;
+    this.bullets.length = 0;
+    this.player = null;
   }
 
   /**
@@ -107,20 +125,17 @@ class GameScene {
 let game;
 
 /** @type {GameScene} */
-let state;
+let scene;
 
 /** @type {Phaser.Text} */
 var hudText;
 
 function updateHud() {
-  hudText.text = `HP ${state.player.getHealth()}`;
+  hudText.text = `HP ${scene.player.getHealth()}`;
 }
 
 /** @type {Phaser.Particles.Arcade.Emitter} */
 var scoreFx;
-
-/** @type {Phaser.Group} */
-var enemies;
 
 var shakeX = 0;
 var shakeY = 0;
@@ -160,7 +175,7 @@ function create() {
   scoreFx.makeParticles('star');
   scoreFx.gravity = 200;
 
-  state = new GameScene(game);
+  scene = new GameScene(game);
 }
 
 function hitPause(durationMs) {
@@ -177,17 +192,10 @@ function triggerSlowMo(slowFactor, durationMs) {
 }
 
 function update() {
-  state.update();
-  const player = state.player.sprite;
-  const ninja = state.player;
+  scene.update();
+  const player = scene.player.sprite;
+  const ninja = scene.player;
   updateHud();
-
-  game.physics.arcade.overlap(player, enemies, (player, enemy) => {
-    if (enemy.onHitPlayer) {
-      enemy.onHitPlayer(ninja);
-    }
-  });
-
   updateCamera();
 
 
@@ -211,7 +219,7 @@ function updateCamera() {
   // TODO: we should snap this to our retro-pixel size
   const shakeWave = Math.sin(Date.now() / 1000 * 2 * Math.PI * 10);
 
-  const player = state.player.sprite;
+  const player = scene.player.sprite;
   game.camera.focusOnXY(
     player.x + shakeX * shakeWave,
     player.y + shakeY * shakeWave);

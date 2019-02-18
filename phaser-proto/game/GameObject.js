@@ -9,8 +9,10 @@ class GameObject {
     sprite.__gameObject__ = this;
   }
   destroy() {
-    this.sprite.kill();
-    this.sprite = null;
+    if (!this.isDestroyed()) {
+      this.sprite.kill();
+      this.sprite = null;
+    }
   }
   isDestroyed() {
     return this.sprite == null;
