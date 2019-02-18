@@ -5,12 +5,18 @@ const S = 1;
 const CANVAS_PIXELS_PER_SPRITE_PIXEL = 2;
 const CPPSP = CANVAS_PIXELS_PER_SPRITE_PIXEL;
 
-class EnvStatic extends GameObject {
-  constructor() {
-    this.breakable = false;
+class StaticWall extends GameObject {
+  constructor(game, x, y, key, frame) {
+    super(game.add.sprite(x, y, key, frame));
+    game.physics.arcade.enable(this.sprite);
+    this.sprite.body.immovable = true;
   }
-  isBreakable() {
-    return this.breakable;
+
+  isDashable() {
+    return false;
+  }
+
+  onCollide(other) {
   }
 }
 
@@ -34,34 +40,54 @@ class PlayState {
   constructor(phaserGame) {
     this.phaserGame = phaserGame;
 
-    // Entity lists
+    // Sprite arrays
     this.environment = [];
     this.enemies = [];
     this.bullets = [];
 
+    /** @type {Array<GameObject>} */
+    this.objects = [];
+
     /** @type {NinjaPlayer} */
     this.player = new NinjaPlayer(phaserGame);
+    this.objects.push(this.player);
+
+    // Create walls
+    for (let i = 0; i < 100; i++) {
+      const wall = new StaticWall(
+        phaserGame,
+        snap(game.world.randomX, 32),
+        snap(game.world.randomY, 32),
+        'inca32', 4);
+      this.objects.push(wall);
+      this.environment.push(wall.sprite);
+    }
   }
 
   update() {
-    this.myCollider_(this.player, this.environment);
-    this.myCollider_(this.player, this.enemies);
-    this.myCollider_(this.player, this.bullets);
+    this.objects.forEach(go => go.update(this));
+    this.myCollide(this.player.sprite, this.environment);
+    this.myCollide(this.player.sprite, this.enemies);
+    this.myCollide(this.player.sprite, this.bullets);
   }
 
-  myCollider_(aa, bb) {
+  getObj(sprite) {
+    return sprite.__gameObject__;
+  }
+
+  myCollide(aa, bb) {
     const arcadePhysics = this.phaserGame.physics.arcade;
     arcadePhysics.collide(aa, bb,
       (a, b) => {
-        a.onCollide(b);
-        b.onCollide(a);
+        this.getObj(a).onCollide(this.getObj(b));
+        this.getObj(b).onCollide(this.getObj(a));
       },
       (a, b) => {
         // If either one wants to ignore, then by convention, we ignore.
-        if (a.onOverlap(b) === false) {
+        if (this.getObj(a).onOverlap(this.getObj(b)) === false) {
           return false;
         }
-        if (b.onOverlap(a) === false) {
+        if (this.getObj(b).onOverlap(this.getObj(a)) === false) {
           return false;
         }
         return true;
@@ -166,14 +192,6 @@ function create() {
 
   new MySprite(game);
 
-  walls = game.add.group();
-  walls.enableBody = true;
-  for (let i = 0; i < 50; i++) {
-    const wall = walls.create(snap(game.world.randomX, 32), snap(game.world.randomY, 32), 'inca32');
-    wall.frame = 4;
-    wall.body.immovable = true;
-  }
-
   breakables = game.add.group();
   breakables.enableBody = true;
   for (let i = 0; i < 50; i++) {
@@ -221,6 +239,7 @@ function triggerSlowMo(slowFactor, durationMs) {
 }
 
 function update() {
+  state.update();
   const player = state.player.sprite;
   const ninja = state.player;
   updateHud();

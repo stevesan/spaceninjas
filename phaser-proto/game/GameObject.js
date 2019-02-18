@@ -1,6 +1,14 @@
 class GameObject {
   /**
    * 
+   * @param {Phaser.Sprite} sprite 
+   */
+  constructor(sprite) {
+    this.sprite = sprite;
+    sprite.__gameObject__ = this;
+  }
+  /**
+   * 
    * @param {PlayState} state 
    */
   update(state) { }

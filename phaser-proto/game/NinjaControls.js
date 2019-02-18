@@ -7,9 +7,8 @@ class NinjaPlayer extends GameObject {
    * @param {Phaser.Game} game
    */
   constructor(game) {
-    super();
-    // Setup player
     const sprite = game.add.sprite(game.world.width / 2, game.world.height / 2, 'ninja');
+    super(sprite);
     sprite.scale.setTo(CPPSP, CPPSP);
 
     sprite.animations.add('idle', [2, 10], 4, true);
