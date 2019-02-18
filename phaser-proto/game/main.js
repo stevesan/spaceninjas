@@ -115,12 +115,6 @@ let game;
 /** @type {PlayState} */
 let state;
 
-/** @type {Phaser.Group} */
-var walls;
-
-/** @type {Phaser.Group} */
-var stars;
-
 /** @type {Phaser.Text} */
 var hudText;
 
@@ -132,25 +126,12 @@ function updateHud() {
 var scoreFx;
 
 /** @type {Phaser.Group} */
-var dashables;
-
-/** @type {Phaser.Group} */
 var enemies;
 
 const gameObjects = [];
 
 var shakeX = 0;
 var shakeY = 0;
-
-function createStars() {
-  stars = game.add.group();
-
-  stars.enableBody = true;
-
-  for (var i = 0; i < 100; i++) {
-    stars.create(snap(game.world.randomX, 32), snap(game.world.randomY, 32), 'star');
-  }
-}
 
 function preload() {
   PRELOAD_CREATE_LIST.forEach(asset => asset.preload());
@@ -180,28 +161,11 @@ function createEnemies() {
   gameObjects.push(new Turret(game, turret, enemies));
 }
 
-class MySprite extends Phaser.Sprite {
-  /**
-   * @param {Phaser.Game} game 
-   */
-  constructor(game) {
-    super(game, game.world.width / 2, game.world.height / 2, 'dude');
-    game.add.existing(this);
-    game.physics.arcade.enable(this);
-  }
-}
-
-const arrayTest = [];
-const playersArray = [];
-
 function create() {
   game.world.setBounds(0, 0, 2000, 2000);
   PRELOAD_CREATE_LIST.forEach(asset => asset.create());
   game.physics.startSystem(Phaser.Physics.ARCADE);
 
-  new MySprite(game);
-
-  createStars();
   createEnemies();
 
   game.add.text(game.world.width / 2 - 100, game.world.height / 2 - 100,
@@ -215,13 +179,6 @@ function create() {
   scoreFx.gravity = 200;
 
   state = new PlayState(game);
-}
-
-function collectStar(player, star) {
-  star.kill();
-  coinAudio.asset.play();
-  // hitPause(100);
-  // triggerSlowMo(3, 500);
 }
 
 function hitPause(durationMs) {
@@ -244,31 +201,14 @@ function update() {
   updateHud();
   gameObjects.forEach(go => go.update());
 
-  var hitWall = game.physics.arcade.collide(player, walls);
-
-  game.physics.arcade.overlap(player, stars, collectStar, null, this);
-
-  // NOTE: can probably fix some "sticky" bugs by only checking in the direction that we're flying in.
-  // if (((hitSoftWall && !brokeSoftWall) || hitWall) && ) {
-  // scratchAudio.get().play();
-  // ninja.onHitWall(getTouchingDir(player.body));
-  // }
-
   game.physics.arcade.overlap(player, enemies, (player, enemy) => {
     if (enemy.onHitPlayer) {
       enemy.onHitPlayer(ninja);
     }
   });
 
-  updateCamShake();
+  updateCamera();
 
-  // MINOR BUG: camera fidgets in non-pleasing way when you run into a wall..
-  // TODO: we should snap this to our retro-pixel size
-  const shakeWave = Math.sin(Date.now() / 1000 * 2 * Math.PI * 10);
-
-  game.camera.focusOnXY(
-    player.x + shakeX * shakeWave,
-    player.y + shakeY * shakeWave);
 
   player.animations.play(ninja.getState());
 }
@@ -278,13 +218,22 @@ function addShake(x, y) {
   shakeY += y;
 }
 
-function updateCamShake() {
+function updateCamera() {
   // Yes, I realize this isn't rate-independent.
   const gamma = 0.9;
   shakeX *= gamma;
   if (shakeX < 0.1) shakeX = 0;
   shakeY *= gamma;
   if (shakeY < 0.1) shakeY = 0;
+
+  // MINOR BUG: camera fidgets in non-pleasing way when you run into a wall..
+  // TODO: we should snap this to our retro-pixel size
+  const shakeWave = Math.sin(Date.now() / 1000 * 2 * Math.PI * 10);
+
+  const player = state.player.sprite;
+  game.camera.focusOnXY(
+    player.x + shakeX * shakeWave,
+    player.y + shakeY * shakeWave);
 }
 
 function render() {
