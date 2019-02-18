@@ -3,6 +3,10 @@ const DASHING_SPEED = 500;
 const DOUBLE_TAP_MS = 300;
 
 const PLAYER_LAND_AUDIO = new PreloadedAudio("wavs/landscratch.wav");
+const CHANGE_DIR_AUDIO = new PreloadedAudio("wavs/boop.wav");
+const DASH_AUDIO = new PreloadedAudio("wavs/dash.wav");
+const HURT_AUDIO = new PreloadedAudio('wavs/hurt2.wav');
+
 
 class NinjaPlayer extends GameObject {
   /**
@@ -88,7 +92,7 @@ class NinjaPlayer extends GameObject {
       return;
     }
     this.health -= dp;
-    hurtAudio.get().play();
+    HURT_AUDIO.get().play();
     other.onDamageSuccess(this, dp);
   }
 
@@ -155,10 +159,10 @@ class NinjaPlayer extends GameObject {
 
     this.setVelocity_(dir, isDash ? DASHING_SPEED : NORMAL_SPEED);
     if (isDash) {
-      dashAudio.get().play();
+      DASH_AUDIO.get().play();
     }
     else {
-      boopAudio.get().play();
+      CHANGE_DIR_AUDIO.get().play();
     }
   }
 
@@ -167,6 +171,7 @@ class NinjaPlayer extends GameObject {
     this.sprite.body.velocity.set(0, 0);
     this.setDirection_(opposite(dir));
     PLAYER_LAND_AUDIO.get().play();
+    // DASH_AUDIO.get().stop();
   }
 }
 

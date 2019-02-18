@@ -156,9 +156,6 @@ function preload() {
 }
 
 const coinAudio = new PreloadedAudio("wavs/coin.wav");
-const boopAudio = new PreloadedAudio("wavs/boop.wav");
-const dashAudio = new PreloadedAudio("wavs/dash.wav");
-const hurtAudio = new PreloadedAudio('wavs/hurt2.wav');
 
 function create() {
   game.world.setBounds(0, 0, 2000, 2000);
