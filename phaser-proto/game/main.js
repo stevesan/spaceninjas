@@ -5,8 +5,75 @@ const S = 1;
 const CANVAS_PIXELS_PER_SPRITE_PIXEL = 2;
 const CPPSP = CANVAS_PIXELS_PER_SPRITE_PIXEL;
 
+class EnvStatic extends GameObject {
+  constructor() {
+    this.breakable = false;
+  }
+  isBreakable() {
+    return this.breakable;
+  }
+}
+
+class BreakableWall extends GameObject {
+  constructor(sprite) {
+    this.sprite = sprite;
+  }
+  isDashable() { return true; }
+  onDamage(damager) {
+    this.sprite.kill();
+    this.sprite = null;
+  }
+  isDead() { return this.sprite == null; }
+}
+
+class PlayState {
+  /**
+   * 
+   * @param {Phaser.Game} phaserGame 
+   */
+  constructor(phaserGame) {
+    this.phaserGame = phaserGame;
+
+    // Entity lists
+    this.environment = [];
+    this.enemies = [];
+    this.bullets = [];
+
+    /** @type {NinjaPlayer} */
+    this.player = new NinjaPlayer(phaserGame);
+  }
+
+  update() {
+    this.myCollider_(this.player, this.environment);
+    this.myCollider_(this.player, this.enemies);
+    this.myCollider_(this.player, this.bullets);
+  }
+
+  myCollider_(aa, bb) {
+    const arcadePhysics = this.phaserGame.physics.arcade;
+    arcadePhysics.collide(aa, bb,
+      (a, b) => {
+        a.onCollide(b);
+        b.onCollide(a);
+      },
+      (a, b) => {
+        // If either one wants to ignore, then by convention, we ignore.
+        if (a.onOverlap(b) === false) {
+          return false;
+        }
+        if (b.onOverlap(a) === false) {
+          return false;
+        }
+        return true;
+      });
+  }
+}
+
 /** @type {Phaser.Game} */
 let game;
+
+/** @type {PlayState} */
+let state;
 
 /** @type {Phaser.Group} */
 var walls;
@@ -21,17 +88,11 @@ var stars;
 var hudText;
 
 function updateHud() {
-  hudText.text = `HP ${ninja.getHealth()}`;
+  hudText.text = `HP ${state.player.getHealth()}`;
 }
-
-/** @type {Phaser.Sprite} */
-var player;
 
 /** @type {Phaser.Particles.Arcade.Emitter} */
 var scoreFx;
-
-/** @type {NinjaControls} */
-var ninja;
 
 /** @type {Phaser.Group} */
 var dashables;
@@ -76,15 +137,6 @@ const dashAudio = new PreloadedAudio("wavs/dash.wav");
 const explodeAudio = new PreloadedAudio("wavs/explode.wav");
 const hurtAudio = new PreloadedAudio('wavs/hurt2.wav');
 
-/**
- * @param {Phaser.Sprite} sprite
- */
-function centerPivot(sprite) {
-  const b = sprite.getBounds();
-  const L = Math.min(b.width, b.height);
-  sprite.pivot.set(b.width / 2, L / 2);
-}
-
 function createEnemies() {
   enemies = game.add.group();
   const turret = enemies.create(game.world.width / 2 + 100, game.world.height / 2, 'powerup', 1);
@@ -103,6 +155,9 @@ class MySprite extends Phaser.Sprite {
     game.physics.arcade.enable(this);
   }
 }
+
+const arrayTest = [];
+const playersArray = [];
 
 function create() {
   game.world.setBounds(0, 0, 2000, 2000);
@@ -142,40 +197,7 @@ function create() {
   scoreFx.makeParticles('star');
   scoreFx.gravity = 200;
 
-  // Setup player
-  player = game.add.sprite(game.world.width / 2, game.world.height / 2, 'ninja');
-  player.scale.setTo(CPPSP, CPPSP);
-  console.log(`player is ${player.width} x ${player.height}`);
-  centerPivot(player);
-  // player.anchor.set(0.5, 0.5);
-  game.physics.arcade.enable(player);
-  player.body.bounce.y = 0;
-  player.body.gravity.y = 0;
-
-  //  Our two animations, walking left and right.
-  player.animations.add('idle', [2, 10], 4, true);
-  player.animations.add('dashing', [0, 8], 16, true);
-  player.animations.add('flying', [1, 9], 12, true);
-
-  const keys = game.input.keyboard.addKeys({
-    goUp: Phaser.Keyboard.W,
-    goDown: Phaser.Keyboard.S,
-    goLeft: Phaser.Keyboard.A,
-    goRight: Phaser.Keyboard.D,
-  });
-
-  ninja = new NinjaControls(game, player);
-
-  function onDirPressed(dir) {
-    ninja.onDirPressed(dir);
-  }
-
-  keys.goUp.onDown.add(() => onDirPressed(0));
-  keys.goLeft.onDown.add(() => onDirPressed(1));
-  keys.goDown.onDown.add(() => onDirPressed(2));
-  keys.goRight.onDown.add(() => onDirPressed(3));
-
-  // game.camera.follow(player);
+  state = new PlayState(game);
 }
 
 function collectStar(player, star) {
@@ -198,12 +220,9 @@ function triggerSlowMo(slowFactor, durationMs) {
   });
 }
 
-function onPlayerHitWall() {
-  scratchAudio.get().play();
-  ninja.onHitWall(getTouchingDir(player.body));
-}
-
 function update() {
+  const player = state.player.sprite;
+  const ninja = state.player;
   updateHud();
   gameObjects.forEach(go => go.update());
 
@@ -226,7 +245,8 @@ function update() {
 
   // NOTE: can probably fix some "sticky" bugs by only checking in the direction that we're flying in.
   if (((hitSoftWall && !brokeSoftWall) || hitWall) && startedTouchingInAnyDir(player.body)) {
-    onPlayerHitWall();
+    scratchAudio.get().play();
+    // ninja.onHitWall(getTouchingDir(player.body));
   }
 
   game.physics.arcade.overlap(player, enemies, (player, enemy) => {
@@ -240,6 +260,7 @@ function update() {
   // MINOR BUG: camera fidgets in non-pleasing way when you run into a wall..
   // TODO: we should snap this to our retro-pixel size
   const shakeWave = Math.sin(Date.now() / 1000 * 2 * Math.PI * 10);
+
   game.camera.focusOnXY(
     player.x + shakeX * shakeWave,
     player.y + shakeY * shakeWave);

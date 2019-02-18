@@ -18,7 +18,6 @@ class Bullet extends Phaser.Sprite {
     player.takeDamage(1);
     this.kill();
   }
-
 }
 
 class Turret {
@@ -50,6 +49,7 @@ class Turret {
       const shot = new Bullet(this.game, this.sprite.x, this.sprite.y, 'cannonball', 0);
       this.shotGroup.add(shot);
       shot.anchor.set(0.5, 0.5);
+
       shot.body.velocity.set(50, 50);
       this.cooldown = COOLDOWN_S;
     }
