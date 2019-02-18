@@ -18,7 +18,11 @@ var breakables;
 var stars;
 
 /** @type {Phaser.Text} */
-var helpTest;
+var hudText;
+
+function updateHud() {
+  hudText.text = `HP ${ninja.getHealth()}`;
+}
 
 /** @type {Phaser.Sprite} */
 var player;
@@ -28,6 +32,14 @@ var scoreFx;
 
 /** @type {NinjaControls} */
 var ninja;
+
+/** @type {Phaser.Group} */
+var dashables;
+
+/** @type {Phaser.Group} */
+var enemies;
+
+const gameObjects = [];
 
 var shakeX = 0;
 var shakeY = 0;
@@ -51,6 +63,10 @@ function preload() {
   game.load.spritesheet('dude', 'phaser_tutorial_02/assets/dude.png', 32, 48);
   game.load.spritesheet('ninja', 'sprites/ninja-sheet.png', 16, 32);
   game.load.spritesheet('inca32', 'sprites/inca_front.png', 32, 32);
+  game.load.spritesheet('powerup', 'sprites/Spaceship-shooter-environment/spritesheets/power-up.png', 16, 16);
+  game.load.spritesheet('shots', 'sprites/Spaceship-shooter-environment/spritesheets/laser-bolts.png', 16, 16);
+  game.load.image('turret', 'sprites/topdown_shooter/guns/cannon/cannon_down.png');
+  game.load.image('cannonball', 'sprites/topdown_shooter/other/cannonball.png')
 }
 
 const coinAudio = new PreloadedAudio("wavs/coin.wav");
@@ -58,6 +74,7 @@ const boopAudio = new PreloadedAudio("wavs/boop.wav");
 const scratchAudio = new PreloadedAudio("wavs/landscratch.wav");
 const dashAudio = new PreloadedAudio("wavs/dash.wav");
 const explodeAudio = new PreloadedAudio("wavs/explode.wav");
+const hurtAudio = new PreloadedAudio('wavs/hurt2.wav');
 
 /**
  * @param {Phaser.Sprite} sprite
@@ -68,10 +85,31 @@ function centerPivot(sprite) {
   sprite.pivot.set(b.width / 2, L / 2);
 }
 
+function createEnemies() {
+  enemies = game.add.group();
+  const turret = enemies.create(game.world.width / 2 + 100, game.world.height / 2, 'powerup', 1);
+  turret.anchor.set(0.5, 0.5);
+  turret.scale.setTo(CPPSP, CPPSP);
+  gameObjects.push(new Turret(game, turret, enemies));
+}
+
+class MySprite extends Phaser.Sprite {
+  /**
+   * @param {Phaser.Game} game 
+   */
+  constructor(game) {
+    super(game, game.world.width / 2, game.world.height / 2, 'dude');
+    game.add.existing(this);
+    game.physics.arcade.enable(this);
+  }
+}
+
 function create() {
   game.world.setBounds(0, 0, 2000, 2000);
   PRELOAD_CREATE_LIST.forEach(asset => asset.create());
   game.physics.startSystem(Phaser.Physics.ARCADE);
+
+  new MySprite(game);
 
   walls = game.add.group();
   walls.enableBody = true;
@@ -92,10 +130,13 @@ function create() {
   }
 
   createStars();
+  createEnemies();
 
-  helpTest = game.add.text(game.world.width / 2 - 100, game.world.height / 2 - 100,
+  game.add.text(game.world.width / 2 - 100, game.world.height / 2 - 100,
     'WASD to move\nDouble-tap to dash', { font: 'Courier New', fontSize: '24px', fill: '#fff' });
-  // helpTest.fixedToCamera = true;
+
+  hudText = game.add.text(game.camera.x + 10, game.camera.y + 10, 'dd', { font: 'Courier New', fontSize: '24px', fill: '#fff' });
+  hudText.fixedToCamera = true;
 
   scoreFx = game.add.emitter(0, 0, 100);
   scoreFx.makeParticles('star');
@@ -127,15 +168,12 @@ function create() {
 
   function onDirPressed(dir) {
     ninja.onDirPressed(dir);
-    boopAudio.get().play();
   }
 
   keys.goUp.onDown.add(() => onDirPressed(0));
   keys.goLeft.onDown.add(() => onDirPressed(1));
   keys.goDown.onDown.add(() => onDirPressed(2));
   keys.goRight.onDown.add(() => onDirPressed(3));
-
-  ninja.onDash = () => dashAudio.get().play();
 
   // game.camera.follow(player);
 }
@@ -166,6 +204,9 @@ function onPlayerHitWall() {
 }
 
 function update() {
+  updateHud();
+  gameObjects.forEach(go => go.update());
+
   var hitWall = game.physics.arcade.collide(player, walls);
 
   game.physics.arcade.overlap(player, stars, collectStar, null, this);
@@ -187,6 +228,12 @@ function update() {
   if (((hitSoftWall && !brokeSoftWall) || hitWall) && startedTouchingInAnyDir(player.body)) {
     onPlayerHitWall();
   }
+
+  game.physics.arcade.overlap(player, enemies, (player, enemy) => {
+    if (enemy.onHitPlayer) {
+      enemy.onHitPlayer(ninja);
+    }
+  });
 
   updateCamShake();
 

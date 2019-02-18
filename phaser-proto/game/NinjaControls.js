@@ -8,6 +8,7 @@ class NinjaControls {
    * @param {Phaser.Sprite} player
    */
   constructor(game, player) {
+    this.health = 3;
     this.game = game;
     this.player = player;
     this.state = 'idle';
@@ -15,6 +16,15 @@ class NinjaControls {
     this.lastDirPressTime = 0;
     this.origWidth = player.getBounds().width;
     this.origHeight = player.getBounds().height;
+  }
+
+  getHealth() {
+    return this.health;
+  }
+
+  takeDamage(dp) {
+    this.health -= dp;
+    hurtAudio.get().play();
   }
 
   continueDashing() {
@@ -78,8 +88,11 @@ class NinjaControls {
     this.state = isDash ? "dashing" : "flying";
 
     this.setVelocity_(dir, isDash ? DASHING_SPEED : NORMAL_SPEED);
-    if (isDash && this.onDash) {
-      this.onDash();
+    if (isDash) {
+      dashAudio.get().play();
+    }
+    else {
+      boopAudio.get().play();
     }
   }
 
