@@ -2,6 +2,8 @@ const NORMAL_SPEED = 200;
 const DASHING_SPEED = 500;
 const DOUBLE_TAP_MS = 300;
 
+const PLAYER_LAND_AUDIO = new PreloadedAudio("wavs/landscratch.wav");
+
 class NinjaPlayer extends GameObject {
   /**
    * @param {Phaser.Game} game
@@ -57,6 +59,15 @@ class NinjaPlayer extends GameObject {
       if (other.isDead()) {
         return false; // Don't let something we just killed block us.
       }
+    }
+  }
+
+  /**
+   * @param {GameObject} other 
+   */
+  onCollide(other) {
+    if (startedTouchingInAnyDir(this.sprite.body)) {
+      this.onHitWall(getTouchingDir(this.sprite.body));
     }
   }
 
@@ -144,6 +155,7 @@ class NinjaPlayer extends GameObject {
     this.state = 'idle';
     this.sprite.body.velocity.set(0, 0);
     this.setDirection_(opposite(dir));
+    PLAYER_LAND_AUDIO.get().play();
   }
 }
 

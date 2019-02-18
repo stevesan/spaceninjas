@@ -5,30 +5,34 @@ const S = 1;
 const CANVAS_PIXELS_PER_SPRITE_PIXEL = 2;
 const CPPSP = CANVAS_PIXELS_PER_SPRITE_PIXEL;
 
-class StaticWall extends GameObject {
+class StaticEnv extends GameObject {
   constructor(game, x, y, key, frame) {
     super(game.add.sprite(x, y, key, frame));
     game.physics.arcade.enable(this.sprite);
     this.sprite.body.immovable = true;
   }
-
-  isDashable() {
-    return false;
-  }
-
-  onCollide(other) {
-  }
 }
 
+const WALL_BREAK_AUDIO = new PreloadedAudio("wavs/explode.wav");
+
 class BreakableWall extends GameObject {
-  constructor(sprite) {
-    this.sprite = sprite;
+  constructor(game, x, y, key, frame) {
+    super(game.add.sprite(x, y, key, frame));
+    game.physics.arcade.enable(this.sprite);
+    this.sprite.body.immovable = true;
+    this.sprite.tint = 0x8888ff;
   }
+
   isDashable() { return true; }
+
   onDamage(damager) {
     this.sprite.kill();
     this.sprite = null;
+    WALL_BREAK_AUDIO.get().play();
+    hitPause(110);
+    addShake(8, 8);
   }
+
   isDead() { return this.sprite == null; }
 }
 
@@ -54,11 +58,21 @@ class PlayState {
 
     // Create walls
     for (let i = 0; i < 100; i++) {
-      const wall = new StaticWall(
+      const wall = new StaticEnv(
         phaserGame,
         snap(game.world.randomX, 32),
         snap(game.world.randomY, 32),
         'inca32', 4);
+      this.objects.push(wall);
+      this.environment.push(wall.sprite);
+    }
+
+    for (let i = 0; i < 50; i++) {
+      const wall = new BreakableWall(
+        phaserGame,
+        snap(game.world.randomX, 32),
+        snap(game.world.randomY, 32),
+        'inca32', 6);
       this.objects.push(wall);
       this.environment.push(wall.sprite);
     }
@@ -103,9 +117,6 @@ let state;
 
 /** @type {Phaser.Group} */
 var walls;
-
-/** @type {Phaser.Group} */
-var breakables;
 
 /** @type {Phaser.Group} */
 var stars;
@@ -158,9 +169,7 @@ function preload() {
 
 const coinAudio = new PreloadedAudio("wavs/coin.wav");
 const boopAudio = new PreloadedAudio("wavs/boop.wav");
-const scratchAudio = new PreloadedAudio("wavs/landscratch.wav");
 const dashAudio = new PreloadedAudio("wavs/dash.wav");
-const explodeAudio = new PreloadedAudio("wavs/explode.wav");
 const hurtAudio = new PreloadedAudio('wavs/hurt2.wav');
 
 function createEnemies() {
@@ -191,16 +200,6 @@ function create() {
   game.physics.startSystem(Phaser.Physics.ARCADE);
 
   new MySprite(game);
-
-  breakables = game.add.group();
-  breakables.enableBody = true;
-  for (let i = 0; i < 50; i++) {
-    /** @type {Phaser.Sprite} */
-    const wall = breakables.create(snap(game.world.randomX, 32), snap(game.world.randomY, 32), 'inca32');
-    wall.frame = 6;
-    wall.tint = 0x8888ff;
-    wall.body.immovable = true;
-  }
 
   createStars();
   createEnemies();
@@ -249,24 +248,11 @@ function update() {
 
   game.physics.arcade.overlap(player, stars, collectStar, null, this);
 
-  let brokeSoftWall = false;
-  var hitSoftWall = game.physics.arcade.collide(player, breakables, (player, wall) => {
-    if (ninja.isDashing()) {
-      brokeSoftWall = true;
-      wall.kill();
-      // The collision does stop the player, but we want to break through!
-      ninja.continueDashing();
-      hitPause(110);
-      addShake(8, 8);
-      explodeAudio.get().play();
-    }
-  }, null, null);
-
   // NOTE: can probably fix some "sticky" bugs by only checking in the direction that we're flying in.
-  if (((hitSoftWall && !brokeSoftWall) || hitWall) && startedTouchingInAnyDir(player.body)) {
-    scratchAudio.get().play();
-    // ninja.onHitWall(getTouchingDir(player.body));
-  }
+  // if (((hitSoftWall && !brokeSoftWall) || hitWall) && ) {
+  // scratchAudio.get().play();
+  // ninja.onHitWall(getTouchingDir(player.body));
+  // }
 
   game.physics.arcade.overlap(player, enemies, (player, enemy) => {
     if (enemy.onHitPlayer) {
