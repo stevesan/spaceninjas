@@ -9,6 +9,7 @@ class TurretBullet extends GameObject {
   constructor(scene, x, y) {
     const game = scene.phaserGame;
     super(scene, game.add.sprite(x, y, 'cannonball', 0));
+    scene.bullets.push(this.sprite);
     this.sprite.anchor.set(0.5, 0.5);
     game.physics.arcade.enable(this.sprite);
     this.lifetime = 3;
@@ -44,6 +45,7 @@ class Turret extends GameObject {
   constructor(scene, x, y) {
     const game = scene.phaserGame;
     super(scene, game.add.sprite(x, y, 'powerup', 1));
+    scene.enemies.push(this.sprite);
     this.sprite.anchor.set(0.5, 0.5);
     this.sprite.scale.setTo(2, 2);
     this.game = game;
@@ -69,7 +71,6 @@ class Turret extends GameObject {
     this.cooldown -= this.game.time.physicsElapsed;
     if (this.cooldown < 0) {
       const bullet = new TurretBullet(this.scene, this.sprite.x, this.sprite.y);
-      this.scene.addBullet(bullet);
 
       const player = this.scene.player.sprite;
       const velocity = fromTo(this.sprite, player);

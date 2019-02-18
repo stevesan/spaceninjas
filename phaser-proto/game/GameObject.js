@@ -7,6 +7,7 @@ class GameObject {
     this.scene = scene;
     this.sprite = sprite;
     sprite.__gameObject__ = this;
+    scene.objects.push(this);
   }
   destroy() {
     if (!this.isDestroyed()) {

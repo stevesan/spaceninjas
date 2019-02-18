@@ -44,7 +44,6 @@ class GameScene {
     const right = left + sideLen * PPT;
     const plop = (x, y) => {
       const wall = new StaticEnv(this, x, y, 'inca32', 4);
-      this.objects.push(wall);
       this.environment.push(wall.sprite);
     }
     for (let i = 0; i < sideLen; i++) {
@@ -62,34 +61,14 @@ class GameScene {
       const y = row * PPT + top;
       if (c == 'P') {
         this.player = new NinjaPlayer(this, x, y);
-        this.objects.push(this.player);
       }
       else if (c == 'T') {
         const T = new Turret(this, x, y);
-        this.objects.push(T);
-        this.enemies.push(T.sprite);
+      }
+      else if (c == 'X') {
+        const o = new BreakableWall(this, x, y);
       }
     }
-
-    // Breakable walls
-    // for (let i = 0; i < 50; i++) {
-    //   const wall = new BreakableWall(
-    //     this,
-    //     snap(randBetween(left, right), 32),
-    //     snap(randBetween(top, bot), 32),
-    //     'inca32', 6);
-    //   this.objects.push(wall);
-    //   this.environment.push(wall.sprite);
-    // }
-
-    // for (let i = 0; i < 50; i++) {
-    //   const obj = new Turret(
-    //     this,
-    //     snap(randBetween(left, right), 32),
-    //     snap(randBetween(top, bot), 32));
-    //   this.objects.push(obj);
-    //   this.enemies.push(obj.sprite);
-    // }
   }
 
   clear() {
@@ -99,15 +78,6 @@ class GameScene {
     this.enemies.length = 0;
     this.bullets.length = 0;
     this.player = null;
-  }
-
-  /**
-   * 
-   * @param {GameObject} bullet 
-   */
-  addBullet(bullet) {
-    this.objects.push(bullet);
-    this.bullets.push(bullet.sprite);
   }
 
   update() {
