@@ -12,9 +12,9 @@ class NinjaPlayer extends GameObject {
   /**
    * @param {GameScene} scene
    */
-  constructor(scene) {
+  constructor(scene, x, y) {
     const game = scene.phaserGame;
-    const sprite = game.add.sprite(game.world.width / 2, game.world.height / 2, 'ninja');
+    const sprite = game.add.sprite(x, y, 'ninja');
     super(scene, sprite);
     sprite.scale.setTo(CPPSP, CPPSP);
 

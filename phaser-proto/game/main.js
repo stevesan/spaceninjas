@@ -27,43 +27,69 @@ class GameScene {
     /** @type {NinjaPlayer} */
     this.player = null;
 
-    this.createRandomScene();
+    this.spawnScene(LEVEL1);
   }
 
-  createRandomScene() {
-    this.player = new NinjaPlayer(this);
-    this.objects.push(this.player);
-
+  /**
+   * 
+   * @param {string} levelString 
+   */
+  spawnScene(levelString) {
     // Create walls
-    for (let i = 0; i < 100; i++) {
-      const wall = new StaticEnv(
-        this,
-        snap(game.world.randomX, 32),
-        snap(game.world.randomY, 32),
-        'inca32', 4);
+    const sideLen = Math.sqrt(levelString.length);
+    const PPT = 32;
+    const left = snap(game.world.width / 2 - sideLen / 2 * PPT, 32);
+    const top = snap(game.world.height / 2 - sideLen / 2 * PPT, 32);
+    const bot = top + sideLen * PPT;
+    const right = left + sideLen * PPT;
+    const plop = (x, y) => {
+      const wall = new StaticEnv(this, x, y, 'inca32', 4);
       this.objects.push(wall);
       this.environment.push(wall.sprite);
+    }
+    for (let i = 0; i < sideLen; i++) {
+      plop(left + i * PPT, top - PPT);
+      plop(left + i * PPT, bot);
+      plop(left - PPT, top + i * PPT);
+      plop(right, top + i * PPT);
+    }
+
+    for (let i = 0; i < levelString.length; i++) {
+      const c = levelString.charAt(i);
+      const row = Math.floor(i / sideLen);
+      const col = i - row * sideLen;
+      const x = col * PPT + left;
+      const y = row * PPT + top;
+      if (c == 'P') {
+        this.player = new NinjaPlayer(this, x, y);
+        this.objects.push(this.player);
+      }
+      else if (c == 'T') {
+        const T = new Turret(this, x, y);
+        this.objects.push(T);
+        this.enemies.push(T.sprite);
+      }
     }
 
     // Breakable walls
-    for (let i = 0; i < 50; i++) {
-      const wall = new BreakableWall(
-        this,
-        snap(game.world.randomX, 32),
-        snap(game.world.randomY, 32),
-        'inca32', 6);
-      this.objects.push(wall);
-      this.environment.push(wall.sprite);
-    }
+    // for (let i = 0; i < 50; i++) {
+    //   const wall = new BreakableWall(
+    //     this,
+    //     snap(randBetween(left, right), 32),
+    //     snap(randBetween(top, bot), 32),
+    //     'inca32', 6);
+    //   this.objects.push(wall);
+    //   this.environment.push(wall.sprite);
+    // }
 
-    for (let i = 0; i < 50; i++) {
-      const obj = new Turret(
-        this,
-        snap(game.world.randomX, 32),
-        snap(game.world.randomY, 32));
-      this.objects.push(obj);
-      this.enemies.push(obj.sprite);
-    }
+    // for (let i = 0; i < 50; i++) {
+    //   const obj = new Turret(
+    //     this,
+    //     snap(randBetween(left, right), 32),
+    //     snap(randBetween(top, bot), 32));
+    //   this.objects.push(obj);
+    //   this.enemies.push(obj.sprite);
+    // }
   }
 
   clear() {

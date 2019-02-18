@@ -2,6 +2,7 @@ class StaticEnv extends GameObject {
   constructor(scene, x, y, key, frame) {
     const game = scene.phaserGame;
     super(scene, game.add.sprite(x, y, key, frame));
+    this.sprite.anchor.set(0.5, 0.5);
     game.physics.arcade.enable(this.sprite);
     this.sprite.body.immovable = true;
   }
@@ -13,6 +14,7 @@ class BreakableWall extends GameObject {
   constructor(scene, x, y, key, frame) {
     const game = scene.phaserGame;
     super(scene, game.add.sprite(x, y, key, frame));
+    this.sprite.anchor.set(0.5, 0.5);
     game.physics.arcade.enable(this.sprite);
     this.sprite.body.immovable = true;
     this.sprite.tint = 0x8888ff;
