@@ -5,38 +5,7 @@ const S = 1;
 const CANVAS_PIXELS_PER_SPRITE_PIXEL = 2;
 const CPPSP = CANVAS_PIXELS_PER_SPRITE_PIXEL;
 
-class StaticEnv extends GameObject {
-  constructor(game, x, y, key, frame) {
-    super(game.add.sprite(x, y, key, frame));
-    game.physics.arcade.enable(this.sprite);
-    this.sprite.body.immovable = true;
-  }
-}
-
-const WALL_BREAK_AUDIO = new PreloadedAudio("wavs/explode.wav");
-
-class BreakableWall extends GameObject {
-  constructor(game, x, y, key, frame) {
-    super(game.add.sprite(x, y, key, frame));
-    game.physics.arcade.enable(this.sprite);
-    this.sprite.body.immovable = true;
-    this.sprite.tint = 0x8888ff;
-  }
-
-  isDashable() { return true; }
-
-  onDamage(damager) {
-    this.sprite.kill();
-    this.sprite = null;
-    WALL_BREAK_AUDIO.get().play();
-    hitPause(110);
-    addShake(8, 8);
-  }
-
-  isDead() { return this.sprite == null; }
-}
-
-class PlayState {
+class GameScene {
   /**
    * 
    * @param {Phaser.Game} phaserGame 
@@ -53,13 +22,13 @@ class PlayState {
     this.objects = [];
 
     /** @type {NinjaPlayer} */
-    this.player = new NinjaPlayer(phaserGame);
+    this.player = new NinjaPlayer(this);
     this.objects.push(this.player);
 
     // Create walls
     for (let i = 0; i < 100; i++) {
       const wall = new StaticEnv(
-        phaserGame,
+        this,
         snap(game.world.randomX, 32),
         snap(game.world.randomY, 32),
         'inca32', 4);
@@ -67,22 +36,47 @@ class PlayState {
       this.environment.push(wall.sprite);
     }
 
+    // Breakable walls
     for (let i = 0; i < 50; i++) {
       const wall = new BreakableWall(
-        phaserGame,
+        this,
         snap(game.world.randomX, 32),
         snap(game.world.randomY, 32),
         'inca32', 6);
       this.objects.push(wall);
       this.environment.push(wall.sprite);
     }
+
+    for (let i = 0; i < 50; i++) {
+      const obj = new Turret(
+        this,
+        snap(game.world.randomX, 32),
+        snap(game.world.randomY, 32));
+      this.objects.push(obj);
+      this.enemies.push(obj.sprite);
+    }
+  }
+
+  /**
+   * 
+   * @param {GameObject} bullet 
+   */
+  addBullet(bullet) {
+    this.objects.push(bullet);
+    this.bullets.push(bullet);
   }
 
   update() {
-    this.objects.forEach(go => go.update(this));
+    this.objects.forEach(go => {
+      if (!go.isDestroyed()) {
+        go.update(this);
+      }
+    });
     this.myCollide(this.player.sprite, this.environment);
     this.myCollide(this.player.sprite, this.enemies);
     this.myCollide(this.player.sprite, this.bullets);
+    this.myCollide(this.enemies, this.environment);
+    this.myCollide(this.bullets, this.environment);
   }
 
   getObj(sprite) {
@@ -112,7 +106,7 @@ class PlayState {
 /** @type {Phaser.Game} */
 let game;
 
-/** @type {PlayState} */
+/** @type {GameScene} */
 let state;
 
 /** @type {Phaser.Text} */
@@ -127,8 +121,6 @@ var scoreFx;
 
 /** @type {Phaser.Group} */
 var enemies;
-
-const gameObjects = [];
 
 var shakeX = 0;
 var shakeY = 0;
@@ -153,20 +145,10 @@ const boopAudio = new PreloadedAudio("wavs/boop.wav");
 const dashAudio = new PreloadedAudio("wavs/dash.wav");
 const hurtAudio = new PreloadedAudio('wavs/hurt2.wav');
 
-function createEnemies() {
-  enemies = game.add.group();
-  const turret = enemies.create(game.world.width / 2 + 100, game.world.height / 2, 'powerup', 1);
-  turret.anchor.set(0.5, 0.5);
-  turret.scale.setTo(CPPSP, CPPSP);
-  gameObjects.push(new Turret(game, turret, enemies));
-}
-
 function create() {
   game.world.setBounds(0, 0, 2000, 2000);
   PRELOAD_CREATE_LIST.forEach(asset => asset.create());
   game.physics.startSystem(Phaser.Physics.ARCADE);
-
-  createEnemies();
 
   game.add.text(game.world.width / 2 - 100, game.world.height / 2 - 100,
     'WASD to move\nDouble-tap to dash', { font: 'Courier New', fontSize: '24px', fill: '#fff' });
@@ -178,7 +160,7 @@ function create() {
   scoreFx.makeParticles('star');
   scoreFx.gravity = 200;
 
-  state = new PlayState(game);
+  state = new GameScene(game);
 }
 
 function hitPause(durationMs) {
@@ -199,7 +181,6 @@ function update() {
   const player = state.player.sprite;
   const ninja = state.player;
   updateHud();
-  gameObjects.forEach(go => go.update());
 
   game.physics.arcade.overlap(player, enemies, (player, enemy) => {
     if (enemy.onHitPlayer) {

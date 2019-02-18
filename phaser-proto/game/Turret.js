@@ -1,56 +1,78 @@
 const COOLDOWN_S = 3;
 
-class Bullet extends Phaser.Sprite {
+class TurretBullet extends GameObject {
   /**
-   * @param {Phaser.Game} game 
+   * @param {GameScene} scene 
+   * @param {number} x
+   * @param {number} y
    */
-  constructor(game, x, y, key, frame) {
-    super(game, x, y, key, frame);
-    game.add.existing(this);
-    game.physics.arcade.enable(this);
+  constructor(scene, x, y) {
+    const game = scene.phaserGame;
+    super(scene, game.add.sprite(x, y, 'cannonball', 0));
+    this.sprite.anchor.set(0.5, 0.5);
+    game.physics.arcade.enable(this.sprite);
+    this.lifetime = 3;
+  }
+
+  update() {
+    this.lifetime -= this.scene.phaserGame.time.physicsElapsed;
+    if (this.lifetime < 0) {
+      this.destroy();
+    }
   }
 
   /**
    * 
-   * @param {NinjaControls} player 
+   * @param {GameObject} other 
    */
-  onHitPlayer(player) {
-    player.takeDamage(1);
-    this.kill();
+  onOverlap(other) {
+    if (other.isPlayer()) {
+      other.onDamage(this);
+      this.destroy();
+    }
   }
 }
 
-class Turret {
+class Turret extends GameObject {
   /**
-   * @param {Phaser.Game} game 
-   * @param {Phaser.Sprite} sprite 
-   * @param {Phaser.Group} shotGroup
+   * @param {GameScene} scene
+   * @param {number} x
+   * @param {number} y
    */
-  constructor(game, sprite, shotGroup) {
+  constructor(scene, x, y) {
+    const game = scene.phaserGame;
+    super(scene, game.add.sprite(x, y, 'powerup', 1));
+    this.sprite.anchor.set(0.5, 0.5);
+    this.sprite.scale.setTo(2, 2);
     this.game = game;
-    this.sprite = sprite;
-    this.cooldown = COOLDOWN_S;
-    this.shotGroup = shotGroup;
+    this.cooldown = Math.random() * COOLDOWN_S;
 
-    game.physics.arcade.enable(sprite);
-    sprite.body.immovable = true;
+    game.physics.arcade.enable(this.sprite);
+    this.sprite.body.immovable = true;
   }
 
-  isDashable() {
-    return true;
+  isDashable() { return true; }
+
+  onDamage(damager) {
+    this.destroy();
+    WALL_BREAK_AUDIO.get().play();
+    hitPause(110);
+    addShake(8, 8);
   }
 
-  /**
-   * 
-   */
+  isDead() { return this.isDestroyed(); }
+
   update() {
+    // TODO effectively disable ourselves if player is not visible
     this.cooldown -= this.game.time.physicsElapsed;
     if (this.cooldown < 0) {
-      const shot = new Bullet(this.game, this.sprite.x, this.sprite.y, 'cannonball', 0);
-      this.shotGroup.add(shot);
-      shot.anchor.set(0.5, 0.5);
+      const bullet = new TurretBullet(this.scene, this.sprite.x, this.sprite.y);
+      this.scene.addBullet(bullet);
 
-      shot.body.velocity.set(50, 50);
+      const player = this.scene.player.sprite;
+      const velocity = fromTo(this.sprite, player);
+      velocity.setMagnitude(100);
+      bullet.sprite.body.velocity.copyFrom(velocity);
       this.cooldown = COOLDOWN_S;
     }
   }

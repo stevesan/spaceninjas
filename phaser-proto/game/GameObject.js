@@ -1,15 +1,23 @@
 class GameObject {
   /**
-   * 
+   * @param {GameScene} scene
    * @param {Phaser.Sprite} sprite 
    */
-  constructor(sprite) {
+  constructor(scene, sprite) {
+    this.scene = scene;
     this.sprite = sprite;
     sprite.__gameObject__ = this;
   }
+  destroy() {
+    this.sprite.kill();
+    this.sprite = null;
+  }
+  isDestroyed() {
+    return this.sprite == null;
+  }
   /**
    * 
-   * @param {PlayState} state 
+   * @param {GameScene} state 
    */
   update(state) { }
   /**
@@ -42,4 +50,6 @@ class GameObject {
   onDamage(damager) { }
 
   isDead() { return false; }
+
+  isPlayer() { return false; }
 }

@@ -6,11 +6,12 @@ const PLAYER_LAND_AUDIO = new PreloadedAudio("wavs/landscratch.wav");
 
 class NinjaPlayer extends GameObject {
   /**
-   * @param {Phaser.Game} game
+   * @param {GameScene} scene
    */
-  constructor(game) {
+  constructor(scene) {
+    const game = scene.phaserGame;
     const sprite = game.add.sprite(game.world.width / 2, game.world.height / 2, 'ninja');
-    super(sprite);
+    super(scene, sprite);
     sprite.scale.setTo(CPPSP, CPPSP);
 
     sprite.animations.add('idle', [2, 10], 4, true);
@@ -70,6 +71,8 @@ class NinjaPlayer extends GameObject {
       this.onHitWall(getTouchingDir(this.sprite.body));
     }
   }
+
+  isPlayer() { return true; }
 
 
   getHealth() {
