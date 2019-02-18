@@ -42,12 +42,17 @@ class GameObject {
    */
   getEnvStatic() { return null; }
 
-  isDashable() { return false; }
+  isDamageable() { return false; }
 
   /**
    * @param {GameObject} damager 
+   * @param {number} dp
    */
-  onDamage(damager) { }
+  onDamage(damager, dp) { }
+
+  // If A damages B (by calling B.onDamage), and B gets some damage done,
+  // B should call A.onDamageSuccess to acknowledge it.
+  onDamageSuccess(victim, dp) { }
 
   isDead() { return false; }
 

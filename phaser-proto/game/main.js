@@ -63,7 +63,7 @@ class GameScene {
    */
   addBullet(bullet) {
     this.objects.push(bullet);
-    this.bullets.push(bullet);
+    this.bullets.push(bullet.sprite);
   }
 
   update() {

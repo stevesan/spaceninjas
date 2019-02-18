@@ -26,10 +26,12 @@ class TurretBullet extends GameObject {
    * @param {GameObject} other 
    */
   onOverlap(other) {
-    if (other.isPlayer()) {
-      other.onDamage(this);
+    if (other.isPlayer() && other.isDamageable()) {
+      other.onDamage(this, 1);
       this.destroy();
     }
+    // Bullets always go through everything
+    return false;
   }
 }
 
@@ -51,7 +53,7 @@ class Turret extends GameObject {
     this.sprite.body.immovable = true;
   }
 
-  isDashable() { return true; }
+  isDamageable() { return true; }
 
   onDamage(damager) {
     this.destroy();

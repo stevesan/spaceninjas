@@ -18,7 +18,7 @@ class BreakableWall extends GameObject {
     this.sprite.tint = 0x8888ff;
   }
 
-  isDashable() { return true; }
+  isDamageable() { return true; }
 
   onDamage(damager) {
     this.destroy();

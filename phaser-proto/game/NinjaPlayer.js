@@ -55,8 +55,8 @@ class NinjaPlayer extends GameObject {
   * @param {GameObject} other 
   */
   onOverlap(other) {
-    if (other.isDashable() && this.isDashing()) {
-      other.onDamage(this);
+    if (other.isDamageable() && this.isDashing()) {
+      other.onDamage(this, 1);
       if (other.isDead()) {
         return false; // Don't let something we just killed block us.
       }
@@ -74,14 +74,22 @@ class NinjaPlayer extends GameObject {
 
   isPlayer() { return true; }
 
-
   getHealth() {
     return this.health;
   }
 
-  takeDamage(dp) {
+  isDamageable() {
+    // TODO enforce grace period
+    return true;
+  }
+
+  onDamage(other, dp) {
+    if (!this.isDamageable()) {
+      return;
+    }
     this.health -= dp;
     hurtAudio.get().play();
+    other.onDamageSuccess(this, dp);
   }
 
   continueDashing() {
