@@ -57,9 +57,6 @@ class GameScene {
       }
       this.hudText.text += `\n${scene.enemies.countLiving()} enemies left`;
     }
-    else if (this.state == 'intermission') {
-      this.hudText.text = `Entering Level ${this.levelIndex}!`;
-    }
   }
 
   /**
@@ -140,11 +137,17 @@ class GameScene {
     if (this.state == 'playing') {
       if (this.enemies.countLiving() == 0) {
         this.state = 'intermission';
+        this.hudText.text = 'LEVEL CLEAR!';
         this.levelIndex++;
         this.phaserGame.time.events.add(3000, () => {
-          this.state = 'playing';
+          this.state = 'countdown';
+          this.hudText.text = 'Get ready..'
           this.clear();
           this.spawnScene(LEVELS[this.levelIndex]);
+          triggerSlowMo(10, 3000);
+          this.phaserGame.time.events.add(3000, () => {
+            this.state = 'playing';
+          })
         });
       }
     }
