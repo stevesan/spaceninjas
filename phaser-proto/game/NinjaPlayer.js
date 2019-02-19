@@ -34,18 +34,6 @@ class NinjaPlayer extends GameObject {
     this.body.bounce.y = 0;
     this.body.gravity.y = 0;
 
-    const keys = game.input.keyboard.addKeys({
-      goUp: Phaser.Keyboard.W,
-      goDown: Phaser.Keyboard.S,
-      goLeft: Phaser.Keyboard.A,
-      goRight: Phaser.Keyboard.D,
-    });
-
-    keys.goUp.onDown.add(() => this.onDirPressed(0));
-    keys.goLeft.onDown.add(() => this.onDirPressed(1));
-    keys.goDown.onDown.add(() => this.onDirPressed(2));
-    keys.goRight.onDown.add(() => this.onDirPressed(3));
-
     this.health = 3;
     this.game = game;
     this.state = 'idle';
@@ -160,6 +148,8 @@ class NinjaPlayer extends GameObject {
     // TODO somehow check if we can even move in this dir!
 
     this.state = isDash ? "dashing" : "flying";
+
+    console.log(`body: ${this.body}`);
 
     this.setVelocity_(dir, isDash ? DASHING_SPEED : NORMAL_SPEED);
     if (isDash) {

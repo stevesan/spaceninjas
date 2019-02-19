@@ -11,6 +11,7 @@ class GameScene {
    * @param {Phaser.Game} phaserGame 
    */
   constructor(phaserGame) {
+    this.state = 'playing';
     this.levelIndex = 0;
     this.phaserGame = phaserGame;
 
@@ -25,7 +26,40 @@ class GameScene {
     /** @type {NinjaPlayer} */
     this.player = null;
 
-    this.spawnScene(LEVEL1);
+    this.spawnScene(LEVELS[this.levelIndex]);
+
+    this.hudText = game.add.text(game.camera.x + 10, game.camera.y + 10, 'dd', { font: 'Courier New', fontSize: '24px', fill: '#fff' });
+    this.hudText.fixedToCamera = true;
+
+    this.setupKeys();
+  }
+
+  setupKeys() {
+    const game = this.phaserGame;
+    const keys = game.input.keyboard.addKeys({
+      goUp: Phaser.Keyboard.W,
+      goDown: Phaser.Keyboard.S,
+      goLeft: Phaser.Keyboard.A,
+      goRight: Phaser.Keyboard.D,
+    });
+
+    keys.goUp.onDown.add(() => this.player.onDirPressed(0));
+    keys.goLeft.onDown.add(() => this.player.onDirPressed(1));
+    keys.goDown.onDown.add(() => this.player.onDirPressed(2));
+    keys.goRight.onDown.add(() => this.player.onDirPressed(3));
+  }
+
+  updateHud() {
+    if (this.state == 'playing') {
+      this.hudText.text = "HP: ";
+      for (let i = 0; i < scene.player.getHealth(); i++) {
+        this.hudText.text += "O";
+      }
+      this.hudText.text += `\n${scene.enemies.countLiving()} enemies left`;
+    }
+    else if (this.state == 'intermission') {
+      this.hudText.text = `Entering Level ${this.levelIndex}!`;
+    }
   }
 
   /**
@@ -44,7 +78,7 @@ class GameScene {
     const bot = top + sideLen * PPT;
     const right = left + sideLen * PPT;
     const plop = (x, y) => {
-      const wall = new StaticEnv(this, x, y, 'inca32', 4);
+      new StaticEnv(this, x, y, 'inca32', 4);
     }
     for (let i = 0; i < sideLen; i++) {
       plop(left + i * PPT, top - PPT);
@@ -60,26 +94,60 @@ class GameScene {
       const x = col * PPT + left;
       const y = row * PPT + top;
       if (c == 'P') {
-        this.player = new NinjaPlayer(this, x, y);
+        new NinjaPlayer(this, x, y);
       }
       else if (c == 'T') {
-        const T = new Turret(this, x, y);
+        new Turret(this, x, y);
       }
       else if (c == 'O') {
-        const o = new BreakableWall(this, x, y);
+        new BreakableWall(this, x, y);
       }
       else if (c == 'X') {
         new StaticEnv(this, x, y);
       }
     }
+
+    if (this.player == null) {
+      throw new Error("No player in level!");
+    }
+    if (this.enemies.countLiving() == 0) {
+      throw new Error("No enemies in level!");
+    }
+  }
+
+  clear() {
+    this.player.destroy();
+    this.environment.destroy();
+    this.enemies.destroy();
+    this.bullets.destroy();
+
+    this.environment = this.phaserGame.add.group();
+    this.enemies = this.phaserGame.add.group();
+    this.bullets = this.phaserGame.add.group();
+    this.player = null;
+
   }
 
   update() {
+    this.updateHud();
+
     this.myCollide(this.player, this.environment);
     this.myCollide(this.player, this.enemies);
     this.myCollide(this.player, this.bullets);
     this.myCollide(this.enemies, this.environment);
     this.myCollide(this.bullets, this.environment);
+
+    if (this.state == 'playing') {
+      if (this.enemies.countLiving() == 0) {
+        this.state = 'intermission';
+        this.levelIndex++;
+        this.phaserGame.time.events.add(3000, () => {
+          this.state = 'playing';
+          this.clear();
+          this.spawnScene(LEVELS[this.levelIndex]);
+        });
+      }
+    }
   }
 
   myCollide(aa, bb) {
@@ -107,17 +175,6 @@ let game;
 
 /** @type {GameScene} */
 let scene;
-
-/** @type {Phaser.Text} */
-var hudText;
-
-function updateHud() {
-
-  hudText.text = "HP: ";
-  for (let i = 0; i < scene.player.getHealth(); i++) {
-    hudText.text += "O";
-  }
-}
 
 /** @type {Phaser.Particles.Arcade.Emitter} */
 var scoreFx;
@@ -151,8 +208,6 @@ function create() {
   game.add.text(game.world.width / 2 - 100, game.world.height / 2 - 140,
     'Tap WASD to fly\nDouble-tap to dash', { font: 'Courier New', fontSize: '24px', fill: '#fff' });
 
-  hudText = game.add.text(game.camera.x + 10, game.camera.y + 10, 'dd', { font: 'Courier New', fontSize: '24px', fill: '#fff' });
-  hudText.fixedToCamera = true;
 
   scoreFx = game.add.emitter(0, 0, 100);
   scoreFx.makeParticles('star');
@@ -176,7 +231,6 @@ function triggerSlowMo(slowFactor, durationMs) {
 
 function update() {
   scene.update();
-  updateHud();
   updateCamera();
 }
 
@@ -198,9 +252,11 @@ function updateCamera() {
   const shakeWave = Math.sin(Date.now() / 1000 * 2 * Math.PI * 10);
 
   const player = scene.player;
-  game.camera.focusOnXY(
-    player.x + shakeX * shakeWave,
-    player.y + shakeY * shakeWave);
+  if (player) {
+    game.camera.focusOnXY(
+      player.x + shakeX * shakeWave,
+      player.y + shakeY * shakeWave);
+  }
 }
 
 function render() {
