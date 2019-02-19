@@ -125,6 +125,17 @@ class GameScene {
 
   }
 
+  countdownToLevel(ms) {
+    this.state = 'countdown';
+    this.hudText.text = 'Get ready..'
+    this.clear();
+    this.spawnScene(LEVELS[this.levelIndex]);
+    triggerSlowMo(100, ms);
+    this.phaserGame.time.events.add(ms, () => {
+      this.state = 'playing';
+    });
+  }
+
   update() {
     this.updateHud();
 
@@ -137,18 +148,23 @@ class GameScene {
     if (this.state == 'playing') {
       if (this.enemies.countLiving() == 0) {
         this.state = 'intermission';
-        this.hudText.text = 'LEVEL CLEAR!';
+        this.hudText.text = '!! LEVEL CLEAR !!';
+        addShake(50, 50);
+        triggerSlowMo(5, 3000);
         this.levelIndex++;
         this.phaserGame.time.events.add(3000, () => {
-          this.state = 'countdown';
-          this.hudText.text = 'Get ready..'
-          this.clear();
-          this.spawnScene(LEVELS[this.levelIndex]);
-          triggerSlowMo(10, 3000);
-          this.phaserGame.time.events.add(3000, () => {
-            this.state = 'playing';
-          })
+          this.countdownToLevel(3000);
         });
+      }
+
+      if (this.player.getHealth() <= 0) {
+        this.state = 'gameover';
+        this.hudText.text = '!! GAME OVER !!';
+        addShake(10, 10);
+        triggerSlowMo(5, 2000);
+        this.phaserGame.time.events.add(2000, () => {
+          this.countdownToLevel(0);
+        })
       }
     }
   }
@@ -223,12 +239,22 @@ function hitPause(durationMs) {
   triggerSlowMo(100, durationMs);
 }
 
+let slowMoEntries = new Set();
+function realizeSlowestSlowMoEntry_() {
+  let bestFactor = 1;
+  slowMoEntries.forEach(e => bestFactor = Math.max(e.factor, bestFactor));
+  game.time.slowMotion = bestFactor;
+  game.time.desiredFps = 60 + (bestFactor > 1 ? bestFactor * 60 : 0);
+  // TODO this doesn't seem to affect animations..
+}
+
 function triggerSlowMo(slowFactor, durationMs) {
-  game.time.slowMotion = slowFactor;
-  game.time.desiredFps = 60 + (slowFactor > 1 ? slowFactor * 60 : 0);
+  const entry = { factor: slowFactor };
+  slowMoEntries.add(entry);
+  realizeSlowestSlowMoEntry_();
   game.time.events.add(durationMs, () => {
-    game.time.slowMotion = 1;
-    game.time.desiredFps = 60;
+    slowMoEntries.delete(entry);
+    realizeSlowestSlowMoEntry_();
   });
 }
 
@@ -244,7 +270,7 @@ function addShake(x, y) {
 
 function updateCamera() {
   // Yes, I realize this isn't rate-independent.
-  const gamma = 0.9;
+  const gamma = 0.93;
   shakeX *= gamma;
   if (shakeX < 0.1) shakeX = 0;
   shakeY *= gamma;
@@ -257,8 +283,8 @@ function updateCamera() {
   const player = scene.player;
   if (player) {
     game.camera.focusOnXY(
-      player.x + shakeX * shakeWave,
-      player.y + shakeY * shakeWave);
+      player.x + shakeX * randBetween(-1, 1),
+      player.y + shakeY * randBetween(-1, 1));
   }
 }
 

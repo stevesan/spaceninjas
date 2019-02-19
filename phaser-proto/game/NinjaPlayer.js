@@ -34,7 +34,7 @@ class NinjaPlayer extends GameObject {
     this.body.bounce.y = 0;
     this.body.gravity.y = 0;
 
-    this.health = 3;
+    this.health = 1;
     this.game = game;
     this.state = 'idle';
     this.currentDir = 0;
@@ -47,6 +47,9 @@ class NinjaPlayer extends GameObject {
   * @param {GameObject} other 
   */
   onOverlap(other) {
+    if (this.isDead()) {
+      return;
+    }
     if (other.isDamageable() && this.isDashing()) {
       other.onDamage(this, 1);
       if (other.isDead()) {
@@ -88,8 +91,18 @@ class NinjaPlayer extends GameObject {
     this.setVelocity_(this.currentDir, DASHING_SPEED);
   }
 
+  isDead() {
+    return this.getHealth() <= 0;
+  }
+
   update() {
-    this.animations.play(this.getState());
+    if (this.isDead()) {
+      this.tint = 0x444;
+      this.animations.stop(this.getState());
+    }
+    else {
+      this.animations.play(this.getState());
+    }
   }
 
   getState() {
@@ -140,6 +153,9 @@ class NinjaPlayer extends GameObject {
    * @param {number} dir 
    */
   onDirPressed(dir) {
+    if (this.isDead()) {
+      return;
+    }
     const isDash = dir == this.lastPressedDir
       && (Date.now() - this.lastDirPressTime) < DOUBLE_TAP_MS;
     this.lastPressedDir = dir;
@@ -161,6 +177,9 @@ class NinjaPlayer extends GameObject {
   }
 
   onHitWall(dir) {
+    if (this.isDead()) {
+      return;
+    }
     this.state = 'idle';
     this.body.velocity.set(0, 0);
     this.setDirection_(opposite(dir));
