@@ -79,7 +79,7 @@ class NinjaPlayer extends GameObject {
   }
 
   onDamage(other, dp) {
-    if (!this.isDamageable()) {
+    if (!this.isDamageable() || this.isDead()) {
       return;
     }
     this.health -= dp;
