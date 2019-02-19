@@ -28,7 +28,15 @@ class GameScene {
 
     this.spawnScene(LEVELS[this.levelIndex]);
 
-    this.hudText = game.add.text(game.camera.x + 10, game.camera.y + 10, 'dd', { font: 'Courier New', fontSize: '24px', fill: '#fff' });
+    this.hudText = game.add.text(game.camera.x, game.camera.y + 15, 'dd',
+      {
+        font: 'Courier New',
+        fontSize: '24px',
+        fill: '#fff',
+        boundsAlignH: 'center'
+      });
+    this.hudText.setTextBounds(0, 0, game.camera.width, game.camera.height);
+    this.hudText.setShadow(3, 3, 'rgba(0,0,0,0.5)', 2);
     this.hudText.fixedToCamera = true;
 
     this.setupKeys();
@@ -57,11 +65,11 @@ class GameScene {
 
   updateHud() {
     if (this.state == 'playing') {
-      this.hudText.text = "HP: ";
-      for (let i = 0; i < scene.player.getHealth(); i++) {
-        this.hudText.text += "O";
-      }
-      this.hudText.text += `\n${scene.enemies.countLiving()} enemies left`;
+      // this.hudText.text = "HP: ";
+      // for (let i = 0; i < scene.player.getHealth(); i++) {
+      // this.hudText.text += "O";
+      // }
+      this.hudText.text = `${scene.enemies.countLiving()} enemies left`;
     }
   }
 
@@ -235,9 +243,9 @@ function create() {
   PRELOAD_CREATE_LIST.forEach(asset => asset.create());
   game.physics.startSystem(Phaser.Physics.ARCADE);
 
-  game.add.text(game.world.width / 2 - 100, game.world.height / 2 - 140,
+  const wasd = game.add.text(game.world.width / 2 - 100, game.world.height / 2 + 100,
     'Tap WASD to fly\nDouble-tap to dash', { font: 'Courier New', fontSize: '24px', fill: '#fff' });
-
+  wasd.setShadow(3, 3, '#000', 2);
 
   scoreFx = game.add.emitter(0, 0, 100);
   scoreFx.makeParticles('star');
