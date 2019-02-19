@@ -43,10 +43,16 @@ class GameScene {
       goRight: Phaser.Keyboard.D,
     });
 
-    keys.goUp.onDown.add(() => this.player.onDirPressed(0));
-    keys.goLeft.onDown.add(() => this.player.onDirPressed(1));
-    keys.goDown.onDown.add(() => this.player.onDirPressed(2));
-    keys.goRight.onDown.add(() => this.player.onDirPressed(3));
+    keys.goUp.onDown.add(() => this.onDirPressed_(0));
+    keys.goLeft.onDown.add(() => this.onDirPressed_(1));
+    keys.goDown.onDown.add(() => this.onDirPressed_(2));
+    keys.goRight.onDown.add(() => this.onDirPressed_(3));
+  }
+
+  onDirPressed_(dir) {
+    if (this.state == 'playing') {
+      this.player.onDirPressed(dir);
+    }
   }
 
   updateHud() {
