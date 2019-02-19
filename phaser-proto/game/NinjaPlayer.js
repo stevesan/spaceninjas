@@ -14,24 +14,25 @@ class NinjaPlayer extends GameObject {
    */
   constructor(scene, x, y) {
     const game = scene.phaserGame;
-    const sprite = game.add.sprite(x, y, 'ninja');
-    super(scene, sprite);
-    sprite.scale.setTo(CPPSP, CPPSP);
+    super(scene, x, y, 'ninja', 0);
+    scene.player = this;
+    game.add.existing(this);
+    this.scale.setTo(CPPSP, CPPSP);
 
-    sprite.animations.add('idle', [2, 10], 4, true);
-    sprite.animations.add('dashing', [0, 8], 16, true);
-    sprite.animations.add('flying', [1, 9], 12, true);
+    this.animations.add('idle', [2, 10], 4, true);
+    this.animations.add('dashing', [0, 8], 16, true);
+    this.animations.add('flying', [1, 9], 12, true);
 
     // Center pivot
-    const spriteBounds = sprite.getBounds();
+    const spriteBounds = this.getBounds();
     const L = Math.min(spriteBounds.width, spriteBounds.height);
-    sprite.pivot.set(spriteBounds.width / 2, L / 2);
+    this.pivot.set(spriteBounds.width / 2, L / 2);
 
     // This is probably right..but messes up our physics right now.
     // player.anchor.set(0.5, 0.5);
-    game.physics.arcade.enable(sprite);
-    sprite.body.bounce.y = 0;
-    sprite.body.gravity.y = 0;
+    game.physics.arcade.enable(this);
+    this.body.bounce.y = 0;
+    this.body.gravity.y = 0;
 
     const keys = game.input.keyboard.addKeys({
       goUp: Phaser.Keyboard.W,
@@ -47,7 +48,6 @@ class NinjaPlayer extends GameObject {
 
     this.health = 3;
     this.game = game;
-    this.sprite = sprite;
     this.state = 'idle';
     this.currentDir = 0;
     this.lastDirPressTime = 0;
@@ -71,8 +71,8 @@ class NinjaPlayer extends GameObject {
    * @param {GameObject} other 
    */
   onCollide(other) {
-    if (startedTouchingInAnyDir(this.sprite.body)) {
-      this.onHitWall(getTouchingDir(this.sprite.body));
+    if (startedTouchingInAnyDir(this.body)) {
+      this.onHitWall(getTouchingDir(this.body));
     }
   }
 
@@ -100,6 +100,10 @@ class NinjaPlayer extends GameObject {
     this.setVelocity_(this.currentDir, DASHING_SPEED);
   }
 
+  update() {
+    this.animations.play(this.getState());
+  }
+
   getState() {
     return this.state;
   }
@@ -109,7 +113,7 @@ class NinjaPlayer extends GameObject {
   }
 
   setDirection_(dir) {
-    const sprite = this.sprite;
+    const sprite = this;
     sprite.rotation = [0, -0.25, 0.5, 0.25][dir] * Math.PI * 2;
     this.currentDir = dir;
 
@@ -124,7 +128,7 @@ class NinjaPlayer extends GameObject {
   }
 
   setVelocity_(dir, speed) {
-    const player = this.sprite;
+    const player = this;
     player.body.velocity.set(
       [0, -speed, 0, speed][dir],
       [-speed, 0, speed, 0][dir]
@@ -168,7 +172,7 @@ class NinjaPlayer extends GameObject {
 
   onHitWall(dir) {
     this.state = 'idle';
-    this.sprite.body.velocity.set(0, 0);
+    this.body.velocity.set(0, 0);
     this.setDirection_(opposite(dir));
     PLAYER_LAND_AUDIO.get().play();
     // DASH_AUDIO.get().stop();

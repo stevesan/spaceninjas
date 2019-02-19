@@ -1,3 +1,4 @@
+
 const LEVEL1 =
   'T                                      T' +
   '                                        ' +
@@ -14,13 +15,13 @@ const LEVEL1 =
   '                                        ' +
   '                                        ' +
   '                                        ' +
-  '               T                        ' +
+  '               L                        ' +
+  '               L                        ' +
+  '               L     O          T       ' +
+  '               L                        ' +
+  '                     P                  ' +
+  '                     X                  ' +
   '                                        ' +
-  '                XXXXXXXXX       T        ' +
-  '                        X               ' +
-  '                     P  X               ' +
-  '                        X               ' +
-  '                        X               ' +
   '                                        ' +
   '            T               T           ' +
   '                                        ' +
@@ -39,3 +40,5 @@ const LEVEL1 =
   '                                        ' +
   '                                        ' +
   'T                                      T';
+
+const LEVELS = [LEVEL1];

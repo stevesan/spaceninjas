@@ -8,10 +8,10 @@ class TurretBullet extends GameObject {
    */
   constructor(scene, x, y) {
     const game = scene.phaserGame;
-    super(scene, game.add.sprite(x, y, 'cannonball', 0));
-    scene.bullets.push(this.sprite);
-    this.sprite.anchor.set(0.5, 0.5);
-    game.physics.arcade.enable(this.sprite);
+    super(scene, x, y, 'cannonball', 0);
+    scene.bullets.add(this);
+    this.anchor.set(0.5, 0.5);
+    game.physics.arcade.enable(this);
     this.lifetime = 3;
   }
 
@@ -44,15 +44,15 @@ class Turret extends GameObject {
    */
   constructor(scene, x, y) {
     const game = scene.phaserGame;
-    super(scene, game.add.sprite(x, y, 'powerup', 1));
-    scene.enemies.push(this.sprite);
-    this.sprite.anchor.set(0.5, 0.5);
-    this.sprite.scale.setTo(2, 2);
+    super(scene, x, y, 'powerup', 1);
+    scene.enemies.add(this);
+    this.anchor.set(0.5, 0.5);
+    this.scale.setTo(2, 2);
     this.game = game;
     this.cooldown = Math.random() * COOLDOWN_S;
 
-    game.physics.arcade.enable(this.sprite);
-    this.sprite.body.immovable = true;
+    game.physics.arcade.enable(this);
+    this.body.immovable = true;
   }
 
   isDamageable() { return true; }
@@ -64,18 +64,18 @@ class Turret extends GameObject {
     addShake(8, 8);
   }
 
-  isDead() { return this.isDestroyed(); }
+  isDead() { return !this.alive; }
 
   update() {
     // TODO effectively disable ourselves if player is not visible
     this.cooldown -= this.game.time.physicsElapsed;
     if (this.cooldown < 0) {
-      const bullet = new TurretBullet(this.scene, this.sprite.x, this.sprite.y);
+      const bullet = new TurretBullet(this.scene, this.x, this.y);
 
-      const player = this.scene.player.sprite;
-      const velocity = fromTo(this.sprite, player);
+      const player = this.scene.player;
+      const velocity = fromTo(this, player);
       velocity.setMagnitude(100);
-      bullet.sprite.body.velocity.copyFrom(velocity);
+      bullet.body.velocity.copyFrom(velocity);
       this.cooldown = COOLDOWN_S;
     }
   }

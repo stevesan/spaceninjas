@@ -11,18 +11,16 @@ class GameScene {
    * @param {Phaser.Game} phaserGame 
    */
   constructor(phaserGame) {
+    this.levelIndex = 0;
     this.phaserGame = phaserGame;
 
     // Sprite arrays
-    /** @type {Array<Phaser.Sprite>} */
-    this.environment = [];
-    /** @type {Array<Phaser.Sprite>} */
-    this.enemies = [];
-    /** @type {Array<Phaser.Sprite>} */
-    this.bullets = [];
-
-    /** @type {Array<GameObject>} */
-    this.objects = [];
+    /** @type {Phaser.Group} */
+    this.environment = phaserGame.add.group();
+    /** @type {Phaser.Group} */
+    this.enemies = phaserGame.add.group();
+    /** @type {Phaser.Group} */
+    this.bullets = phaserGame.add.group();
 
     /** @type {NinjaPlayer} */
     this.player = null;
@@ -36,7 +34,10 @@ class GameScene {
    */
   spawnScene(levelString) {
     // Create walls
-    const sideLen = Math.sqrt(levelString.length);
+    const sideLen = Math.floor(Math.sqrt(levelString.length));
+    if (sideLen * sideLen != levelString.length) {
+      throw new Error("level string length must be a perfect square.")
+    }
     const PPT = 32;
     const left = snap(game.world.width / 2 - sideLen / 2 * PPT, 32);
     const top = snap(game.world.height / 2 - sideLen / 2 * PPT, 32);
@@ -44,7 +45,6 @@ class GameScene {
     const right = left + sideLen * PPT;
     const plop = (x, y) => {
       const wall = new StaticEnv(this, x, y, 'inca32', 4);
-      this.environment.push(wall.sprite);
     }
     for (let i = 0; i < sideLen; i++) {
       plop(left + i * PPT, top - PPT);
@@ -65,51 +65,36 @@ class GameScene {
       else if (c == 'T') {
         const T = new Turret(this, x, y);
       }
-      else if (c == 'X') {
+      else if (c == 'O') {
         const o = new BreakableWall(this, x, y);
+      }
+      else if (c == 'X') {
+        new StaticEnv(this, x, y);
       }
     }
   }
 
-  clear() {
-    this.objects.forEach(o => o.destroy());
-    this.objects.length = 0;
-    this.environment.length = 0;
-    this.enemies.length = 0;
-    this.bullets.length = 0;
-    this.player = null;
-  }
-
   update() {
-    this.objects.forEach(go => {
-      if (!go.isDestroyed()) {
-        go.update(this);
-      }
-    });
-    this.myCollide(this.player.sprite, this.environment);
-    this.myCollide(this.player.sprite, this.enemies);
-    this.myCollide(this.player.sprite, this.bullets);
+    this.myCollide(this.player, this.environment);
+    this.myCollide(this.player, this.enemies);
+    this.myCollide(this.player, this.bullets);
     this.myCollide(this.enemies, this.environment);
     this.myCollide(this.bullets, this.environment);
-  }
-
-  getObj(sprite) {
-    return sprite.__gameObject__;
   }
 
   myCollide(aa, bb) {
     const arcadePhysics = this.phaserGame.physics.arcade;
     arcadePhysics.collide(aa, bb,
       (a, b) => {
-        this.getObj(a).onCollide(this.getObj(b));
-        this.getObj(b).onCollide(this.getObj(a));
+        a.onCollide(b);
+        b.onCollide(a);
       },
       (a, b) => {
         // If either one wants to ignore, then by convention, we ignore.
-        if (this.getObj(a).onOverlap(this.getObj(b)) === false) {
+        if (a.onOverlap(b) === false) {
           return false;
         }
-        if (this.getObj(b).onOverlap(this.getObj(a)) === false) {
+        if (b.onOverlap(a) === false) {
           return false;
         }
         return true;
@@ -127,7 +112,11 @@ let scene;
 var hudText;
 
 function updateHud() {
-  hudText.text = `HP ${scene.player.getHealth()}`;
+
+  hudText.text = "HP: ";
+  for (let i = 0; i < scene.player.getHealth(); i++) {
+    hudText.text += "O";
+  }
 }
 
 /** @type {Phaser.Particles.Arcade.Emitter} */
@@ -138,7 +127,7 @@ var shakeY = 0;
 
 function preload() {
   PRELOAD_CREATE_LIST.forEach(asset => asset.preload());
-  game.stage.backgroundColor = '#2e0e39';
+  // TODO have these preloads be declared in the Object files, like audio.
   game.load.image('ground', 'phaser_tutorial_02/assets/platform.png');
   game.load.image('star', 'phaser_tutorial_02/assets/star.png');
   game.load.image('baddie', 'phaser_tutorial_02/assets/baddie.png');
@@ -154,12 +143,13 @@ function preload() {
 const coinAudio = new PreloadedAudio("wavs/coin.wav");
 
 function create() {
+  game.stage.backgroundColor = '#2e0e39';
   game.world.setBounds(0, 0, 2000, 2000);
   PRELOAD_CREATE_LIST.forEach(asset => asset.create());
   game.physics.startSystem(Phaser.Physics.ARCADE);
 
-  game.add.text(game.world.width / 2 - 100, game.world.height / 2 - 100,
-    'WASD to move\nDouble-tap to dash', { font: 'Courier New', fontSize: '24px', fill: '#fff' });
+  game.add.text(game.world.width / 2 - 100, game.world.height / 2 - 140,
+    'Tap WASD to fly\nDouble-tap to dash', { font: 'Courier New', fontSize: '24px', fill: '#fff' });
 
   hudText = game.add.text(game.camera.x + 10, game.camera.y + 10, 'dd', { font: 'Courier New', fontSize: '24px', fill: '#fff' });
   hudText.fixedToCamera = true;
@@ -186,13 +176,8 @@ function triggerSlowMo(slowFactor, durationMs) {
 
 function update() {
   scene.update();
-  const player = scene.player.sprite;
-  const ninja = scene.player;
   updateHud();
   updateCamera();
-
-
-  player.animations.play(ninja.getState());
 }
 
 function addShake(x, y) {
@@ -212,7 +197,7 @@ function updateCamera() {
   // TODO: we should snap this to our retro-pixel size
   const shakeWave = Math.sin(Date.now() / 1000 * 2 * Math.PI * 10);
 
-  const player = scene.player.sprite;
+  const player = scene.player;
   game.camera.focusOnXY(
     player.x + shakeX * shakeWave,
     player.y + shakeY * shakeWave);

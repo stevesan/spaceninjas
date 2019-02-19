@@ -1,28 +1,11 @@
-class GameObject {
+class GameObject extends Phaser.Sprite {
   /**
    * @param {GameScene} scene
-   * @param {Phaser.Sprite} sprite 
    */
-  constructor(scene, sprite) {
+  constructor(scene, x, y, key, frame) {
+    super(scene.phaserGame, x, y, key, frame);
     this.scene = scene;
-    this.sprite = sprite;
-    sprite.__gameObject__ = this;
-    scene.objects.push(this);
   }
-  destroy() {
-    if (!this.isDestroyed()) {
-      this.sprite.kill();
-      this.sprite = null;
-    }
-  }
-  isDestroyed() {
-    return this.sprite == null;
-  }
-  /**
-   * 
-   * @param {GameScene} state 
-   */
-  update(state) { }
   /**
    * @param {GameObject} other 
    */
@@ -32,18 +15,6 @@ class GameObject {
    * @returns {boolean} False if we should ignore collisions with other this frame.
    */
   onOverlap(other) { return true; }
-  /**
-   * @return {?Player}
-   */
-  getPlayer() { return null; }
-  /**
-   * @return {?Bullet}
-   */
-  getBullet() { return null; }
-  /**
-   * @return {?EnvStatic}
-   */
-  getEnvStatic() { return null; }
 
   isDamageable() { return false; }
 
