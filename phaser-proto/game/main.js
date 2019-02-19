@@ -128,11 +128,13 @@ class GameScene {
   countdownToLevel(ms) {
     this.state = 'countdown';
     this.hudText.text = 'Get ready..'
+    this.phaserGame.stage.backgroundColor = '#1e0020';
     this.clear();
     this.spawnScene(LEVELS[this.levelIndex]);
     triggerSlowMo(100, ms);
     this.phaserGame.time.events.add(ms, () => {
       this.state = 'playing';
+      this.phaserGame.stage.backgroundColor = '#2e0e39';
     });
   }
 
@@ -149,6 +151,7 @@ class GameScene {
       if (this.enemies.countLiving() == 0) {
         this.state = 'intermission';
         this.hudText.text = '!! LEVEL CLEAR !!';
+        this.phaserGame.stage.backgroundColor = '#1e4e54';
         addShake(50, 50);
         triggerSlowMo(5, 3000);
         this.levelIndex++;
@@ -160,6 +163,8 @@ class GameScene {
       if (this.player.getHealth() <= 0) {
         this.state = 'gameover';
         this.hudText.text = '!! GAME OVER !!';
+        this.phaserGame.stage.backgroundColor = '#1e0020';
+
         addShake(10, 10);
         triggerSlowMo(5, 2000);
         this.phaserGame.time.events.add(2000, () => {

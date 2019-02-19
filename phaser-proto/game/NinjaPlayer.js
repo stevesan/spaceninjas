@@ -97,7 +97,7 @@ class NinjaPlayer extends GameObject {
 
   update() {
     if (this.isDead()) {
-      this.tint = 0x444;
+      this.tint = 0xaaaaaa;
       this.animations.stop(this.getState());
     }
     else {
