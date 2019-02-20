@@ -247,9 +247,9 @@ function preload() {
   game.load.image('star', 'phaser_tutorial_02/assets/star.png');
   game.load.image('baddie', 'phaser_tutorial_02/assets/baddie.png');
   game.load.spritesheet('dude', 'phaser_tutorial_02/assets/dude.png', 32, 48);
-  game.load.spritesheet('ninja', 'sprites/ninja-sheet.png', 16, 32);
+  game.load.spritesheet('ninja', 'sprites/ninja-sheet.png', 32, 64);
   game.load.spritesheet('inca32', 'sprites/inca_front.png', 32, 32);
-  game.load.spritesheet('powerup', 'sprites/Spaceship-shooter-environment/spritesheets/power-up.png', 16, 16);
+  game.load.spritesheet('powerup', 'sprites/Spaceship-shooter-environment/spritesheets/power-up.png', 32, 32);
   game.load.spritesheet('shots', 'sprites/Spaceship-shooter-environment/spritesheets/laser-bolts.png', 16, 16);
   game.load.image('turret', 'sprites/topdown_shooter/guns/cannon/cannon_down.png');
   game.load.image('cannonball', 'sprites/topdown_shooter/other/cannonball.png')
@@ -330,7 +330,7 @@ function updateCamera() {
 
 function render() {
   // game.debug.rectangle(player.getBounds(), '#ff0000', false);
-  // game.debug.body(player);
+  game.debug.body(scene.player);
   // const t = player.body.touching;
   // game.debug.text(`body touch: ${t['up'] ? 'u' : ' '}${t['left'] ? 'l' : ' '}${t['down'] ? 'd' : ' '}${t['right'] ? 'r' : ' '}`, 0, 50);
 }

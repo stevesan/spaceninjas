@@ -17,22 +17,20 @@ class NinjaPlayer extends GameObject {
     super(scene, x, y, 'ninja', 0);
     scene.player = this;
     game.add.existing(this);
-    this.scale.setTo(CPPSP, CPPSP);
 
     this.animations.add('idle', [2, 10], 4, true);
     this.animations.add('dashing', [0, 8], 16, true);
     this.animations.add('flying', [1, 9], 12, true);
 
-    // Center pivot
-    const spriteBounds = this.getBounds();
-    const L = Math.min(spriteBounds.width, spriteBounds.height);
-    this.pivot.set(spriteBounds.width / 2, L / 2);
-
-    // This is probably right..but messes up our physics right now.
-    // player.anchor.set(0.5, 0.5);
     game.physics.arcade.enable(this);
     this.body.bounce.y = 0;
     this.body.gravity.y = 0;
+
+    // Position sprite and collider so they're offset and rotate correctly.
+    const spriteBounds = this.getBounds();
+    const L = Math.min(spriteBounds.width, spriteBounds.height);
+    this.anchor.set(0.5, 0.25);
+    this.body.setSize(L, L, 0, 0);
 
     this.health = 1;
     this.state = 'idle';
@@ -124,15 +122,6 @@ class NinjaPlayer extends GameObject {
     const sprite = this;
     sprite.rotation = [0, -0.25, 0.5, 0.25][dir] * Math.PI * 2;
     this.currentDir = dir;
-
-    // Update collider
-    const ow = 16;
-    const oh = this.isIdle() ? 16 : 32;
-    sprite.body.setSize(
-      [ow, oh, ow, oh][dir],
-      [oh, ow, oh, ow][dir],
-      [0, 0, -ow, -oh][dir],
-      [0, -ow, -oh, 0][dir]);
   }
 
   setVelocity_(dir, speed) {

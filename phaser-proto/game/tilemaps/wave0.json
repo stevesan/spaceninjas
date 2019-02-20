@@ -19,62 +19,50 @@
          "name":"objects",
          "objects":[
                 {
-                 "gid":65,
-                 "height":16,
-                 "id":7,
+                 "gid":1,
+                 "height":32,
+                 "id":12,
                  "name":"",
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":16,
+                 "width":32,
                  "x":832,
-                 "y":832
+                 "y":800
                 }, 
                 {
-                 "gid":65,
-                 "height":16,
-                 "id":8,
+                 "gid":1,
+                 "height":32,
+                 "id":13,
                  "name":"",
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":16,
+                 "width":32,
                  "x":1024,
                  "y":832
-                }, 
-                {
-                 "gid":67,
-                 "height":16,
-                 "id":9,
-                 "name":"",
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":16,
-                 "x":832,
-                 "y":992
-                }, 
-                {
-                 "gid":67,
-                 "height":16,
-                 "id":10,
-                 "name":"",
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":16,
-                 "x":1024,
-                 "y":992
                 }, 
                 {
                  "gid":3,
-                 "height":16,
-                 "id":11,
+                 "height":32,
+                 "id":14,
                  "name":"",
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":16,
+                 "width":32,
+                 "x":928,
+                 "y":992
+                }, 
+                {
+                 "gid":7,
+                 "height":32,
+                 "id":15,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
                  "x":928,
                  "y":896
                 }],
@@ -85,42 +73,23 @@
          "y":0
         }],
  "nextlayerid":5,
- "nextobjectid":12,
+ "nextobjectid":16,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.2.2",
  "tileheight":32,
  "tilesets":[
         {
-         "columns":8,
-         "firstgid":1,
-         "image":"..\/sprites\/ninja-sheet.png",
-         "imageheight":128,
-         "imagewidth":128,
-         "margin":0,
-         "name":"ninja",
-         "spacing":0,
-         "tilecount":64,
-         "tileheight":16,
-         "tiles":[
-                {
-                 "id":2,
-                 "type":"playerStart"
-                }],
-         "tilewidth":16,
-         "transparentcolor":"#faffea"
-        }, 
-        {
          "columns":2,
-         "firstgid":65,
+         "firstgid":1,
          "image":"..\/sprites\/Spaceship-shooter-environment\/spritesheets\/power-up.png",
-         "imageheight":32,
-         "imagewidth":32,
+         "imageheight":64,
+         "imagewidth":64,
          "margin":0,
          "name":"powerup",
          "spacing":0,
          "tilecount":4,
-         "tileheight":16,
+         "tileheight":32,
          "tiles":[
                 {
                  "id":0,
@@ -130,7 +99,26 @@
                  "id":2,
                  "type":"greyTurret"
                 }],
-         "tilewidth":16,
+         "tilewidth":32,
+         "transparentcolor":"#faffea"
+        }, 
+        {
+         "columns":8,
+         "firstgid":5,
+         "image":"..\/sprites\/ninja-sheet.png",
+         "imageheight":256,
+         "imagewidth":256,
+         "margin":0,
+         "name":"ninja",
+         "spacing":0,
+         "tilecount":64,
+         "tileheight":32,
+         "tiles":[
+                {
+                 "id":2,
+                 "type":"playerStart"
+                }],
+         "tilewidth":32,
          "transparentcolor":"#faffea"
         }],
  "tilewidth":32,
