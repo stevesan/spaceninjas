@@ -15,6 +15,7 @@ class GameScene {
     this.levelIndex = 0;
     this.phaserGame = phaserGame;
 
+
     // Sprite arrays
     /** @type {Phaser.Group} */
     this.environment = phaserGame.add.group();
@@ -23,10 +24,22 @@ class GameScene {
     /** @type {Phaser.Group} */
     this.bullets = phaserGame.add.group();
 
+    // Use this group to make sure all game objects always render under the HUD (created later)
+    this.gameGroup = phaserGame.add.group();
+    this.gameGroup.add(this.environment);
+    this.gameGroup.add(this.enemies);
+    this.gameGroup.add(this.bullets);
+
     /** @type {NinjaPlayer} */
     this.player = null;
 
     this.spawnScene(LEVELS[this.levelIndex]);
+
+    this.map = game.add.tilemap('level_base');
+    this.map.addTilesetImage('inca_front', 'inca32');
+    this.mapLayer = this.map.createLayer('Tile Layer 1');
+    this.map.setCollisionByExclusion([], true, this.mapLayer);
+    this.mapLayer.resizeWorld();
 
     this.hudText = game.add.text(game.camera.x, game.camera.y + 15, 'dd',
       {
@@ -38,12 +51,6 @@ class GameScene {
     this.hudText.setTextBounds(0, 0, game.camera.width, game.camera.height);
     this.hudText.setShadow(2, 2, 'rgba(0,0,0,0.5)', 2);
     this.hudText.fixedToCamera = true;
-
-    this.map = game.add.tilemap('level_base');
-    this.map.addTilesetImage('inca_front', 'inca32');
-    this.mapLayer = this.map.createLayer('Tile Layer 1');
-    this.map.setCollisionByExclusion([], true, this.mapLayer);
-    this.mapLayer.resizeWorld();
 
     this.setupKeys();
   }
@@ -130,6 +137,11 @@ class GameScene {
     this.environment = this.phaserGame.add.group();
     this.enemies = this.phaserGame.add.group();
     this.bullets = this.phaserGame.add.group();
+
+    this.gameGroup.add(this.environment);
+    this.gameGroup.add(this.enemies);
+    this.gameGroup.add(this.bullets);
+
     this.player = null;
 
   }
@@ -137,10 +149,10 @@ class GameScene {
   countdownToLevel(ms) {
     wasd.visible = this.levelIndex == 0;
     this.state = 'countdown';
-    this.hudText.text = 'Get ready..'
     this.phaserGame.stage.backgroundColor = '#1e0020';
     this.clear();
     this.spawnScene(LEVELS[this.levelIndex]);
+    this.hudText.text = 'Get ready..'
     triggerSlowMo(100, ms);
     this.phaserGame.time.events.add(ms, () => {
       this.state = 'playing';
@@ -298,7 +310,6 @@ function updateCamera() {
 
   // MINOR BUG: camera fidgets in non-pleasing way when you run into a wall..
   // TODO: we should snap this to our retro-pixel size
-  const shakeWave = Math.sin(Date.now() / 1000 * 2 * Math.PI * 10);
 
   const player = scene.player;
   if (player) {
