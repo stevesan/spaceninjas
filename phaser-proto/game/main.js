@@ -330,7 +330,7 @@ function updateCamera() {
 
 function render() {
   // game.debug.rectangle(player.getBounds(), '#ff0000', false);
-  game.debug.body(scene.player);
+  // game.debug.body(scene.player);
   // const t = player.body.touching;
   // game.debug.text(`body touch: ${t['up'] ? 'u' : ' '}${t['left'] ? 'l' : ' '}${t['down'] ? 'd' : ' '}${t['right'] ? 'r' : ' '}`, 0, 50);
 }
