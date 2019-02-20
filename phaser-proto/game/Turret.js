@@ -69,12 +69,13 @@ class Turret extends GameObject {
     // TODO effectively disable ourselves if player is not visible
     this.cooldown -= this.game.time.physicsElapsed;
     if (this.cooldown < 0) {
-      const bullet = new TurretBullet(this.scene, this.x, this.y);
-
-      const player = this.scene.player;
-      const velocity = fromTo(this, player);
-      velocity.setMagnitude(100);
-      bullet.body.velocity.copyFrom(velocity);
+      if (this.inCamera) {
+        const bullet = new TurretBullet(this.scene, this.x, this.y);
+        const player = this.scene.player;
+        const velocity = fromTo(this, player);
+        velocity.setMagnitude(100);
+        bullet.body.velocity.copyFrom(velocity);
+      }
       this.cooldown = COOLDOWN_S;
     }
   }

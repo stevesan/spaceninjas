@@ -135,6 +135,7 @@ class GameScene {
   }
 
   countdownToLevel(ms) {
+    wasd.visible = this.levelIndex == 0;
     this.state = 'countdown';
     this.hudText.text = 'Get ready..'
     this.phaserGame.stage.backgroundColor = '#1e0020';
@@ -164,10 +165,10 @@ class GameScene {
         this.hudText.text = '!! LEVEL CLEAR !!';
         this.phaserGame.stage.backgroundColor = '#1e4e54';
         addShake(50, 50);
-        triggerSlowMo(5, 3000);
+        triggerSlowMo(5, 1500);
         this.levelIndex++;
-        this.phaserGame.time.events.add(3000, () => {
-          this.countdownToLevel(3000);
+        this.phaserGame.time.events.add(1500, () => {
+          this.countdownToLevel(1500);
         });
       }
 
@@ -177,9 +178,9 @@ class GameScene {
         this.phaserGame.stage.backgroundColor = '#1e0020';
 
         addShake(10, 10);
-        triggerSlowMo(5, 2000);
-        this.phaserGame.time.events.add(2000, () => {
-          this.countdownToLevel(0);
+        triggerSlowMo(5, 1500);
+        this.phaserGame.time.events.add(1500, () => {
+          this.countdownToLevel(500);
         })
       }
     }
@@ -217,6 +218,8 @@ var scoreFx;
 var shakeX = 0;
 var shakeY = 0;
 
+let wasd;
+
 function preload() {
   PRELOAD_CREATE_LIST.forEach(asset => asset.preload());
   // TODO have these preloads be declared in the Object files, like audio.
@@ -234,15 +237,13 @@ function preload() {
   game.load.tilemap('level_base', 'tilemaps/level_base.json', null, Phaser.Tilemap.TILED_JSON);
 }
 
-const coinAudio = new PreloadedAudio("wavs/coin.wav");
-
 function create() {
   game.stage.backgroundColor = '#2e0e39';
   game.world.setBounds(0, 0, 2000, 2000);
   PRELOAD_CREATE_LIST.forEach(asset => asset.create());
   game.physics.startSystem(Phaser.Physics.ARCADE);
 
-  const wasd = game.add.text(game.world.width / 2 - 100, game.world.height / 2 + 100,
+  wasd = game.add.text(game.world.width / 2 - 100, game.world.height / 2 + 100,
     'Tap WASD to fly\nDouble-tap to dash', { font: 'Courier New', fontSize: '24px', fill: '#fff' });
   wasd.setShadow(3, 3, '#000', 2);
 
