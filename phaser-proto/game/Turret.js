@@ -48,7 +48,6 @@ class Turret extends GameObject {
     scene.enemies.add(this);
     this.anchor.set(0.5, 0.5);
     this.scale.setTo(2, 2);
-    this.game = game;
     this.cooldown = Math.random() * COOLDOWN_S;
 
     game.physics.arcade.enable(this);

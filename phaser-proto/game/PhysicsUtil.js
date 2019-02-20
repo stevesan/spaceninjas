@@ -34,3 +34,35 @@ function getTouchingDir(body) {
   if (body.touching['right']) return 3;
   return null;
 }
+
+class WasBlockedTracker {
+  /**
+   * 
+   * @param {Phaser.Physics.Arcade.Body} body 
+   */
+  constructor(body) {
+    this.body = body;
+    this.wasBlocked = [false, false, false, false];
+  }
+
+  /**
+   * 
+   * @param {number} dir 
+   */
+  wasJustBlocked(dir) {
+    return !this.wasBlocked[dir] && this.body.blocked[DIR_STRINGS[dir]];
+  }
+
+  wasJustBlockedInAnyDir() {
+    return this.wasJustBlocked(0)
+      || this.wasJustBlocked(1)
+      || this.wasJustBlocked(2)
+      || this.wasJustBlocked(3);
+  }
+
+  updateWas() {
+    for (let i = 0; i < 4; i++) {
+      this.wasBlocked[i] = this.body.blocked[DIR_STRINGS[i]];
+    }
+  }
+}

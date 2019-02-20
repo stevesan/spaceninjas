@@ -35,34 +35,39 @@ class NinjaPlayer extends GameObject {
     this.body.gravity.y = 0;
 
     this.health = 1;
-    this.game = game;
     this.state = 'idle';
     this.currentDir = 0;
     this.lastDirPressTime = 0;
     this.origWidth = spriteBounds.width;
     this.origHeight = spriteBounds.height;
+
+    this.wasBlocked = new WasBlockedTracker(this.body);
   }
 
   /**
   * @param {GameObject} other 
+  * @return {boolean}
   */
   onOverlap(other) {
     if (this.isDead()) {
-      return;
+      return true;
     }
-    if (other.isDamageable() && this.isDashing()) {
+    if (other.isDamageable && other.isDamageable() && this.isDashing()) {
       other.onDamage(this, 1);
       if (other.isDead()) {
         return false; // Don't let something we just killed block us.
       }
     }
+    return true;
   }
 
   /**
    * @param {GameObject} other 
    */
   onCollide(other) {
-    if (startedTouchingInAnyDir(this.body)) {
+    // NOTE: this clause doesn't pass for tilemap walls...
+    if (startedTouchingInAnyDir(this.body) || this.wasBlocked.wasJustBlockedInAnyDir()) {
+      // TODO actually just create another clause for blocked..
       this.onHitWall(getTouchingDir(this.body));
     }
   }
@@ -103,6 +108,8 @@ class NinjaPlayer extends GameObject {
     else {
       this.animations.play(this.getState());
     }
+
+    this.wasBlocked.updateWas();
   }
 
   getState() {
@@ -165,8 +172,6 @@ class NinjaPlayer extends GameObject {
 
     this.state = isDash ? "dashing" : "flying";
 
-    console.log(`body: ${this.body}`);
-
     this.setVelocity_(dir, isDash ? DASHING_SPEED : NORMAL_SPEED);
     if (isDash) {
       DASH_AUDIO.get().play();
@@ -184,7 +189,6 @@ class NinjaPlayer extends GameObject {
     this.body.velocity.set(0, 0);
     this.setDirection_(opposite(dir));
     PLAYER_LAND_AUDIO.get().play();
-    // DASH_AUDIO.get().stop();
   }
 }
 

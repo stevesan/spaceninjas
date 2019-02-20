@@ -36,8 +36,14 @@ class GameScene {
         boundsAlignH: 'center'
       });
     this.hudText.setTextBounds(0, 0, game.camera.width, game.camera.height);
-    this.hudText.setShadow(3, 3, 'rgba(0,0,0,0.5)', 2);
+    this.hudText.setShadow(2, 2, 'rgba(0,0,0,0.5)', 2);
     this.hudText.fixedToCamera = true;
+
+    this.map = game.add.tilemap('level_base');
+    this.map.addTilesetImage('inca_front', 'inca32');
+    this.mapLayer = this.map.createLayer('Tile Layer 1');
+    this.map.setCollisionByExclusion([], true, this.mapLayer);
+    this.mapLayer.resizeWorld();
 
     this.setupKeys();
   }
@@ -86,17 +92,6 @@ class GameScene {
     const PPT = 32;
     const left = snap(game.world.width / 2 - sideLen / 2 * PPT, 32);
     const top = snap(game.world.height / 2 - sideLen / 2 * PPT, 32);
-    const bot = top + sideLen * PPT;
-    const right = left + sideLen * PPT;
-    const plop = (x, y) => {
-      new StaticEnv(this, x, y, 'inca32', 4);
-    }
-    for (let i = 0; i < sideLen; i++) {
-      plop(left + i * PPT, top - PPT);
-      plop(left + i * PPT, bot);
-      plop(left - PPT, top + i * PPT);
-      plop(right, top + i * PPT);
-    }
 
     for (let i = 0; i < levelString.length; i++) {
       const c = levelString.charAt(i);
@@ -161,6 +156,8 @@ class GameScene {
     this.myCollide(this.enemies, this.environment);
     this.myCollide(this.bullets, this.environment);
 
+    this.myCollide(this.player, this.mapLayer);
+
     if (this.state == 'playing') {
       if (this.enemies.countLiving() == 0) {
         this.state = 'intermission';
@@ -192,15 +189,15 @@ class GameScene {
     const arcadePhysics = this.phaserGame.physics.arcade;
     arcadePhysics.collide(aa, bb,
       (a, b) => {
-        a.onCollide(b);
-        b.onCollide(a);
+        if (a.onCollide) a.onCollide(b);
+        if (b.onCollide) b.onCollide(a);
       },
       (a, b) => {
         // If either one wants to ignore, then by convention, we ignore.
-        if (a.onOverlap(b) === false) {
+        if (a.onOverlap && a.onOverlap(b) === false) {
           return false;
         }
-        if (b.onOverlap(a) === false) {
+        if (b.onOverlap && b.onOverlap(a) === false) {
           return false;
         }
         return true;
@@ -233,6 +230,8 @@ function preload() {
   game.load.spritesheet('shots', 'sprites/Spaceship-shooter-environment/spritesheets/laser-bolts.png', 16, 16);
   game.load.image('turret', 'sprites/topdown_shooter/guns/cannon/cannon_down.png');
   game.load.image('cannonball', 'sprites/topdown_shooter/other/cannonball.png')
+
+  game.load.tilemap('level_base', 'tilemaps/level_base.json', null, Phaser.Tilemap.TILED_JSON);
 }
 
 const coinAudio = new PreloadedAudio("wavs/coin.wav");
@@ -252,6 +251,7 @@ function create() {
   scoreFx.gravity = 200;
 
   scene = new GameScene(game);
+
 }
 
 function hitPause(durationMs) {
