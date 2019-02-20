@@ -108042,9 +108042,10 @@ Phaser.TilemapParser = {
             {
                 var newSet = new Phaser.Tileset(set.name, set.firstgid, set.tilewidth, set.tileheight, set.margin, set.spacing, set.properties);
 
-                if (set.tileproperties)
+                // STEVE: My version of Tiled exports this part as "tiles", not "tileproperties"
+                if (set.tiles)
                 {
-                    newSet.tileProperties = set.tileproperties;
+                    newSet.tileProperties = set.tiles;
                 }
 
                 // For a normal sliced tileset the row/count/size information is computed when updated.

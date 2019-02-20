@@ -51,3 +51,21 @@ class PreloadedAudio {
    */
   get() { return this.asset; }
 }
+
+/**
+ * 
+ * @param {Phaser.Tilemap} map 
+ */
+function createPropertiesByGid(map) {
+  const rv = new Map();
+  map.tilesets.forEach(set => {
+    if (!set.tileProperties) {
+      return;
+    }
+    set.tileProperties.forEach(props => {
+      const gid = set.firstgid + props.id;
+      rv.set(gid, props);
+    });
+  });
+  return rv;
+}

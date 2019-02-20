@@ -52,6 +52,14 @@ class GameScene {
     this.hudText.setShadow(2, 2, 'rgba(0,0,0,0.5)', 2);
     this.hudText.fixedToCamera = true;
 
+    // TEMP
+    /** @type {Phaser.Tilemap} */
+    const wave = game.add.tilemap('wave0');
+    const propMap = createPropertiesByGid(wave);
+    wave.objects['objects'].forEach(obj => {
+      console.log(propMap.get(obj.gid));
+    });
+
     this.setupKeys();
   }
 
@@ -247,6 +255,7 @@ function preload() {
   game.load.image('cannonball', 'sprites/topdown_shooter/other/cannonball.png')
 
   game.load.tilemap('level_base', 'tilemaps/level_base.json', null, Phaser.Tilemap.TILED_JSON);
+  game.load.tilemap('wave0', 'tilemaps/wave0.json', null, Phaser.Tilemap.TILED_JSON);
 }
 
 function create() {
