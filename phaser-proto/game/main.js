@@ -15,7 +15,7 @@ class GameScene {
     this.levelIndex = 0;
     this.phaserGame = phaserGame;
     this.hudFlashEnd = 0;
-
+    this.adHocUpdaters = new AdHocUpdaters(phaserGame);
 
     // Sprite arrays
     /** @type {Phaser.Group} */
@@ -92,13 +92,6 @@ class GameScene {
       // this.hudText.text += "O";
       // }
       this.hudText.text = `${scene.enemies.countLiving()} enemies left`;
-    }
-
-    if (this.hudFlashEnd > Date.now()) {
-      this.hudText.tint = Math.floor(Date.now() / 60) % 2 == 0 ? 0xff0000 : 0xffffff;
-    }
-    else {
-      this.hudText.tint = 0xffffff;
     }
   }
 
@@ -177,10 +170,15 @@ class GameScene {
   }
 
   onEnemyDeath(enemy) {
-    this.hudFlashEnd = Date.now() + 500;
+    this.adHocUpdaters.add(1000,
+      () => {
+        this.hudText.tint = Math.floor(this.phaserGame.time.time / 60) % 2 == 0 ? 0x88ff00 : 0xffffff;
+      },
+      () => { this.hudText.tint = 0xffffff });
   }
 
   update() {
+    this.adHocUpdaters.update();
     this.updateHud();
 
     this.myCollide(this.player, this.environment);
