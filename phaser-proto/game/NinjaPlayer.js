@@ -47,7 +47,7 @@ class NinjaPlayer extends GameObject {
       return false;
     }
 
-    const props = sprite.layer.__map.__propDict.get(sprite.index);
+    const props = getTileProps(sprite);
     if (!props) {
       return false;
     }
@@ -62,7 +62,7 @@ class NinjaPlayer extends GameObject {
   onOverlap(other) {
     if (this.isDashableWallTile_(other) && this.isDashing()) {
       // Dash through and break tile.
-      other.layer.__map.removeTile(other.x, other.y);
+      removeTileFromMap(other);
       WALL_BREAK_AUDIO.get().play();
       hitPause(200);
       addShake(8, 8);

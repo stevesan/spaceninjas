@@ -41,10 +41,8 @@ class GameScene {
     this.map.addTilesetImage('inca_back', 'inca_back');
     this.mapLayer = this.map.createLayer('Tile Layer 1');
     this.map.setCollisionByExclusion([], true, this.mapLayer);
-    this.map.__propDict = createPropertiesByGid(this.map);
     this.mapLayer.resizeWorld();
-    // So we can easily go from a collided Phaser.Tile to its property map..heh. Each Tile gets a reference to this layer field.
-    this.mapLayer.layer.__map = this.map;
+    applyTilemapHacks(this.map);
 
     this.hudText = game.add.text(game.camera.x, game.camera.y + 15, 'dd',
       {
