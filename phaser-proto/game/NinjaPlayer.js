@@ -42,11 +42,32 @@ class NinjaPlayer extends GameObject {
     this.wasBlocked = new WasBlockedTracker(this.body);
   }
 
+  isDashableWallTile_(sprite) {
+    if (!(sprite instanceof Phaser.Tile)) {
+      return false;
+    }
+
+    const props = this.scene.mapPropMap.get(sprite.index);
+    if (!props) {
+      return false;
+    }
+
+    return props.type == 'softWall';
+  }
+
   /**
   * @param {GameObject} other 
   * @return {boolean}
   */
   onOverlap(other) {
+    if (this.isDashableWallTile_(other) && this.isDashing()) {
+      // Dash through and break tile.
+      this.scene.map.removeTile(other.x, other.y);
+      WALL_BREAK_AUDIO.get().play();
+      hitPause(200);
+      addShake(8, 8);
+      return false;
+    }
     if (this.isDead()) {
       return true;
     }
@@ -63,7 +84,6 @@ class NinjaPlayer extends GameObject {
    * @param {GameObject} other 
    */
   onCollide(other) {
-    // NOTE: this clause doesn't pass for tilemap walls...
     if (startedTouchingInAnyDir(this.body) || this.wasBlocked.wasJustBlockedInAnyDir()) {
       // TODO actually just create another clause for blocked..
       this.onHitWall(getTouchingDir(this.body));

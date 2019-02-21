@@ -38,9 +38,11 @@ class GameScene {
 
     this.map = game.add.tilemap('level_base');
     this.map.addTilesetImage('inca_front', 'inca32');
+    this.map.addTilesetImage('inca_back', 'inca_back');
     this.mapLayer = this.map.createLayer('Tile Layer 1');
     this.map.setCollisionByExclusion([], true, this.mapLayer);
     this.mapLayer.resizeWorld();
+    this.mapPropMap = createPropertiesByGid(this.map);
 
     this.hudText = game.add.text(game.camera.x, game.camera.y + 15, 'dd',
       {
@@ -258,6 +260,7 @@ function preload() {
   game.load.spritesheet('dude', 'phaser_tutorial_02/assets/dude.png', 32, 48);
   game.load.spritesheet('ninja', 'sprites/ninja-sheet.png', 32, 64);
   game.load.spritesheet('inca32', 'sprites/inca_front.png', 32, 32);
+  game.load.spritesheet('inca_back', 'sprites/inca_back.png', 32, 32);
   game.load.spritesheet('powerup', 'sprites/Spaceship-shooter-environment/spritesheets/power-up.png', 32, 32);
   game.load.spritesheet('shots', 'sprites/Spaceship-shooter-environment/spritesheets/laser-bolts.png', 16, 16);
   game.load.image('turret', 'sprites/topdown_shooter/guns/cannon/cannon_down.png');
