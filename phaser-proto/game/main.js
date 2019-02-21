@@ -14,6 +14,7 @@ class GameScene {
     this.state = 'playing';
     this.levelIndex = 0;
     this.phaserGame = phaserGame;
+    this.hudFlashEnd = 0;
 
 
     // Sprite arrays
@@ -92,6 +93,13 @@ class GameScene {
       // }
       this.hudText.text = `${scene.enemies.countLiving()} enemies left`;
     }
+
+    if (this.hudFlashEnd > Date.now()) {
+      this.hudText.tint = Math.floor(Date.now() / 60) % 2 == 0 ? 0xff0000 : 0xffffff;
+    }
+    else {
+      this.hudText.tint = 0xffffff;
+    }
   }
 
   /**
@@ -168,6 +176,10 @@ class GameScene {
     });
   }
 
+  onEnemyDeath(enemy) {
+    this.hudFlashEnd = Date.now() + 500;
+  }
+
   update() {
     this.updateHud();
 
@@ -191,8 +203,7 @@ class GameScene {
           this.countdownToLevel(1500);
         });
       }
-
-      if (this.player.getHealth() <= 0) {
+      else if (this.player.getHealth() <= 0) {
         this.state = 'gameover';
         this.hudText.text = '!! GAME OVER !!';
         this.phaserGame.stage.backgroundColor = '#1e0020';
@@ -264,7 +275,7 @@ function create() {
   PRELOAD_CREATE_LIST.forEach(asset => asset.create());
   game.physics.startSystem(Phaser.Physics.ARCADE);
 
-  wasd = game.add.text(game.world.width / 2 - 100, game.world.height / 2 + 100,
+  wasd = game.add.text(game.world.width / 2 - 100, game.world.height / 2 + 50,
     'Tap WASD to fly\nDouble-tap to dash', { font: 'Courier New', fontSize: '24px', fill: '#fff' });
   wasd.setShadow(3, 3, '#000', 2);
 
