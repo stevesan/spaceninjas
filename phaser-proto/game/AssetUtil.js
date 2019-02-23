@@ -70,29 +70,3 @@ function createPropertiesByGid(map) {
   return rv;
 }
 
-/**
- * 
- * @param {Phaser.Tilemap} map 
- */
-function applyTilemapHacks(map) {
-  console.log(map);
-  map.__propDict = createPropertiesByGid(map);
-  // So we can easily go from a collided Phaser.Tile to its property map..heh. Each Tile gets a reference to this layer field.
-  map.layers.forEach(layer => layer.__map = map);
-}
-
-/**
- * 
- * @param {Phaser.Tile} tile 
- */
-function getTileProps(tile) {
-  return tile.layer.__map.__propDict.get(tile.index);
-}
-
-/**
- * 
- * @param {Phaser.Tile} tile 
- */
-function removeTileFromMap(tile) {
-  tile.layer.__map.removeTile(tile.x, tile.y);
-}

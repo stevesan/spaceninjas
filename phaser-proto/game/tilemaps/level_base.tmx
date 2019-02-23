@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.2" tiledversion="1.2.2" orientation="orthogonal" renderorder="right-down" width="60" height="60" tilewidth="32" tileheight="32" infinite="0" nextlayerid="2" nextobjectid="1">
  <tileset firstgid="1" name="inca_front" tilewidth="32" tileheight="32" tilecount="35" columns="5">
-  <image source="../sprites/inca_front.png" trans="faffea" width="160" height="224"/>
+  <image source="../sprites/tilesets/inca_front.png" trans="faffea" width="160" height="224"/>
   <tile id="0" type="wall"/>
  </tileset>
  <tileset firstgid="36" name="inca_back" tilewidth="32" tileheight="32" tilecount="35" columns="5">
-  <image source="../sprites/inca_back.png" trans="faffea" width="160" height="224"/>
+  <image source="../sprites/tilesets/inca_back.png" trans="faffea" width="160" height="224"/>
   <tile id="2" type="softWall"/>
   <tile id="8" type="softWall"/>
  </tileset>

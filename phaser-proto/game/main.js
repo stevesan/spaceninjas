@@ -37,29 +37,22 @@ class GameScene {
 
     // Sprite arrays
     /** @type {Phaser.Group} */
-    this.environment = phaserGame.add.group();
+    this.enemies = null;
     /** @type {Phaser.Group} */
-    this.enemies = phaserGame.add.group();
-    /** @type {Phaser.Group} */
-    this.bullets = phaserGame.add.group();
+    this.bullets = null;
 
     // Use this group to make sure all game objects always render under the HUD (created later)
-    this.gameGroup = phaserGame.add.group();
-    this.gameGroup.add(this.environment);
-    this.gameGroup.add(this.enemies);
-    this.gameGroup.add(this.bullets);
+    /** @type {Phaser.Group} */
+    this.gameGroup = null;
 
     /** @type {NinjaPlayer} */
     this.player = null;
 
-    this.spawnScene(LEVELS[this.levelIndex]);
+    /** @type {Array<Phaser.TilemapLayer} */
+    this.tilemapLayers = [];
 
-    this.map = game.add.tilemap('level_base');
-    addTilesets(this.map);
-    this.mapLayer = this.map.createLayer('Tile Layer 1');
-    this.map.setCollisionByExclusion([], true, this.mapLayer);
-    this.mapLayer.resizeWorld();
-    applyTilemapHacks(this.map);
+    this.clear();
+    this.spawnScene(LEVELS[this.levelIndex]);
 
     this.hudText = game.add.text(game.camera.x, game.camera.y + 15, 'dd',
       {
@@ -81,6 +74,36 @@ class GameScene {
     });
 
     this.setupKeys();
+  }
+
+  spawnTilemap_(assetKey) {
+    const collidingTileTypes = new Set(['softWall']);
+
+    const map = game.add.tilemap(assetKey);
+    addTilesets(map);
+    addTilemapExtensions(map);
+    map.layers.forEach(layer => {
+      const layerInst = map.createLayer(layer.name);
+      this.tilemapLayers.push(layerInst);
+      this.gameGroup.add(layerInst);
+      console.log(layer);
+      map.setCollisionByExclusion([], true, layerInst);
+
+      // Set collision for tiles that should collide.
+      const collidingTileIds = [];
+      for2d([layer.x, layer.y], [layer.width, layer.height],
+        (x, y) => {
+          const tile = map.getTile(x, y);
+          if (tile) {
+            const type = getTilePropOr(tile, 'type', null);
+            if (type && collidingTileTypes.has(type)) {
+              collidingTileIds.push(tile.index);
+            }
+          }
+        });
+
+      map.setCollision(collidingTileIds, true, layerInst);
+    });
   }
 
   setupKeys() {
@@ -119,6 +142,8 @@ class GameScene {
    * @param {string} levelString 
    */
   spawnScene(levelString) {
+    this.spawnTilemap_('level_base');
+
     // Create walls
     const sideLen = Math.floor(Math.sqrt(levelString.length));
     if (sideLen * sideLen != levelString.length) {
@@ -140,12 +165,12 @@ class GameScene {
       else if (c == 'T') {
         new Turret(this, x, y);
       }
-      else if (c == 'O') {
-        new BreakableWall(this, x, y);
-      }
-      else if (c == 'X') {
-        new StaticEnv(this, x, y);
-      }
+      // else if (c == 'O') {
+      // new BreakableWall(this, x, y);
+      // }
+      // else if (c == 'X') {
+      // new StaticEnv(this, x, y);
+      // }
     }
 
     if (this.player == null) {
@@ -154,24 +179,34 @@ class GameScene {
     if (this.enemies.countLiving() == 0) {
       throw new Error("No enemies in level!");
     }
+
+    this.logSprites_();
+    console.log(`${this.phaserGame.world.countLiving()} living`);
+  }
+
+  logSprites_(group, prefix = '') {
+    if (group === undefined) {
+      group = this.phaserGame.world;
+    }
+    group.forEach(c => {
+      console.log(`${prefix}${c.constructor.name},${c.name},${c.key}`);
+      if (c instanceof Phaser.Group) {
+        this.logSprites_(c, prefix + '  ');
+      }
+    })
   }
 
   clear() {
-    this.player.destroy();
-    this.environment.destroy();
-    this.enemies.destroy();
-    this.bullets.destroy();
+    // Does this try to destroy all children?
+    if (this.gameGroup) this.gameGroup.destroy();
+    this.gameGroup = this.phaserGame.add.group(undefined, "physical");
 
-    this.environment = this.phaserGame.add.group();
-    this.enemies = this.phaserGame.add.group();
-    this.bullets = this.phaserGame.add.group();
+    this.tilemapLayers = [];
+    this.enemies = this.phaserGame.add.group(this.gameGroup, "enemies");
+    this.bullets = this.phaserGame.add.group(this.gameGroup, "bullets");
 
-    this.gameGroup.add(this.environment);
-    this.gameGroup.add(this.enemies);
-    this.gameGroup.add(this.bullets);
-
+    if (this.player) this.player.destroy();
     this.player = null;
-
   }
 
   countdownToLevel(ms) {
@@ -200,13 +235,12 @@ class GameScene {
     this.adHocUpdaters.update();
     this.updateHud();
 
-    this.myCollide(this.player, this.environment);
     this.myCollide(this.player, this.enemies);
     this.myCollide(this.player, this.bullets);
-    this.myCollide(this.enemies, this.environment);
-    this.myCollide(this.bullets, this.environment);
 
-    this.myCollide(this.player, this.mapLayer);
+    this.tilemapLayers.forEach(layer => this.myCollide(this.player, layer));
+    this.tilemapLayers.forEach(layer => this.myCollide(this.enemies, layer));
+    this.tilemapLayers.forEach(layer => this.myCollide(this.bullets, layer));
 
     if (this.state == 'playing') {
       if (this.enemies.countLiving() == 0) {
@@ -296,9 +330,9 @@ function create() {
     'Tap WASD to fly\nDouble-tap to dash', { font: 'Courier New', fontSize: '24px', fill: '#fff' });
   wasd.setShadow(3, 3, '#000', 2);
 
-  scoreFx = game.add.emitter(0, 0, 100);
-  scoreFx.makeParticles('star');
-  scoreFx.gravity = 200;
+  // scoreFx = game.add.emitter(0, 0, 100);
+  // scoreFx.makeParticles('star');
+  // scoreFx.gravity = 200;
 
   scene = new GameScene(game);
 

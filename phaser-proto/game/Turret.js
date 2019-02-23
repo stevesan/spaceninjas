@@ -27,7 +27,7 @@ class TurretBullet extends GameObject {
    * @param {GameObject} other 
    */
   onOverlap(other) {
-    if (other.isPlayer() && other.isDamageable()) {
+    if (other.isPlayer && other.isPlayer() && other.isDamageable()) {
       other.onDamage(this, 1);
       this.destroy();
     }

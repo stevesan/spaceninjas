@@ -23,7 +23,7 @@
         {
          "columns":5,
          "firstgid":1,
-         "image":"..\/sprites\/inca_front.png",
+         "image":"..\/sprites\/tilesets\/inca_front.png",
          "imageheight":224,
          "imagewidth":160,
          "margin":0,
@@ -42,7 +42,7 @@
         {
          "columns":5,
          "firstgid":36,
-         "image":"..\/sprites\/inca_back.png",
+         "image":"..\/sprites\/tilesets\/inca_back.png",
          "imageheight":224,
          "imagewidth":160,
          "margin":0,
