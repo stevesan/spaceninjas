@@ -5,6 +5,24 @@ const S = 1;
 const CANVAS_PIXELS_PER_SPRITE_PIXEL = 2;
 const CPPSP = CANVAS_PIXELS_PER_SPRITE_PIXEL;
 
+const TILESET_SHEET_KEYS = ['inca_front', 'inca_back'];
+
+function preloadTilesets() {
+  TILESET_SHEET_KEYS.forEach(key => {
+    game.load.spritesheet(key, `sprites/tilesets/${key}.png`, 32, 32);
+  })
+}
+
+/**
+ * 
+ * @param {Phaser.Tilemap} map 
+ */
+function addTilesets(map) {
+  TILESET_SHEET_KEYS.forEach(key => {
+    map.addTilesetImage(key);
+  })
+}
+
 class GameScene {
   /**
    * 
@@ -37,8 +55,7 @@ class GameScene {
     this.spawnScene(LEVELS[this.levelIndex]);
 
     this.map = game.add.tilemap('level_base');
-    this.map.addTilesetImage('inca_front', 'inca32');
-    this.map.addTilesetImage('inca_back', 'inca_back');
+    addTilesets(this.map);
     this.mapLayer = this.map.createLayer('Tile Layer 1');
     this.map.setCollisionByExclusion([], true, this.mapLayer);
     this.mapLayer.resizeWorld();
@@ -253,14 +270,13 @@ let wasd;
 
 function preload() {
   PRELOAD_CREATE_LIST.forEach(asset => asset.preload());
+  preloadTilesets();
   // TODO have these preloads be declared in the Object files, like audio.
   game.load.image('ground', 'phaser_tutorial_02/assets/platform.png');
   game.load.image('star', 'phaser_tutorial_02/assets/star.png');
   game.load.image('baddie', 'phaser_tutorial_02/assets/baddie.png');
   game.load.spritesheet('dude', 'phaser_tutorial_02/assets/dude.png', 32, 48);
   game.load.spritesheet('ninja', 'sprites/ninja-sheet.png', 32, 64);
-  game.load.spritesheet('inca32', 'sprites/inca_front.png', 32, 32);
-  game.load.spritesheet('inca_back', 'sprites/inca_back.png', 32, 32);
   game.load.spritesheet('powerup', 'sprites/Spaceship-shooter-environment/spritesheets/power-up.png', 32, 32);
   game.load.spritesheet('shots', 'sprites/Spaceship-shooter-environment/spritesheets/laser-bolts.png', 16, 16);
   game.load.image('turret', 'sprites/topdown_shooter/guns/cannon/cannon_down.png');

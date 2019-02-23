@@ -8,7 +8,7 @@ class StaticEnv extends GameObject {
    * @param {number} frame 
    */
   constructor(scene, x, y, key, frame) {
-    key = key || 'inca32';
+    key = key || 'inca_front';
     frame = frame || 4;
     const game = scene.phaserGame;
     super(scene, x, y, key, frame);
@@ -24,7 +24,7 @@ const WALL_BREAK_AUDIO = new PreloadedAudio("wavs/explode.wav");
 class BreakableWall extends GameObject {
   constructor(scene, x, y) {
     const game = scene.phaserGame;
-    super(scene, x, y, 'inca32', 6);
+    super(scene, x, y, 'inca_front', 6);
     scene.environment.add(this);
     this.anchor.set(0.5, 0.5);
     game.physics.arcade.enable(this);
