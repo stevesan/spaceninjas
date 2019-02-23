@@ -41,18 +41,18 @@ class GameScene {
     /** @type {Phaser.Group} */
     this.bullets = null;
 
-    // Use this group to make sure all game objects always render under the HUD (created later)
+    // Use this group to make sure all physical sprites always render under the HUD (created later)
     /** @type {Phaser.Group} */
-    this.gameGroup = null;
+    this.physicalGroup = this.phaserGame.add.group(undefined, "physical");
 
     /** @type {NinjaPlayer} */
     this.player = null;
 
+    /** @type {Array<Phaser.Tilemap} */
+    this.tilemaps = [];
+
     /** @type {Array<Phaser.TilemapLayer} */
     this.tilemapLayers = [];
-
-    this.clear();
-    this.spawnScene(LEVELS[this.levelIndex]);
 
     this.hudText = game.add.text(game.camera.x, game.camera.y + 15, 'dd',
       {
@@ -64,6 +64,9 @@ class GameScene {
     this.hudText.setTextBounds(0, 0, game.camera.width, game.camera.height);
     this.hudText.setShadow(2, 2, 'rgba(0,0,0,0.5)', 2);
     this.hudText.fixedToCamera = true;
+
+    this.resetPhysical();
+    this.spawnScene(LEVELS[this.levelIndex]);
 
     // TEMP
     /** @type {Phaser.Tilemap} */
@@ -80,13 +83,13 @@ class GameScene {
     const collidingTileTypes = new Set(['softWall']);
 
     const map = game.add.tilemap(assetKey);
+    this.tilemaps.push(map);
     addTilesets(map);
     addTilemapExtensions(map);
     map.layers.forEach(layer => {
       const layerInst = map.createLayer(layer.name);
       this.tilemapLayers.push(layerInst);
-      this.gameGroup.add(layerInst);
-      console.log(layer);
+      this.physicalGroup.add(layerInst);
       map.setCollisionByExclusion([], true, layerInst);
 
       // Set collision for tiles that should collide.
@@ -180,30 +183,38 @@ class GameScene {
       throw new Error("No enemies in level!");
     }
 
-    this.logSprites_();
-    console.log(`${this.phaserGame.world.countLiving()} living`);
+    const count = this.logSprites_(this.phaserGame.world, '--');
+    console.log(`${count} objects`);
   }
 
-  logSprites_(group, prefix = '') {
-    if (group === undefined) {
-      group = this.phaserGame.world;
+  logSprites_(obj, prefix = '') {
+    if (obj === undefined) {
+      obj = this.phaserGame.world;
     }
-    group.forEach(c => {
-      console.log(`${prefix}${c.constructor.name},${c.name},${c.key}`);
-      if (c instanceof Phaser.Group) {
-        this.logSprites_(c, prefix + '  ');
-      }
-    })
+    let count = 1;
+    console.log(`${prefix}${obj.constructor.name},${obj.name || obj.key}`, obj);
+    if (obj instanceof Phaser.Group) {
+      obj.forEach(c => {
+        count += this.logSprites_(c, prefix + '--');
+      });
+    }
+    return count;
   }
 
-  clear() {
-    // Does this try to destroy all children?
-    if (this.gameGroup) this.gameGroup.destroy();
-    this.gameGroup = this.phaserGame.add.group(undefined, "physical");
+  resetPhysical() {
+    // Recreate children, but don't recreate the physical group itself - to preserve order under HUD.
+    // NOTE: for some reason, just destroy children of physical group didn't work..
+    if (this.enemies) this.enemies.destroy();
+    if (this.bullets) this.bullets.destroy();
 
+    this.enemies = this.phaserGame.add.group(this.physicalGroup, "enemies");
+    this.bullets = this.phaserGame.add.group(this.physicalGroup, "bullets");
+
+    this.tilemapLayers.forEach(l => l.destroy());
     this.tilemapLayers = [];
-    this.enemies = this.phaserGame.add.group(this.gameGroup, "enemies");
-    this.bullets = this.phaserGame.add.group(this.gameGroup, "bullets");
+
+    this.tilemaps.forEach(m => m.destroy());
+    this.tilemaps = [];
 
     if (this.player) this.player.destroy();
     this.player = null;
@@ -213,7 +224,7 @@ class GameScene {
     wasd.visible = this.levelIndex == 0;
     this.state = 'countdown';
     this.phaserGame.stage.backgroundColor = '#1e0020';
-    this.clear();
+    this.resetPhysical();
     this.spawnScene(LEVELS[this.levelIndex]);
     this.hudText.text = 'Get ready..'
     triggerSlowMo(100, ms);
