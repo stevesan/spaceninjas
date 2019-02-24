@@ -8,7 +8,7 @@ const CPPSP = CANVAS_PIXELS_PER_SPRITE_PIXEL;
 const waitBgColor = '#0e0020';
 
 
-const TILESET_SHEET_KEYS = ['inca_front', 'inca_back'];
+const TILESET_SHEET_KEYS = ['inca_front', 'inca_back', 'inca_back2'];
 
 function preloadTilesets() {
   TILESET_SHEET_KEYS.forEach(key => {
@@ -68,7 +68,6 @@ class GameScene {
     this.hudText.setShadow(2, 2, 'rgba(0,0,0,0.5)', 2);
     this.hudText.fixedToCamera = true;
 
-    this.resetPhysical();
     this.spawnScene(LEVELS[this.levelIndex]);
 
     // TEMP
@@ -148,6 +147,24 @@ class GameScene {
    * @param {string} levelString 
    */
   spawnScene(levelString) {
+    // Recreate children, but don't recreate the physical group itself - to
+    // preserve order under HUD.
+
+    safeDestroy(this.enemies);
+    this.enemies = this.phaserGame.add.group(this.physicalGroup, "enemies");
+
+    safeDestroy(this.bullets);
+    this.bullets = this.phaserGame.add.group(this.physicalGroup, "bullets");
+
+    this.tilemapLayers.forEach(l => l.destroy());
+    this.tilemapLayers = [];
+
+    this.tilemaps.forEach(m => m.destroy());
+    this.tilemaps = [];
+
+    if (this.player) this.player.destroy();
+    this.player = null;
+
     this.spawnTilemap_('level_base');
 
     // Create walls
@@ -195,7 +212,7 @@ class GameScene {
       obj = this.phaserGame.world;
     }
     let count = 1;
-    console.log(`${prefix}${obj.constructor.name || obj.name || obj.key}`, obj);
+    console.log(`${prefix}${obj.constructor.name || obj.name || obj.key}`);
     if (obj instanceof Phaser.Group) {
       obj.forEach(c => {
         count += this.logSprites_(c, prefix + '| ');
@@ -204,30 +221,10 @@ class GameScene {
     return count;
   }
 
-  resetPhysical() {
-    // Recreate children, but don't recreate the physical group itself - to preserve order under HUD.
-    // NOTE: for some reason, just destroy children of physical group didn't work..
-    if (this.enemies) this.enemies.destroy();
-    if (this.bullets) this.bullets.destroy();
-
-    this.enemies = this.phaserGame.add.group(this.physicalGroup, "enemies");
-    this.bullets = this.phaserGame.add.group(this.physicalGroup, "bullets");
-
-    this.tilemapLayers.forEach(l => l.destroy());
-    this.tilemapLayers = [];
-
-    this.tilemaps.forEach(m => m.destroy());
-    this.tilemaps = [];
-
-    if (this.player) this.player.destroy();
-    this.player = null;
-  }
-
   countdownToLevel(ms) {
     wasd.visible = this.levelIndex == 0;
     this.state = 'countdown';
     this.phaserGame.stage.backgroundColor = waitBgColor;
-    this.resetPhysical();
     this.spawnScene(LEVELS[this.levelIndex]);
     this.hudText.text = 'Get ready..'
     triggerSlowMo(100, ms);
