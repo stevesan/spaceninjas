@@ -100,7 +100,7 @@ class GameScene {
       const collidingTileIds = [];
       for2d([layer.x, layer.y], [layer.width, layer.height],
         (x, y) => {
-          const tile = map.getTile(x, y);
+          const tile = map.getTile(x, y, layerInst);
           if (tile) {
             const type = getTilePropOr(tile, 'type', null);
             if (collidingTileTypes.has(type)) {
@@ -204,6 +204,7 @@ class GameScene {
     if (this.player == null) {
       throw new Error("No player in level!");
     }
+
     if (this.enemies.countLiving() == 0) {
       throw new Error("No enemies in level!");
     }
@@ -258,12 +259,14 @@ class GameScene {
     this.myCollide(this.player, this.enemies);
     this.myCollide(this.player, this.bullets);
 
-    // This doesn't work...need to collide with each layer.
-    // this.myCollide(this.layer, this.environment);
+    [this.player, this.enemies, this.bullets].forEach(group => {
+      this.tilemapLayers.forEach(layer => {
+        // So removeTileFromMap works.
+        layer.map.setLayer(layer);
 
-    this.tilemapLayers.forEach(layer => this.myCollide(this.player, layer));
-    this.tilemapLayers.forEach(layer => this.myCollide(this.enemies, layer));
-    this.tilemapLayers.forEach(layer => this.myCollide(this.bullets, layer));
+        this.myCollide(group, layer);
+      });
+    });
 
     if (this.state == 'playing') {
       if (this.enemies.countLiving() == 0) {
