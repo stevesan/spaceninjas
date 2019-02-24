@@ -10,7 +10,7 @@ class TurretBullet extends GameObject {
     const game = scene.phaserGame;
     super(scene, x, y, 'cannonball', 0);
     scene.bullets.add(this);
-    this.anchor.set(0.5, 0.5);
+    // this.anchor.set(0.5, 0.5);
     game.physics.arcade.enable(this);
     this.lifetime = 3;
   }
@@ -46,7 +46,7 @@ class Turret extends GameObject {
     const game = scene.phaserGame;
     super(scene, x, y, 'powerup', 1);
     scene.enemies.add(this);
-    this.anchor.set(0.5, 0.5);
+    // this.anchor.set(0.5, 0.5);
     this.cooldown = Math.random() * COOLDOWN_S;
 
     game.physics.arcade.enable(this);

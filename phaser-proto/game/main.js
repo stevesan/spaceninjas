@@ -118,10 +118,10 @@ class GameScene {
         switch (type) {
           case 'playerStart':
             console.log(obj);
-            new NinjaPlayer(this, obj.x, obj.y);
+            new NinjaPlayer(this, obj.x + 16, obj.y - 16);
             break;
           case 'turret':
-            new Turret(this, obj.x, obj.y);
+            new Turret(this, obj.x, obj.y - 32);
             console.log(obj);
             break;
         }
@@ -397,7 +397,7 @@ function updateCamera() {
 
 function render() {
   // game.debug.rectangle(player.getBounds(), '#ff0000', false);
-  // game.debug.body(scene.player);
+  game.debug.body(scene.player);
   // const t = player.body.touching;
   // game.debug.text(`body touch: ${t['up'] ? 'u' : ' '}${t['left'] ? 'l' : ' '}${t['down'] ? 'd' : ' '}${t['right'] ? 'r' : ' '}`, 0, 50);
 }
