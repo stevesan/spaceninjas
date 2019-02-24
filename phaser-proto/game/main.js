@@ -7,7 +7,7 @@ const CPPSP = CANVAS_PIXELS_PER_SPRITE_PIXEL;
 
 const waitBgColor = '#0e0020';
 
-
+const LEVEL_TILEMAP_KEYS = ['wave0', 'wave0'];
 const TILESET_SHEET_KEYS = ['inca_front', 'inca_back', 'inca_back2'];
 
 function preloadTilesets() {
@@ -21,6 +21,7 @@ function preloadTilesets() {
  * @param {Phaser.Tilemap} map 
  */
 function addTilesetImages(map) {
+  // TODO only add the sets used in the map
   TILESET_SHEET_KEYS.forEach(key => {
     map.addTilesetImage(key);
   })
@@ -70,7 +71,7 @@ class GameScene {
     this.hudText.setShadow(2, 2, 'rgba(0,0,0,0.5)', 2);
     this.hudText.fixedToCamera = true;
 
-    this.spawnScene(LEVELS[this.levelIndex]);
+    this.spawnScene(LEVEL_TILEMAP_KEYS[this.levelIndex]);
 
     // TEMP
     /** @type {Phaser.Tilemap} */
@@ -111,6 +112,24 @@ class GameScene {
 
       map.setCollision(collidingTileIds, true, layerInst);
     });
+
+    // Objects
+    for (var layerName in map.objects) {
+      map.objects[layerName].forEach(obj => {
+        const type = getObjectPropOr(map, obj.gid, 'type', undefined);
+
+        switch (type) {
+          case 'playerStart':
+            console.log(obj);
+            new NinjaPlayer(this, obj.x, obj.y);
+            break;
+          case 'turret':
+            new Turret(this, obj.x, obj.y);
+            console.log(obj);
+            break;
+        }
+      });
+    }
   }
 
   setupKeys() {
@@ -146,9 +165,9 @@ class GameScene {
 
   /**
    * 
-   * @param {string} levelString 
+   * @param {string} tilemapKey 
    */
-  spawnScene(levelString) {
+  spawnScene(tilemapKey) {
     // Recreate children, but don't recreate the physical group itself - to
     // preserve order under HUD.
 
@@ -171,35 +190,7 @@ class GameScene {
     this.player = null;
 
     this.spawnTilemap_('level_base');
-
-    // Create walls
-    const sideLen = Math.floor(Math.sqrt(levelString.length));
-    if (sideLen * sideLen != levelString.length) {
-      throw new Error("level string length must be a perfect square.")
-    }
-    const PPT = 32;
-    const left = snap(game.world.width / 2 - sideLen / 2 * PPT, 32);
-    const top = snap(game.world.height / 2 - sideLen / 2 * PPT, 32);
-
-    for (let i = 0; i < levelString.length; i++) {
-      const c = levelString.charAt(i);
-      const row = Math.floor(i / sideLen);
-      const col = i - row * sideLen;
-      const x = col * PPT + left;
-      const y = row * PPT + top;
-      if (c == 'P') {
-        new NinjaPlayer(this, x, y);
-      }
-      else if (c == 'T') {
-        new Turret(this, x, y);
-      }
-      // else if (c == 'O') {
-      // new BreakableWall(this, x, y);
-      // }
-      // else if (c == 'X') {
-      // new StaticEnv(this, x, y);
-      // }
-    }
+    this.spawnTilemap_(tilemapKey);
 
     if (this.player == null) {
       throw new Error("No player in level!");
@@ -231,7 +222,7 @@ class GameScene {
     wasd.visible = this.levelIndex == 0;
     this.state = 'countdown';
     this.phaserGame.stage.backgroundColor = waitBgColor;
-    this.spawnScene(LEVELS[this.levelIndex]);
+    this.spawnScene(LEVEL_TILEMAP_KEYS[this.levelIndex]);
     this.hudText.text = 'Get ready..'
     triggerSlowMo(100, ms);
     this.phaserGame.time.events.add(ms, () => {

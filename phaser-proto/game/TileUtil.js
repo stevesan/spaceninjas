@@ -35,3 +35,20 @@ function getTilePropOr(tile, prop, ifDNE) {
 function removeTileFromMap(tile) {
   tile.layer.__map.removeTile(tile.x, tile.y, tile.layer.name);
 }
+
+/**
+ * 
+ * @param {Phaser.Tilemap} map 
+ * @param {string} prop
+ * @param {number} objectGid 
+ * @param {object} ifDNE 
+ */
+function getObjectPropOr(map, objectGid, prop, ifDNE) {
+  const props = map.__propDict.get(objectGid);
+  if (props && prop in props) {
+    return props[prop];
+  }
+  else {
+    return ifDNE;
+  }
+}
