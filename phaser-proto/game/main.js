@@ -43,6 +43,8 @@ class GameScene {
     this.enemies = null;
     /** @type {Phaser.Group} */
     this.bullets = null;
+    /** @type {Phaser.Group} */
+    this.environment = null;
 
     // Use this group to make sure all physical sprites always render under the HUD (created later)
     /** @type {Phaser.Group} */
@@ -92,7 +94,7 @@ class GameScene {
       const layerInst = map.createLayer(layer.name);
       this.tilemapLayers.push(layerInst);
       // Make sure they render under HUD, etc.
-      this.physicalGroup.add(layerInst);
+      this.environment.add(layerInst);
 
       // Set collision for tiles that should collide.
       const collidingTileIds = [];
@@ -150,14 +152,17 @@ class GameScene {
     // Recreate children, but don't recreate the physical group itself - to
     // preserve order under HUD.
 
+    this.tilemapLayers.forEach(l => l.destroy());
+    this.tilemapLayers = [];
+
+    safeDestroy(this.environment);
+    this.environment = this.phaserGame.add.group(this.physicalGroup, "environment");
+
     safeDestroy(this.enemies);
     this.enemies = this.phaserGame.add.group(this.physicalGroup, "enemies");
 
     safeDestroy(this.bullets);
     this.bullets = this.phaserGame.add.group(this.physicalGroup, "bullets");
-
-    this.tilemapLayers.forEach(l => l.destroy());
-    this.tilemapLayers = [];
 
     this.tilemaps.forEach(m => m.destroy());
     this.tilemaps = [];
@@ -252,6 +257,9 @@ class GameScene {
 
     this.myCollide(this.player, this.enemies);
     this.myCollide(this.player, this.bullets);
+
+    // This doesn't work...need to collide with each layer.
+    // this.myCollide(this.layer, this.environment);
 
     this.tilemapLayers.forEach(layer => this.myCollide(this.player, layer));
     this.tilemapLayers.forEach(layer => this.myCollide(this.enemies, layer));
