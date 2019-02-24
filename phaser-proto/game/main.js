@@ -7,13 +7,33 @@ const CPPSP = CANVAS_PIXELS_PER_SPRITE_PIXEL;
 
 const waitBgColor = '#0e0020';
 
-const LEVEL_TILEMAP_KEYS = ['wave0', 'wave0'];
+const LEVEL_TILEMAP_KEYS = ['wave0', 'wave1'];
 const TILESET_SHEET_KEYS = ['inca_front', 'inca_back', 'inca_back2'];
 
 function preloadTilesets() {
   TILESET_SHEET_KEYS.forEach(key => {
     game.load.spritesheet(key, `sprites/tilesets/${key}.png`, 32, 32);
   })
+}
+
+function preload() {
+  PRELOAD_CREATE_LIST.forEach(asset => asset.preload());
+  preloadTilesets();
+  // TODO have these preloads be declared in the Object files, like audio.
+  game.load.image('ground', 'phaser_tutorial_02/assets/platform.png');
+  game.load.image('star', 'phaser_tutorial_02/assets/star.png');
+  game.load.image('baddie', 'phaser_tutorial_02/assets/baddie.png');
+  game.load.spritesheet('dude', 'phaser_tutorial_02/assets/dude.png', 32, 48);
+  game.load.spritesheet('ninja', 'sprites/ninja-sheet.png', 32, 64);
+  game.load.spritesheet('powerup', 'sprites/Spaceship-shooter-environment/spritesheets/power-up.png', 32, 32);
+  game.load.spritesheet('shots', 'sprites/Spaceship-shooter-environment/spritesheets/laser-bolts.png', 16, 16);
+  game.load.image('turret', 'sprites/topdown_shooter/guns/cannon/cannon_down.png');
+  game.load.image('cannonball', 'sprites/topdown_shooter/other/cannonball.png')
+
+  game.load.tilemap('level_base', 'tilemaps/level_base.json', null, Phaser.Tilemap.TILED_JSON);
+  LEVEL_TILEMAP_KEYS.forEach(key => {
+    game.load.tilemap(key, `tilemaps/${key}.json`, null, Phaser.Tilemap.TILED_JSON);
+  });
 }
 
 /**
@@ -311,24 +331,6 @@ var scoreFx;
 var shakeX = 0;
 var shakeY = 0;
 
-function preload() {
-  PRELOAD_CREATE_LIST.forEach(asset => asset.preload());
-  preloadTilesets();
-  // TODO have these preloads be declared in the Object files, like audio.
-  game.load.image('ground', 'phaser_tutorial_02/assets/platform.png');
-  game.load.image('star', 'phaser_tutorial_02/assets/star.png');
-  game.load.image('baddie', 'phaser_tutorial_02/assets/baddie.png');
-  game.load.spritesheet('dude', 'phaser_tutorial_02/assets/dude.png', 32, 48);
-  game.load.spritesheet('ninja', 'sprites/ninja-sheet.png', 32, 64);
-  game.load.spritesheet('powerup', 'sprites/Spaceship-shooter-environment/spritesheets/power-up.png', 32, 32);
-  game.load.spritesheet('shots', 'sprites/Spaceship-shooter-environment/spritesheets/laser-bolts.png', 16, 16);
-  game.load.image('turret', 'sprites/topdown_shooter/guns/cannon/cannon_down.png');
-  game.load.image('cannonball', 'sprites/topdown_shooter/other/cannonball.png')
-
-  game.load.tilemap('level_base', 'tilemaps/level_base.json', null, Phaser.Tilemap.TILED_JSON);
-  game.load.tilemap('wave0', 'tilemaps/wave0.json', null, Phaser.Tilemap.TILED_JSON);
-}
-
 function create() {
   game.stage.backgroundColor = '#2e0e39';
   game.world.setBounds(0, 0, 2000, 2000);
@@ -397,7 +399,7 @@ function updateCamera() {
 
 function render() {
   // game.debug.rectangle(player.getBounds(), '#ff0000', false);
-  game.debug.body(scene.player);
+  // game.debug.body(scene.player);
   // const t = player.body.touching;
   // game.debug.text(`body touch: ${t['up'] ? 'u' : ' '}${t['left'] ? 'l' : ' '}${t['down'] ? 'd' : ' '}${t['right'] ? 'r' : ' '}`, 0, 50);
 }
