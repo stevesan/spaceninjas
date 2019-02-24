@@ -60,7 +60,16 @@ class WasBlockedTracker {
       || this.wasJustBlocked(3);
   }
 
-  updateWas() {
+  getBlockedDir() {
+    for (let i = 0; i < 4; i++) {
+      if (this.body.blocked[DIR_STRINGS[i]]) {
+        return i;
+      }
+    }
+    return undefined;
+  }
+
+  update() {
     for (let i = 0; i < 4; i++) {
       this.wasBlocked[i] = this.body.blocked[DIR_STRINGS[i]];
     }

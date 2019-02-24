@@ -80,13 +80,28 @@ class NinjaPlayer extends GameObject {
     return true;
   }
 
+  onHitWall_(dir) {
+    if (this.isDead()) {
+      return;
+    }
+    this.state = 'idle';
+    this.body.velocity.set(0, 0);
+    this.setDirection_(opposite(dir));
+    PLAYER_LAND_AUDIO.get().play();
+  }
+
   /**
    * @param {GameObject} other 
    */
   onCollide(other) {
-    if (startedTouchingInAnyDir(this.body) || this.wasBlocked.wasJustBlockedInAnyDir()) {
-      // TODO actually just create another clause for blocked..
-      this.onHitWall(getTouchingDir(this.body));
+    if (startedTouchingInAnyDir(this.body)) {
+      const dir = getTouchingDir(this.body);
+      this.onHitWall_(dir);
+    }
+
+    if (this.wasBlocked.wasJustBlockedInAnyDir()) {
+      const dir = this.wasBlocked.getBlockedDir();
+      this.onHitWall_(dir);
     }
   }
 
@@ -127,7 +142,7 @@ class NinjaPlayer extends GameObject {
       this.animations.play(this.getState());
     }
 
-    this.wasBlocked.updateWas();
+    this.wasBlocked.update();
   }
 
   getState() {
@@ -190,14 +205,5 @@ class NinjaPlayer extends GameObject {
     }
   }
 
-  onHitWall(dir) {
-    if (this.isDead()) {
-      return;
-    }
-    this.state = 'idle';
-    this.body.velocity.set(0, 0);
-    this.setDirection_(opposite(dir));
-    PLAYER_LAND_AUDIO.get().play();
-  }
 }
 
