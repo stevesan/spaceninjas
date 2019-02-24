@@ -5,6 +5,9 @@ const S = 1;
 const CANVAS_PIXELS_PER_SPRITE_PIXEL = 2;
 const CPPSP = CANVAS_PIXELS_PER_SPRITE_PIXEL;
 
+const waitBgColor = '#0e0020';
+
+
 const TILESET_SHEET_KEYS = ['inca_front', 'inca_back'];
 
 function preloadTilesets() {
@@ -223,7 +226,7 @@ class GameScene {
   countdownToLevel(ms) {
     wasd.visible = this.levelIndex == 0;
     this.state = 'countdown';
-    this.phaserGame.stage.backgroundColor = '#1e0020';
+    this.phaserGame.stage.backgroundColor = waitBgColor;
     this.resetPhysical();
     this.spawnScene(LEVELS[this.levelIndex]);
     this.hudText.text = 'Get ready..'
@@ -240,6 +243,10 @@ class GameScene {
         this.hudText.tint = Math.floor(this.phaserGame.time.time / 60) % 2 == 0 ? 0x88ff00 : 0xffffff;
       },
       () => { this.hudText.tint = 0xffffff });
+  }
+
+  isPlaying() {
+    return this.state == 'playing';
   }
 
   update() {
@@ -259,21 +266,23 @@ class GameScene {
         this.hudText.text = '!! LEVEL CLEAR !!';
         this.phaserGame.stage.backgroundColor = '#1e4e54';
         addShake(50, 50);
-        triggerSlowMo(5, 1500);
+        const ms = 2000;
+        triggerSlowMo(5, ms);
         this.levelIndex++;
-        this.phaserGame.time.events.add(1500, () => {
-          this.countdownToLevel(1500);
+        this.phaserGame.time.events.add(ms, () => {
+          this.countdownToLevel(2000);
         });
       }
       else if (this.player.getHealth() <= 0) {
         this.state = 'gameover';
         this.hudText.text = '!! GAME OVER !!';
-        this.phaserGame.stage.backgroundColor = '#1e0020';
+        this.phaserGame.stage.backgroundColor = waitBgColor;
 
+        const ms = 1000;
         addShake(10, 10);
-        triggerSlowMo(5, 1500);
-        this.phaserGame.time.events.add(1500, () => {
-          this.countdownToLevel(500);
+        triggerSlowMo(5, ms);
+        this.phaserGame.time.events.add(ms, () => {
+          this.countdownToLevel(0);
         })
       }
     }

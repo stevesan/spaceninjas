@@ -21,6 +21,7 @@ class NinjaPlayer extends GameObject {
     this.animations.add('idle', [2, 10], 4, true);
     this.animations.add('dashing', [0, 8], 16, true);
     this.animations.add('flying', [1, 9], 12, true);
+    this.frame = 10;
 
     game.physics.arcade.enable(this);
     this.body.bounce.y = 0;
@@ -100,7 +101,7 @@ class NinjaPlayer extends GameObject {
     }
 
     if (this.wasBlocked.wasJustBlockedInAnyDir()) {
-      const dir = this.wasBlocked.getBlockedDir();
+      const dir = getBlockedDir(this.body);
       this.onHitWall_(dir);
     }
   }
@@ -134,11 +135,12 @@ class NinjaPlayer extends GameObject {
   }
 
   update() {
-    if (this.isDead()) {
-      this.tint = 0xaaaaaa;
+    if (this.isDead() || this.scene.state == 'countdown') {
+      this.tint = 0x888888;
       this.animations.stop(this.getState());
     }
     else {
+      this.tint = 0xffffff;
       this.animations.play(this.getState());
     }
 
