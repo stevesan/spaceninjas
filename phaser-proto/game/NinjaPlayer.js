@@ -194,17 +194,17 @@ class NinjaPlayer extends GameObject {
     this.lastPressedDir = dir;
     this.lastDirPressTime = Date.now()
 
-    // TODO somehow check if we can even move in this dir!
-
     this.state = isDash ? "dashing" : "flying";
 
     this.setVelocity_(dir, isDash ? DASHING_SPEED : NORMAL_SPEED);
     if (isDash) {
       DASH_AUDIO.get().play();
+      addShake(2, 2);
     }
     else {
       CHANGE_DIR_AUDIO.get().play();
     }
+
   }
 
 }

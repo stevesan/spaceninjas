@@ -277,11 +277,11 @@ class GameScene {
         this.hudText.text = '!! LEVEL CLEAR !!';
         this.phaserGame.stage.backgroundColor = '#1e4e54';
         addShake(50, 50);
-        const ms = 2000;
+        const ms = 1500;
         triggerSlowMo(5, ms);
         this.levelIndex++;
         this.phaserGame.time.events.add(ms, () => {
-          this.countdownToLevel(2000);
+          this.countdownToLevel(1500);
         });
       }
       else if (this.player.getHealth() <= 0) {
