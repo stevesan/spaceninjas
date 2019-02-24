@@ -71,15 +71,12 @@ class GameScene {
     this.hudText.setShadow(2, 2, 'rgba(0,0,0,0.5)', 2);
     this.hudText.fixedToCamera = true;
 
+    this.wasd = game.add.text(game.world.width / 2 - 100, game.world.height / 2 + 50,
+      'Tap WASD to fly\nDouble-tap to dash', { font: 'Courier New', fontSize: '24px', fill: '#fff' });
+    this.wasd.setShadow(2, 2, 'rgba(0,0,0,0.5)', 2);
+
     this.spawnScene(LEVEL_TILEMAP_KEYS[this.levelIndex]);
 
-    // TEMP
-    /** @type {Phaser.Tilemap} */
-    const wave = game.add.tilemap('wave0');
-    const propMap = createPropertiesByGid(wave);
-    wave.objects['objects'].forEach(obj => {
-      console.log(propMap.get(obj.gid));
-    });
 
     this.setupKeys();
   }
@@ -219,7 +216,7 @@ class GameScene {
   }
 
   countdownToLevel(ms) {
-    wasd.visible = this.levelIndex == 0;
+    this.wasd.visible = this.levelIndex == 0;
     this.state = 'countdown';
     this.phaserGame.stage.backgroundColor = waitBgColor;
     this.spawnScene(LEVEL_TILEMAP_KEYS[this.levelIndex]);
@@ -314,8 +311,6 @@ var scoreFx;
 var shakeX = 0;
 var shakeY = 0;
 
-let wasd;
-
 function preload() {
   PRELOAD_CREATE_LIST.forEach(asset => asset.preload());
   preloadTilesets();
@@ -339,10 +334,6 @@ function create() {
   game.world.setBounds(0, 0, 2000, 2000);
   PRELOAD_CREATE_LIST.forEach(asset => asset.create());
   game.physics.startSystem(Phaser.Physics.ARCADE);
-
-  wasd = game.add.text(game.world.width / 2 - 100, game.world.height / 2 + 50,
-    'Tap WASD to fly\nDouble-tap to dash', { font: 'Courier New', fontSize: '24px', fill: '#fff' });
-  wasd.setShadow(3, 3, '#000', 2);
 
   // scoreFx = game.add.emitter(0, 0, 100);
   // scoreFx.makeParticles('star');
