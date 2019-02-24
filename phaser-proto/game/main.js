@@ -17,7 +17,7 @@ function preloadTilesets() {
  * 
  * @param {Phaser.Tilemap} map 
  */
-function addTilesets(map) {
+function addTilesetImages(map) {
   TILESET_SHEET_KEYS.forEach(key => {
     map.addTilesetImage(key);
   })
@@ -80,17 +80,17 @@ class GameScene {
   }
 
   spawnTilemap_(assetKey) {
-    const collidingTileTypes = new Set(['softWall']);
+    const collidingTileTypes = new Set(['softWall', 'wall']);
 
     const map = game.add.tilemap(assetKey);
     this.tilemaps.push(map);
-    addTilesets(map);
+    addTilesetImages(map);
     addTilemapExtensions(map);
     map.layers.forEach(layer => {
       const layerInst = map.createLayer(layer.name);
       this.tilemapLayers.push(layerInst);
+      // Make sure they render under HUD, etc.
       this.physicalGroup.add(layerInst);
-      map.setCollisionByExclusion([], true, layerInst);
 
       // Set collision for tiles that should collide.
       const collidingTileIds = [];
@@ -99,7 +99,7 @@ class GameScene {
           const tile = map.getTile(x, y);
           if (tile) {
             const type = getTilePropOr(tile, 'type', null);
-            if (type && collidingTileTypes.has(type)) {
+            if (collidingTileTypes.has(type)) {
               collidingTileIds.push(tile.index);
             }
           }

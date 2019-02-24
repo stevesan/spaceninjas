@@ -35,6 +35,10 @@
                 {
                  "id":0,
                  "type":"wall"
+                }, 
+                {
+                 "id":1,
+                 "type":"wall"
                 }],
          "tilewidth":32,
          "transparentcolor":"#faffea"

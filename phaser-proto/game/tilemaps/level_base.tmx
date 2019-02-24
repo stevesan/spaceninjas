@@ -3,6 +3,7 @@
  <tileset firstgid="1" name="inca_front" tilewidth="32" tileheight="32" tilecount="35" columns="5">
   <image source="../sprites/tilesets/inca_front.png" trans="faffea" width="160" height="224"/>
   <tile id="0" type="wall"/>
+  <tile id="1" type="wall"/>
  </tileset>
  <tileset firstgid="36" name="inca_back" tilewidth="32" tileheight="32" tilecount="35" columns="5">
   <image source="../sprites/tilesets/inca_back.png" trans="faffea" width="160" height="224"/>
