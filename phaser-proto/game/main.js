@@ -46,7 +46,7 @@ class GameScene {
 
     // Use this group to make sure all physical sprites always render under the HUD (created later)
     /** @type {Phaser.Group} */
-    this.physicalGroup = this.phaserGame.add.group(undefined, "physical");
+    this.physicalGroup = this.phaserGame.add.group(undefined, "pieces");
 
     /** @type {NinjaPlayer} */
     this.player = null;
@@ -186,19 +186,19 @@ class GameScene {
       throw new Error("No enemies in level!");
     }
 
-    const count = this.logSprites_(this.phaserGame.world, '--');
+    const count = this.logSprites_();
     console.log(`${count} objects`);
   }
 
-  logSprites_(obj, prefix = '') {
+  logSprites_(obj, prefix = '| ') {
     if (obj === undefined) {
       obj = this.phaserGame.world;
     }
     let count = 1;
-    console.log(`${prefix}${obj.constructor.name},${obj.name || obj.key}`, obj);
+    console.log(`${prefix}${obj.constructor.name || obj.name || obj.key}`, obj);
     if (obj instanceof Phaser.Group) {
       obj.forEach(c => {
-        count += this.logSprites_(c, prefix + '--');
+        count += this.logSprites_(c, prefix + '| ');
       });
     }
     return count;

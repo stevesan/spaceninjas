@@ -59,7 +59,7 @@ class Turret extends GameObject {
     this.destroy();
     this.scene.onEnemyDeath(this);
     WALL_BREAK_AUDIO.get().play();
-    hitPause(150);
+    hitPause(180);
     addShake(8, 8);
   }
 
