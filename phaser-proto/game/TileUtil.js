@@ -33,5 +33,5 @@ function getTilePropOr(tile, prop, ifDNE) {
  * @param {Phaser.Tile} tile 
  */
 function removeTileFromMap(tile) {
-  tile.layer.__map.removeTile(tile.x, tile.y);
+  tile.layer.__map.removeTile(tile.x, tile.y, tile.layer.name);
 }

@@ -260,12 +260,7 @@ class GameScene {
     this.myCollide(this.player, this.bullets);
 
     [this.player, this.enemies, this.bullets].forEach(group => {
-      this.tilemapLayers.forEach(layer => {
-        // So removeTileFromMap works.
-        layer.map.setLayer(layer);
-
-        this.myCollide(group, layer);
-      });
+      this.tilemapLayers.forEach(layer => this.myCollide(group, layer));
     });
 
     if (this.state == 'playing') {
