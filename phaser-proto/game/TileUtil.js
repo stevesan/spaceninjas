@@ -52,3 +52,20 @@ function getObjectPropOr(map, objectGid, prop, ifDNE) {
     return ifDNE;
   }
 }
+
+/**
+ * 
+ * @param {Phaser.Line} line 
+ * @param {Phaser.TilemapLayer} layer
+ * @param {object} process
+ */
+function overlapLine(line, layer, process) {
+  var tiles = layer.getTiles(line.x, line.y, line.width, line.height, true);
+  tiles.forEach(tile => {
+    const rect = new Phaser.Rectangle(tile.worldX, tile.worldY,
+      tile.width, tile.height);
+    if (Phaser.Line.intersectionWithRectangle(line, rect)) {
+      process(tile);
+    }
+  });
+}

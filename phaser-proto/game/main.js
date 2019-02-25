@@ -97,8 +97,13 @@ class GameScene {
 
     this.spawnScene(LEVEL_TILEMAP_KEYS[this.levelIndex]);
 
-
     this.setupKeys();
+  }
+
+  overlapLineWithTiles(line, process) {
+    this.tilemapLayers.forEach(layer => {
+      overlapLine(line, layer, process);
+    })
   }
 
   spawnTilemap_(assetKey) {
@@ -253,7 +258,7 @@ class GameScene {
       () => {
         this.hudText.tint = Math.floor(this.phaserGame.time.time / 60) % 2 == 0 ? 0x88ff00 : 0xffffff;
       },
-      () => { this.hudText.tint = 0xffffff });
+      () => this.hudText.tint = 0xffffff);
   }
 
   isPlaying() {
@@ -261,6 +266,15 @@ class GameScene {
   }
 
   update() {
+
+    //TEMP
+    // this.debugTiles = [];
+    // this.overlapLineWithTiles(
+    // new Phaser.Line(1000, 1000, this.player.x, this.player.y),
+    // tile => {
+    // this.debugTiles.push(tile);
+    // });
+
     this.adHocUpdaters.update();
     this.updateHud();
 
@@ -398,6 +412,16 @@ function updateCamera() {
 }
 
 function render() {
+  if (scene.debugTiles) {
+    scene.debugTiles.forEach(t => {
+      const r = new Phaser.Rectangle(t.worldX, t.worldY, t.width, t.height);
+      game.debug.rectangle(r, '#ffffff', true);
+      game.debug.rectangle(r, '#00ff00', true);
+    });
+
+    game.debug.geom(new Phaser.Line(1000, 1000, scene.player.x, scene.player.y), '#ff0000', true);
+    game.debug.text(`${scene.debugTiles.length}`, 100, 100, '#ffffff');
+  }
   // game.debug.rectangle(player.getBounds(), '#ff0000', false);
   // game.debug.body(scene.player);
   // const t = player.body.touching;
