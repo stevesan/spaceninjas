@@ -34,7 +34,7 @@ class NinjaPlayer extends GameObject {
     this.anchor.set(0.5, 0.25);
     this.body.setSize(L, L, 0, 0);
 
-    this.health = 999;
+    this.health = 1;
     this.state = 'idle';
     this.currentDir = 0;
     this.lastDirPressTime = 0;
