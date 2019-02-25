@@ -7,7 +7,7 @@ const CPPSP = CANVAS_PIXELS_PER_SPRITE_PIXEL;
 
 const waitBgColor = '#0e0020';
 
-const LEVEL_TILEMAP_KEYS = ['wave0', 'wave1'];
+const LEVEL_TILEMAP_KEYS = ['wave0', 'wave1', 'wave2'];
 const TILESET_SHEET_KEYS = ['inca_front', 'inca_back', 'inca_back2'];
 
 function preloadTilesets() {
