@@ -30,10 +30,11 @@ class NinjaPlayer extends GameObject {
     // Position sprite and collider so they're offset and rotate correctly.
     const spriteBounds = this.getBounds();
     const L = Math.min(spriteBounds.width, spriteBounds.height);
+    // Better to set anchor instead of pivot, to keep collider in sync.
     this.anchor.set(0.5, 0.25);
     this.body.setSize(L, L, 0, 0);
 
-    this.health = 1;
+    this.health = 999;
     this.state = 'idle';
     this.currentDir = 0;
     this.lastDirPressTime = 0;

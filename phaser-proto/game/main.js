@@ -146,7 +146,7 @@ class GameScene {
             new NinjaPlayer(this, obj.x + 16, obj.y - 16);
             break;
           case 'turret':
-            new Turret(this, obj.x, obj.y - 32);
+            new Turret(this, obj.x + 16, obj.y - 16);
             console.log(obj);
             break;
         }
