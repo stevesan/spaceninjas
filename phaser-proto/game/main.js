@@ -100,6 +100,13 @@ class GameScene {
     this.setupKeys();
   }
 
+  /**
+   * @returns {number}
+   */
+  getDeltaTime() {
+    return this.phaserGame.time.physicsElapsed;
+  }
+
   overlapLineWithTiles(line, process) {
     this.tilemapLayers.forEach(layer => {
       overlapLine(line, layer, process);
@@ -147,7 +154,9 @@ class GameScene {
             break;
           case 'turret':
             new Turret(this, obj.x + 16, obj.y - 16);
-            console.log(obj);
+            break;
+          case 'chaser':
+            new Chaser(this, obj.x + 16, obj.y - 16);
             break;
         }
       });

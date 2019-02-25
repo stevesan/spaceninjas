@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.2.2" orientation="orthogonal" renderorder="right-down" width="60" height="60" tilewidth="32" tileheight="32" infinite="0" nextlayerid="5" nextobjectid="64">
- <tileset firstgid="1" name="powerup" tilewidth="32" tileheight="32" tilecount="4" columns="2">
+<map version="1.2" tiledversion="1.2.2" orientation="orthogonal" renderorder="right-down" width="60" height="60" tilewidth="32" tileheight="32" infinite="0" nextlayerid="5" nextobjectid="65">
+ <tileset firstgid="1" name="c" tilewidth="32" tileheight="32" tilecount="4" columns="2">
   <image source="../sprites/Spaceship-shooter-environment/spritesheets/power-up.png" trans="faffea" width="64" height="64"/>
   <tile id="0" type="turret"/>
-  <tile id="2" type="greyTurret"/>
+  <tile id="2" type="chaser"/>
  </tileset>
  <tileset firstgid="5" name="ninja" tilewidth="32" tileheight="32" tilecount="64" columns="8">
   <image source="../sprites/ninja-sheet.png" trans="faffea" width="256" height="256"/>
@@ -84,5 +84,6 @@
  <objectgroup id="4" name="objects">
   <object id="15" gid="7" x="992" y="992" width="32" height="32"/>
   <object id="63" gid="1" x="608" y="512" width="32" height="32"/>
+  <object id="64" gid="3" x="672" y="736" width="32" height="32"/>
  </objectgroup>
 </map>

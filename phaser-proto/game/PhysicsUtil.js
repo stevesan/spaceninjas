@@ -1,5 +1,12 @@
 const DIR_STRINGS = ['up', 'left', 'down', 'right'];
 
+const DIR_VECTORS = [
+  new Phaser.Point(0, -1),
+  new Phaser.Point(-1, 0),
+  new Phaser.Point(0, 1),
+  new Phaser.Point(1, 0)
+];
+
 /**
  * @param {Phaser.Physics.Arcade.Body} body
  * @param {number} dir

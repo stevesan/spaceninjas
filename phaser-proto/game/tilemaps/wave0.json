@@ -41,6 +41,18 @@
                  "width":32,
                  "x":608,
                  "y":512
+                }, 
+                {
+                 "gid":3,
+                 "height":32,
+                 "id":64,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":672,
+                 "y":736
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -49,7 +61,7 @@
          "y":0
         }],
  "nextlayerid":5,
- "nextobjectid":64,
+ "nextobjectid":65,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.2.2",
@@ -62,7 +74,7 @@
          "imageheight":64,
          "imagewidth":64,
          "margin":0,
-         "name":"powerup",
+         "name":"c",
          "spacing":0,
          "tilecount":4,
          "tileheight":32,
@@ -73,7 +85,7 @@
                 }, 
                 {
                  "id":2,
-                 "type":"greyTurret"
+                 "type":"chaser"
                 }],
          "tilewidth":32,
          "transparentcolor":"#faffea"
