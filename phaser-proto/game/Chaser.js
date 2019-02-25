@@ -57,13 +57,13 @@ class Chaser extends GameObject {
       }
       else if (this.slideTime < 0) {
         // OK time to back it up
-        this.backupTime = 0.5;
+        this.backupTime = 0.25 + Math.random() * 0.5;
         this.state = 'backup';
         const backupDir = opposite(blockedDir);
         this.body.velocity.copyFrom(DIR_VECTORS[backupDir]);
-        this.body.velocity.setMagnitude(100);
+        this.body.velocity.setMagnitude(150);
         // Rotate it by some random amount, for fun
-        Phaser.Point.rotate(this.body.velocity, 0, 0, Math.random() * 2 - 1 * Math.PI * 0.5);
+        Phaser.Point.rotate(this.body.velocity, 0, 0, (Math.random() * 2 - 1) * Math.PI * 0.5);
       }
     }
     if (this.state == 'backup') {
