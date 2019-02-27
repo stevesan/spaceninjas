@@ -38,6 +38,7 @@ class Bull extends GameObject {
   isDead() { return !this.alive; }
 
   update() {
+    // this.phaser.debug.geom(new Phaser.Line().fromPoints(this.position, this.scene.player.position), '#ff0000', true);
     if (this.scene.hasClearLineOfSight(this.position, this.scene.player.position)) {
       this.body.velocity.setTo(0, 0);
     }

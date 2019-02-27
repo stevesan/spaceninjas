@@ -28,6 +28,8 @@ function preload() {
   game.load.spritesheet('powerup', 'sprites/Spaceship-shooter-environment/spritesheets/power-up.png', 32, 32);
   game.load.spritesheet('shots', 'sprites/Spaceship-shooter-environment/spritesheets/laser-bolts.png', 16, 16);
   game.load.spritesheet('enemy-medium', 'sprites/Spaceship-shooter-environment/spritesheets/enemy-medium.png', 64, 32);
+  game.load.spritesheet('robot-parts', 'sprites/sci fi robot parts.png', 32, 32);
+  game.load.image('laser-side', 'sprites/topdown_shooter/guns/laser/laser_side.png');
   game.load.image('turret', 'sprites/topdown_shooter/guns/cannon/cannon_down.png');
   game.load.image('cannonball', 'sprites/topdown_shooter/other/cannonball.png')
 
@@ -202,6 +204,9 @@ class GameScene {
             break;
           case 'bull':
             new Bull(this, obj.x + 16, obj.y - 16);
+            break;
+          case 'laser':
+            new SpinLaser(this, obj.x + 16, obj.y - 16);
             break;
         }
       });

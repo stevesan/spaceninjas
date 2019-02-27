@@ -65,6 +65,18 @@
                  "width":64,
                  "x":896,
                  "y":736
+                }, 
+                {
+                 "gid":163,
+                 "height":32,
+                 "id":67,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":736,
+                 "y":768
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -73,7 +85,7 @@
          "y":0
         }],
  "nextlayerid":5,
- "nextobjectid":66,
+ "nextobjectid":68,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.2.2",
@@ -176,6 +188,44 @@
                  "type":"bull"
                 }],
          "tilewidth":64,
+         "transparentcolor":"#faffea"
+        }, 
+        {
+         "columns":2,
+         "firstgid":141,
+         "image":"..\/sprites\/topdown_shooter\/guns\/laser\/laser_side.png",
+         "imageheight":32,
+         "imagewidth":64,
+         "margin":0,
+         "name":"laser_side",
+         "spacing":0,
+         "tilecount":4,
+         "tileheight":16,
+         "tiles":[
+                {
+                 "id":0,
+                 "type":"laser"
+                }],
+         "tilewidth":32,
+         "transparentcolor":"#faffea"
+        }, 
+        {
+         "columns":5,
+         "firstgid":145,
+         "image":"..\/sprites\/sci fi robot parts.png",
+         "imageheight":384,
+         "imagewidth":160,
+         "margin":0,
+         "name":"sci fi robot parts",
+         "spacing":0,
+         "tilecount":60,
+         "tileheight":32,
+         "tiles":[
+                {
+                 "id":18,
+                 "type":"laser"
+                }],
+         "tilewidth":32,
          "transparentcolor":"#faffea"
         }],
  "tilewidth":32,

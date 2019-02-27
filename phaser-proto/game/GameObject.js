@@ -19,6 +19,13 @@ class GameObject extends Phaser.Sprite {
   isDamageable() { return false; }
 
   /**
+   * @returns {Phaser.Game}
+   */
+  get phaser() {
+    return this.scene.phaserGame;
+  }
+
+  /**
    * @param {GameObject} damager 
    * @param {number} dp
    */

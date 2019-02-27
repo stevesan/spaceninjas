@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.2.2" orientation="orthogonal" renderorder="right-down" width="60" height="60" tilewidth="32" tileheight="32" infinite="0" nextlayerid="5" nextobjectid="66">
+<map version="1.2" tiledversion="1.2.2" orientation="orthogonal" renderorder="right-down" width="60" height="60" tilewidth="32" tileheight="32" infinite="0" nextlayerid="5" nextobjectid="68">
  <tileset firstgid="1" name="c" tilewidth="32" tileheight="32" tilecount="4" columns="2">
   <image source="../sprites/Spaceship-shooter-environment/spritesheets/power-up.png" trans="faffea" width="64" height="64"/>
   <tile id="0" type="turret"/>
@@ -20,6 +20,14 @@
  <tileset firstgid="139" name="enemy-medium" tilewidth="64" tileheight="32" tilecount="2" columns="2">
   <image source="../sprites/Spaceship-shooter-environment/spritesheets/enemy-medium.png" trans="faffea" width="128" height="32"/>
   <tile id="0" type="bull"/>
+ </tileset>
+ <tileset firstgid="141" name="laser_side" tilewidth="32" tileheight="16" tilecount="4" columns="2">
+  <image source="../sprites/topdown_shooter/guns/laser/laser_side.png" trans="faffea" width="64" height="32"/>
+  <tile id="0" type="laser"/>
+ </tileset>
+ <tileset firstgid="145" name="sci fi robot parts" tilewidth="32" tileheight="32" tilecount="60" columns="5">
+  <image source="../sprites/sci fi robot parts.png" trans="faffea" width="160" height="384"/>
+  <tile id="18" type="laser"/>
  </tileset>
  <layer id="1" name="Tile Layer 1" width="60" height="60">
   <data encoding="csv">
@@ -90,5 +98,6 @@
   <object id="63" gid="1" x="608" y="512" width="32" height="32"/>
   <object id="64" gid="3" x="544" y="896" width="32" height="32"/>
   <object id="65" gid="139" x="896" y="736" width="64" height="32"/>
+  <object id="67" gid="163" x="736" y="768" width="32" height="32"/>
  </objectgroup>
 </map>
