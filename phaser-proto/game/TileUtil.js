@@ -61,11 +61,12 @@ function getObjectPropOr(map, objectGid, prop, ifDNE) {
  */
 function overlapLine(line, layer, process) {
   var tiles = layer.getTiles(line.x, line.y, line.width, line.height, true);
+  const intxPt = new Phaser.Point(0, 0);
   tiles.forEach(tile => {
     const rect = new Phaser.Rectangle(tile.worldX, tile.worldY,
       tile.width, tile.height);
-    if (Phaser.Line.intersectionWithRectangle(line, rect)) {
-      process(tile);
+    if (Phaser.Line.intersectionWithRectangle(line, rect, intxPt)) {
+      process(tile, intxPt);
     }
   });
 }

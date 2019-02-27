@@ -127,6 +127,28 @@ class GameScene {
     return !hitAny;
   }
 
+  /**
+   * Returns the closest intersecting tile and point of intersection
+   * @param {Phaser.Line} line 
+   */
+  raycastTiles(line) {
+    let bestTile = null;
+    let bestIntx = new Phaser.Point();
+    let bestDist = 0;
+    this.tilemapLayers.forEach(layer => {
+      overlapLine(line, layer, (tile, intx) => {
+        const dist = Phaser.Point.distance(line.start, intx);
+        if (bestTile == null || dist < bestDist) {
+          bestTile = tile;
+          bestIntx.copyFrom(intx);
+          bestDist = dist;
+        }
+      });
+    });
+
+    return { tile: bestTile, intx: bestIntx };
+  }
+
   overlapLineWithTiles(line, process) {
     this.tilemapLayers.forEach(layer => {
       overlapLine(line, layer, process);
@@ -453,11 +475,26 @@ function render() {
 
     game.debug.geom(new Phaser.Line(1000, 1000, scene.player.x, scene.player.y), '#ff0000', true);
     game.debug.text(`${scene.debugTiles.length}`, 100, 100, '#ffffff');
+
   }
   // game.debug.rectangle(player.getBounds(), '#ff0000', false);
   // game.debug.body(scene.player);
   // const t = player.body.touching;
   // game.debug.text(`body touch: ${t['up'] ? 'u' : ' '}${t['left'] ? 'l' : ' '}${t['down'] ? 'd' : ' '}${t['right'] ? 'r' : ' '}`, 0, 50);
+
+
+  if (false) {
+    // debug raycast
+    const line = new Phaser.Line(scene.player.x, scene.player.y, 1000, 1000);
+    game.debug.geom(line, '#ff0000', true);
+    const cast = scene.raycastTiles(line);
+    if (cast.tile != null) {
+      const t = cast.tile;
+      const r = new Phaser.Rectangle(t.worldX, t.worldY, t.width, t.height);
+      game.debug.rectangle(r, '#00ff00', true);
+      game.debug.geom(cast.intx, '#ff0000', true);
+    }
+  }
 }
 
 window.onload = function () {
