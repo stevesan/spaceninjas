@@ -101,10 +101,17 @@ class GameScene {
   }
 
   /**
-   * @returns {number}
+   * @returns {number} In seconds
    */
   getDeltaTime() {
     return this.phaserGame.time.physicsElapsed;
+  }
+
+  /**
+   * @returns {number} Absolute game time in seconds;
+   */
+  getTime() {
+    return this.phaserGame.time.time / 1e3;
   }
 
   overlapLineWithTiles(line, process) {

@@ -15,7 +15,7 @@ class ChasingModule {
   moveTowardsPlayer_() {
     const player = this.scene.player;
     const velocity = fromTo(this.object, player);
-    velocity.setMagnitude(100);
+    velocity.setMagnitude(210);
     this.body.velocity.copyFrom(velocity);
   }
 
@@ -43,7 +43,7 @@ class ChasingModule {
         this.state = 'backup';
         const backupDir = opposite(blockedDir);
         this.body.velocity.copyFrom(DIR_VECTORS[backupDir]);
-        this.body.velocity.setMagnitude(150);
+        this.body.velocity.setMagnitude(250);
         // Rotate it by some random amount, for fun
         Phaser.Point.rotate(this.body.velocity, 0, 0, (Math.random() * 2 - 1) * Math.PI * 0.5);
       }

@@ -14,9 +14,10 @@ class Chaser extends GameObject {
     this.body.immovable = true;
 
     this.chasing = new ChasingModule(scene, this);
+    this.destructTimer = 5;
   }
 
-  isDamageable() { return true; }
+  isDamageable() { return false; }
 
   onOverlap(other) {
     if (other.isPlayer && other.isPlayer() && other.isDamageable()) {
@@ -39,5 +40,18 @@ class Chaser extends GameObject {
 
   update() {
     this.chasing.update();
+    this.destructTimer -= this.scene.getDeltaTime();
+    if (this.destructTimer < 0) {
+      this.destroy();
+    }
+
+    const t = this.scene.phaserGame.time.time;
+    if (this.destructTimer < 0.5) {
+      const blinkOn = Math.floor(t / 1e3 * 20) % 2 == 0;
+      this.tint = blinkOn ? 0xff0000 : 0xffffff;
+    }
+    else {
+      this.tint = 0xffffff;
+    }
   }
 }

@@ -44,5 +44,14 @@ class Turret extends GameObject {
       }
       this.cooldown = COOLDOWN_S;
     }
+    else {
+      if (this.cooldown < 0.5) {
+        const blinkOn = Math.floor(this.scene.getTime() * 16) % 2 == 0;
+        this.tint = blinkOn ? 0xff0000 : 0xffffff;
+      }
+      else {
+        this.tint = 0xffffff;
+      }
+    }
   }
 }
