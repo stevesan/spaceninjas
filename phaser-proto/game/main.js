@@ -27,6 +27,7 @@ function preload() {
   game.load.spritesheet('ninja', 'sprites/ninja-sheet.png', 32, 64);
   game.load.spritesheet('powerup', 'sprites/Spaceship-shooter-environment/spritesheets/power-up.png', 32, 32);
   game.load.spritesheet('shots', 'sprites/Spaceship-shooter-environment/spritesheets/laser-bolts.png', 16, 16);
+  game.load.spritesheet('enemy-medium', 'sprites/Spaceship-shooter-environment/spritesheets/enemy-medium.png', 64, 32);
   game.load.image('turret', 'sprites/topdown_shooter/guns/cannon/cannon_down.png');
   game.load.image('cannonball', 'sprites/topdown_shooter/other/cannonball.png')
 
@@ -114,6 +115,18 @@ class GameScene {
     return this.phaserGame.time.time / 1e3;
   }
 
+  squareWave(freqHz, offsetSecs = 0) {
+    return Math.floor((offsetSecs + this.getTime()) * 2 * freqHz) % 2 == 0;
+  }
+
+  hasClearLineOfSight(a, b) {
+    let hitAny = false;
+    this.overlapLineWithTiles(new Phaser.Line(a.x, a.y, b.x, b.y), tile => {
+      hitAny = true;
+    });
+    return !hitAny;
+  }
+
   overlapLineWithTiles(line, process) {
     this.tilemapLayers.forEach(layer => {
       overlapLine(line, layer, process);
@@ -164,6 +177,9 @@ class GameScene {
             break;
           case 'chaser':
             new Chaser(this, obj.x + 16, obj.y - 16);
+            break;
+          case 'bull':
+            new Bull(this, obj.x + 16, obj.y - 16);
             break;
         }
       });

@@ -1,4 +1,4 @@
-class Chaser extends GameObject {
+class Bull extends GameObject {
   /**
    * @param {GameScene} scene
    * @param {number} x
@@ -6,7 +6,7 @@ class Chaser extends GameObject {
    */
   constructor(scene, x, y) {
     const game = scene.phaserGame;
-    super(scene, x, y, 'powerup', 2);
+    super(scene, x, y, 'enemy-medium', 1);
     scene.enemies.add(this);
     this.anchor.set(0.5, 0.5);
 
@@ -14,7 +14,6 @@ class Chaser extends GameObject {
     this.body.immovable = true;
 
     this.chasing = new ChasingModule(scene, this);
-    this.destructTimer = 5;
   }
 
   isDamageable() { return false; }
@@ -39,18 +38,11 @@ class Chaser extends GameObject {
   isDead() { return !this.alive; }
 
   update() {
-    this.chasing.update();
-    this.destructTimer -= this.scene.getDeltaTime();
-    if (this.destructTimer < 0) {
-      this.destroy();
-    }
-
-    const t = this.scene.phaserGame.time.time;
-    if (this.destructTimer < 0.5) {
-      this.tint = this.scene.squareWave(10) ? 0xff0000 : 0xffffff;
+    if (this.scene.hasClearLineOfSight(this.position, this.scene.player.position)) {
+      this.body.velocity.setTo(0, 0);
     }
     else {
-      this.tint = 0xffffff;
+      this.chasing.update();
     }
   }
 }
