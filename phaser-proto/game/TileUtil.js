@@ -59,7 +59,7 @@ function getObjectPropOr(map, objectGid, prop, ifDNE) {
  * @param {Phaser.TilemapLayer} layer
  * @param {object} process
  */
-function overlapLine(line, layer, process) {
+function overlapLineWithLayer(line, layer, process) {
   var tiles = layer.getTiles(line.x, line.y, line.width, line.height, true);
   const intxPt = new Phaser.Point(0, 0);
   tiles.forEach(tile => {

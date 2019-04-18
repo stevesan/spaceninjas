@@ -38,5 +38,10 @@ class SpinLaser extends GameObject {
       laserLine.end.copyFrom(cast.intx);
     }
     this.phaser.debug.geom(laserLine, '#ff0000', true);
+
+    // Are we hitting the player?
+    if (null != Phaser.Line.intersectionWithRectangle(laserLine, this.scene.player.body)) {
+      this.scene.player.onDamage(this, 1);
+    }
   }
 }
