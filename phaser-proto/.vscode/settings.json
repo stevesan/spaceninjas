@@ -3,5 +3,6 @@
     "**/.DS_Store": true,
     "**/.git": true
   },
-  "editor.formatOnSave": true
+  "editor.formatOnSave": true,
+  "python.pythonPath": "/Users/Steve/anaconda/bin/python"
 }

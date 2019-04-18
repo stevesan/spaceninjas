@@ -5,6 +5,12 @@ const S = 1;
 const CANVAS_PIXELS_PER_SPRITE_PIXEL = 2;
 const CPPSP = CANVAS_PIXELS_PER_SPRITE_PIXEL;
 
+// Used for run-time mod of debug flags. For example, if you want to debug-draw
+// the player and coins, open the Chrome console and run "DEBUG.draws = ['player', 'coins']"
+const DEBUG = {
+  draws: []
+};
+
 const waitBgColor = '#0e0020';
 
 const LEVEL_TILEMAP_KEYS = ['wave0', 'wave1', 'wave2'];
@@ -52,7 +58,6 @@ function addTilesetImages(map) {
 
 class GameScene {
   /**
-   * 
    * @param {Phaser.Game} phaserGame 
    */
   constructor(phaserGame) {
@@ -326,13 +331,14 @@ class GameScene {
 
   update() {
 
-    //TEMP
-    // this.debugTiles = [];
-    // this.overlapLineWithTiles(
-    // new Phaser.Line(1000, 1000, this.player.x, this.player.y),
-    // tile => {
-    // this.debugTiles.push(tile);
-    // });
+    if (DEBUG.draws.includes('tilecast')) {
+      this.debugTiles = [];
+      this.overlapLineWithTiles(
+        new Phaser.Line(1000, 1000, this.player.x, this.player.y),
+        tile => {
+          this.debugTiles.push(tile);
+        });
+    }
 
     this.adHocUpdaters.update();
     this.updateHud();
@@ -470,6 +476,14 @@ function updateCamera() {
   }
 }
 
+function debugDrawPlayer() {
+  const player = scene.player;
+  game.debug.rectangle(player.getBounds(), '#ff0000', false);
+  game.debug.body(scene.player);
+  const t = player.body.touching;
+  game.debug.text(`body touch: ${t['up'] ? 'u' : ' '}${t['left'] ? 'l' : ' '}${t['down'] ? 'd' : ' '}${t['right'] ? 'r' : ' '}`, 0, 50);
+}
+
 function render() {
   if (scene.debugTiles) {
     scene.debugTiles.forEach(t => {
@@ -480,13 +494,11 @@ function render() {
 
     game.debug.geom(new Phaser.Line(1000, 1000, scene.player.x, scene.player.y), '#ff0000', true);
     game.debug.text(`${scene.debugTiles.length}`, 100, 100, '#ffffff');
-
   }
-  // game.debug.rectangle(player.getBounds(), '#ff0000', false);
-  // game.debug.body(scene.player);
-  // const t = player.body.touching;
-  // game.debug.text(`body touch: ${t['up'] ? 'u' : ' '}${t['left'] ? 'l' : ' '}${t['down'] ? 'd' : ' '}${t['right'] ? 'r' : ' '}`, 0, 50);
 
+  if (DEBUG.draws.includes('player')) {
+    debugDrawPlayer();
+  }
 
   if (false) {
     // debug raycast

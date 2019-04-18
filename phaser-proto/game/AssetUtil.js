@@ -20,9 +20,6 @@ class PreloadedSprite {
     this.asset = game.add.sprite(0, 0, this.key);
   }
 
-  /**
-   * @return {Phaser.Sound}
-   */
   get() { return this.asset; }
 }
 
@@ -50,6 +47,8 @@ class PreloadedAudio {
    * @return {Phaser.Sound}
    */
   get() { return this.asset; }
+
+  play() { this.get().play(); }
 }
 
 /**

@@ -7,7 +7,6 @@ const CHANGE_DIR_AUDIO = new PreloadedAudio("wavs/boop.wav");
 const DASH_AUDIO = new PreloadedAudio("wavs/dash.wav");
 const HURT_AUDIO = new PreloadedAudio('wavs/hurt2.wav');
 
-
 class NinjaPlayer extends GameObject {
   /**
    * @param {GameScene} scene
@@ -123,7 +122,7 @@ class NinjaPlayer extends GameObject {
       return;
     }
     this.health -= dp;
-    HURT_AUDIO.get().play();
+    HURT_AUDIO.play();
     other.onDamageSuccess(this, dp);
   }
 
@@ -199,7 +198,7 @@ class NinjaPlayer extends GameObject {
 
     this.setVelocity_(dir, isDash ? PLAYER_DASHING_SPEED : PLAYER_NORMAL_SPEED);
     if (isDash) {
-      DASH_AUDIO.get().play();
+      DASH_AUDIO.play();
       addShake(2, 2);
     }
     else {
