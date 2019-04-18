@@ -31,8 +31,6 @@ class Bull extends GameObject {
     this.destroy();
     this.scene.onEnemyDeath(this);
     WALL_BREAK_AUDIO.get().play();
-    hitPause(180);
-    addShake(8, 8);
   }
 
   isDead() { return !this.alive; }

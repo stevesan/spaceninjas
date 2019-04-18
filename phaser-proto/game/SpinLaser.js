@@ -20,8 +20,6 @@ class SpinLaser extends GameObject {
     this.destroy();
     this.scene.onEnemyDeath(this);
     WALL_BREAK_AUDIO.get().play();
-    hitPause(180);
-    addShake(8, 8);
   }
 
   isDead() { return !this.alive; }
@@ -37,6 +35,8 @@ class SpinLaser extends GameObject {
     if (cast.tile != null) {
       laserLine.end.copyFrom(cast.intx);
     }
+
+    // TEMP
     this.phaser.debug.geom(laserLine, '#ff0000', true);
 
     // Are we hitting the player?

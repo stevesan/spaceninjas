@@ -324,6 +324,8 @@ class GameScene {
   }
 
   onEnemyDeath(enemy) {
+    hitPause(180);
+    addShake(8, 8);
     this.adHocUpdaters.add(1000,
       () => {
         this.hudText.tint = Math.floor(this.phaserGame.time.time / 60) % 2 == 0 ? 0x88ff00 : 0xffffff;
