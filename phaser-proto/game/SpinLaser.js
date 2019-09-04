@@ -12,6 +12,7 @@ class SpinLaser extends GameObject {
 
     game.physics.arcade.enable(this);
     this.body.immovable = true;
+    this.damagedPlayer = false;
   }
 
   isDamageable() { return true; }
@@ -28,7 +29,7 @@ class SpinLaser extends GameObject {
     this.rotation += this.scene.getDeltaTime() * Math.PI / 5;
     const delta = new Phaser.Point(0, -1);
     delta.rotate(0, 0, this.rotation);
-    delta.setMagnitude(128);
+    delta.setMagnitude(500);
     const endPt = Phaser.Point.add(this.position, delta);
     const laserLine = new Phaser.Line().fromPoints(this.position, endPt);
     const cast = this.scene.raycastTiles(laserLine);
@@ -37,11 +38,12 @@ class SpinLaser extends GameObject {
     }
 
     // TEMP
-    this.phaser.debug.geom(laserLine, '#ff0000', true);
+    this.phaser.debug.geom(laserLine, this.damagedPlayer ? '#ff0000' : '#ffff00', true);
 
     // Are we hitting the player?
     if (null != Phaser.Line.intersectionWithRectangle(laserLine, this.scene.player.body)) {
       this.scene.player.onDamage(this, 1);
+      this.damagedPlayer = true;
     }
   }
 }

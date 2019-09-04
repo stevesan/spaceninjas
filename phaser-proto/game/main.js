@@ -520,6 +520,8 @@ function render() {
       game.debug.geom(cast.intx, '#ff0000', true);
     }
   }
+
+  scene.enemies.forEach(e => game.debug.body(e));
 }
 
 window.onload = function () {

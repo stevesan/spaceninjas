@@ -12,6 +12,9 @@ class Bull extends GameObject {
 
     game.physics.arcade.enable(this);
     this.body.immovable = true;
+    const spriteBounds = this.getBounds();
+    const L = Math.min(spriteBounds.width, spriteBounds.height);
+    this.body.setSize(L, L, 0, 0);
 
     this.chasing = new ChasingModule(scene, this);
   }
@@ -36,12 +39,21 @@ class Bull extends GameObject {
   isDead() { return !this.alive; }
 
   update() {
+    const toPlayer = fromTo(this, this.scene.player);
+    this.rotation = Math.atan2(toPlayer.y, toPlayer.x) - Math.PI / 2;
+
     // this.phaser.debug.geom(new Phaser.Line().fromPoints(this.position, this.scene.player.position), '#ff0000', true);
     if (this.scene.hasClearLineOfSight(this.position, this.scene.player.position)) {
-      this.body.velocity.setTo(0, 0);
+      // this.body.velocity.setTo(0, 0);
+      this.tint = this.scene.squareWave(10) ? 0xff0000 : 0xffffff;
+      this.chasing.speed = 30;
+
     }
     else {
-      this.chasing.update();
+      this.chasing.speed = 200;
     }
+    // else {
+    this.chasing.update();
+    // }
   }
 }

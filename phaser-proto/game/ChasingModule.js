@@ -10,12 +10,13 @@ class ChasingModule {
     this.slideTime = 0;
     this.object = object;
     this.body = object.body;
+    this.speed = 210;
   }
 
   moveTowardsPlayer_() {
     const player = this.scene.player;
     const velocity = fromTo(this.object, player);
-    velocity.setMagnitude(210);
+    velocity.setMagnitude(this.speed);
     this.body.velocity.copyFrom(velocity);
   }
 
