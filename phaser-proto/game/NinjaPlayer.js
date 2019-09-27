@@ -66,7 +66,7 @@ class NinjaPlayer extends GameObject {
       removeTileFromMap(other);
       WALL_BREAK_AUDIO.get().play();
       hitPause(200);
-      addShake(8, 8);
+      addShake(2, 2);
       return false;
     }
     if (this.isDead()) {

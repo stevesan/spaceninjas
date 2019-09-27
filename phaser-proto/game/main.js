@@ -521,7 +521,7 @@ function render() {
     }
   }
 
-  scene.enemies.forEach(e => game.debug.body(e));
+  // scene.enemies.forEach(e => game.debug.body(e));
 }
 
 window.onload = function () {
